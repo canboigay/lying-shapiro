@@ -1,0 +1,10 @@
+name = "lying-shapiro"
+compatibility_date = "2026-10-01"
+
+routes = [
+  { pattern = "lyingshapiro.com", custom_domain = true },
+  { pattern = "www.lyingshapiro.com", custom_domain = true }
+]
+
+[assets]
+directory = "./site"
