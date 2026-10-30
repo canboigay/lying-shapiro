@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lying Capiro · Brian Shapiro Catchphrase Board &amp; Debate Corpus</title>
+  <meta name="description" content="Transcript-grounded ranking of recycled Brian Shapiro (Pushing The Limits) debate catchphrases, audio mashup soundboard, 164 polite-dodge windows, and video clips across 364 debates." />
+  <link rel="canonical" href="https://lyingshapiro.com/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://lyingshapiro.com/" />
+  <meta property="og:title" content="Lying Capiro · Brian Shapiro Catchphrase Board" />
+  <meta property="og:description" content="5,205 catchphrase hits across 364 Pushing The Limits debates — ranked with audio mashups, 164 polite-dodge windows, Andrew Wilson debate stats, and video clips." />
+  <meta property="og:image" content="https://lyingshapiro.com/brand/yt.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Lying Capiro · Brian Shapiro Catchphrase Board" />
+  <meta name="twitter:description" content="5,205 catchphrase hits across 364 Pushing The Limits debates — ranked with audio mashups, 164 polite-dodge windows, and video clips." />
+  <meta name="twitter:image" content="https://lyingshapiro.com/brand/yt.jpg" />
+  <link rel="stylesheet" href="./styles.css" />
+  <link rel="icon" type="image/png" href="./favicon.png" />
+  <link rel="apple-touch-icon" href="./brand/avatar-192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="studio-bar" role="navigation" aria-label="Studio navigation">
+    <div class="studio-bar-left">
+      <span class="on-air"><span class="on-air-dot" aria-hidden="true"></span> ON AIR</span>
+      <span class="studio-sep" aria-hidden="true">·</span>
+      <span>Pushing The Limits Corpus</span>
+    </div>
+    <nav class="studio-nav">
+      <a href="#board-title">Catchphrases</a>
+      <a href="#soundboard-section">Soundboard</a>
+      <a href="#floor-section">Floor Control</a>
+      <a href="#dodge-section">Polite Dodge Lab <span class="nav-badge" id="nav-dodge-count">164</span></a>
+      <a href="#wilson-section">Wilson Files <span class="nav-badge" id="nav-wilson-count">14</span></a>
+    </nav>
+  </div>
+
+  <div class="ticker" aria-label="Top catchphrase frequency crawl">
+    <div class="ticker-label">LIVE COUNTS</div>
+    <div class="ticker-track" id="ticker-track">
+      <div class="ticker-inner" id="ticker-inner">Loading debate corpus crawl...</div>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="masthead">
+      <div class="brand-row">
+        <div class="avatar-wrap" id="avatar-wrap" hidden>
+          <img id="avatar-img" alt="Lying Capiro — Independent Thinker avatar" width="96" height="96" />
+        </div>
+        <div class="brand-text">
+          <div class="brand-kicker">364 DEBATES · 3.07M WORDS · TRANSCRIPT-GROUNDED</div>
+          <h1>LYING CAPIRO</h1>
+          <p class="tagline">Welcome to Brian Shapiro’s Liberal World</p>
+          <p class="disclaimer">Satire / parody archive of recycled talking points, polite dodges, and floor-control tics across Pushing The Limits debates (with Kewl Vic Live commentary overlays). Not affiliated with Brian Shapiro — and <em>not</em> Ben Shapiro.</p>
+          <div class="hero-stat-strip" id="hero-stat-strip" aria-label="Corpus highlights"></div>
+        </div>
+      </div>
+
+      <aside class="tds-side" id="tds-side" aria-labelledby="tds-title" role="button" tabindex="0" aria-expanded="false" aria-controls="tds-breakdown" title="Click to toggle TDS topic breakdown">
+        <div class="tds-side-label">
+          <span class="tds-kicker" id="tds-title">TDS</span>
+          <div class="tds-score-inline" id="tds-score" aria-live="polite">-</div>
+        </div>
+        <div class="tds-gauge tds-gauge-vert" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="tds-gauge" aria-label="Trump Derangement Syndrome meter">
+          <div class="tds-fill" id="tds-fill"></div>
+          <div class="tds-needle" id="tds-needle"></div>
+        </div>
+        <p class="tds-side-cap" id="tds-blurb">Trump share</p>
+        <span class="tds-breakdown-hint">Breakdown ▾</span>
+      </aside>
+    </div>
+
+    <section class="tds-breakdown" id="tds-breakdown" hidden aria-label="TDS Topic Breakdown">
+      <div class="tds-breakdown-head">
+        <div>
+          <h3>Trump Derangement Syndrome (TDS) Corpus Breakdown</h3>
+          <p id="tds-breakdown-summary">Weighted share of Pushing The Limits catchphrase hits and debate coverage tied to Trump topics or Trump-adjacent debate dodges.</p>
+        </div>
+        <button type="button" class="tds-breakdown-close" id="tds-breakdown-close" aria-label="Close TDS breakdown">Close</button>
+      </div>
+      <div class="tds-breakdown-grid" id="tds-breakdown-grid"></div>
+    </section>
+  </header>
+
+  <main class="layout layout-with-clips">
+    <div class="main-column">
+      <!-- INSTANT SOUNDBOARD -->
+      <section class="soundboard-section" id="soundboard-section" aria-labelledby="soundboard-title">
+        <div class="soundboard-head">
+          <div>
+            <h2 id="soundboard-title">Instant Soundboard</h2>
+            <p class="soundboard-sub">Tap any button to hear the 3-hit debate mashup or meltdown cut</p>
+          </div>
+          <div class="soundboard-actions">
+            <button type="button" class="reel-btn" id="play-reel-btn" aria-pressed="false">▶ Play All Mashups</button>
+            <button type="button" class="reel-stop-btn" id="stop-audio-btn" hidden>■ Stop</button>
+          </div>
+        </div>
+        <div class="soundboard-grid" id="soundboard-grid" role="group" aria-label="Audio mashup soundboard"></div>
+      </section>
+
+      <!-- MAIN CATCHPHRASE BOARD -->
+      <section class="board-panel" aria-labelledby="board-title">
+        <div class="board-head">
+          <div class="board-head-top">
+            <div>
+              <h2 id="board-title">Most-Used Catchphrases</h2>
+              <p class="board-sub">The most-repeated lines across 364 debates. Click any quote for associated variants, audio mashup sources, and timestamped transcript proof.</p>
+            </div>
+          </div>
+
+          <div class="board-toolbar">
+            <div class="search-wrap">
+              <input type="search" id="board-search" class="board-search" placeholder="Search phrases, variants, or transcript quotes..." aria-label="Search catchphrases and quotes" />
+              <button type="button" id="board-search-clear" class="board-search-clear" hidden aria-label="Clear search">×</button>
+            </div>
+            <div class="sort-wrap">
+              <label for="board-sort" class="sort-label">Sort:</label>
+              <select id="board-sort" class="board-sort" aria-label="Sort catchphrases">
+                <option value="ptl_hits">Most Used (PTL Hits)</option>
+                <option value="debates">Most Debates Hit</option>
+                <option value="wilson">Andrew Wilson Debates</option>
+                <option value="kewl">Kewl Vic Live Overlays</option>
+                <option value="rate">Density (Per 1k Words)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="filters" id="filters" role="group" aria-label="Category filters">
+          <!-- filled by JS -->
+        </div>
+
+        <div class="quote-board" id="quote-board" aria-live="polite">
+          <p class="board-loading">Loading catchphrases...</p>
+        </div>
+
+        <div class="board-more-wrap" id="board-more-wrap" hidden>
+          <button type="button" class="show-more-btn" id="show-more-btn">Show more phrases</button>
+        </div>
+
+        <!-- FLOOR CONTROL -->
+        <section class="floor-section" id="floor-section" hidden aria-labelledby="floor-title">
+          <div class="floor-head">
+            <h3 id="floor-title">Floor Control &amp; Interruption Tics</h3>
+            <p class="floor-sub">Debate fillers used to filibuster or grab the mic mid-point (708 hits across 205 debates). Shown separately so they don’t drown out topical catchphrases.</p>
+          </div>
+          <div class="quote-board floor-board" id="floor-board"></div>
+        </section>
+      </section>
+
+      <!-- POLITE DODGE LAB (164 WINDOWS) -->
+      <section class="dodge-section" id="dodge-section" aria-labelledby="dodge-title">
+        <div class="section-head">
+          <div class="section-kicker">BEHAVIORAL PATTERN LAB · 164 TIMESTAMPED WINDOWS</div>
+          <h2 id="dodge-title">The “Polite Dodge” Tracker</h2>
+          <p class="section-sub">How the signature move works: open with a polite concession (<em>“I’m glad you asked”</em>, <em>“Okay let’s talk about that”</em>, <em>“Very fair question”</em>), then immediately pivot away with <em>“in a second”</em>, <em>“let me ask you”</em>, or abandon the caller’s topic within 90 seconds.</p>
+        </div>
+
+        <div class="dodge-controls">
+          <div class="dodge-tabs" id="dodge-tabs" role="group" aria-label="Polite dodge filter">
+            <button type="button" class="dodge-tab active" data-dodge-filter="pivot_marker">Explicit Pivot Caught <span id="dodge-count-pivot">49</span></button>
+            <button type="button" class="dodge-tab" data-dodge-filter="all">All Dodge Windows <span id="dodge-count-all">164</span></button>
+            <button type="button" class="dodge-tab" data-dodge-filter="no_topic_return_heuristic">90s Topic Abandon <span id="dodge-count-abandon">115</span></button>
+          </div>
+          <input type="search" id="dodge-search" class="dodge-search" placeholder="Filter by debate title or quote..." aria-label="Filter polite dodge windows" />
+        </div>
+
+        <div class="dodge-grid" id="dodge-grid" aria-live="polite"></div>
+
+        <div class="board-more-wrap" id="dodge-more-wrap" hidden>
+          <button type="button" class="show-more-btn" id="dodge-more-btn">Show more dodge windows</button>
+        </div>
+      </section>
+
+      <!-- ANDREW WILSON FILES (14 DEBATES) -->
+      <section class="wilson-section" id="wilson-section" aria-labelledby="wilson-title">
+        <div class="section-head">
+          <div class="section-kicker">HEAD-TO-HEAD SUB-CORPUS · 14 DEBATES</div>
+          <h2 id="wilson-title">The Andrew Wilson Files</h2>
+          <p class="section-sub">When debating Andrew Wilson across 14 full episodes, Brian leans heavily on procedural floor-control and four recurring talking points. Click any cluster to inspect its full transcript drawer above.</p>
+        </div>
+
+        <div class="wilson-layout">
+          <div class="wilson-clusters-col">
+            <h3 class="wilson-col-title">Top Crutch Lines vs. Andrew Wilson</h3>
+            <div class="wilson-bars" id="wilson-bars"></div>
+          </div>
+          <div class="wilson-debates-col">
+            <h3 class="wilson-col-title">All 14 Indexed Wilson Debates</h3>
+            <ul class="wilson-debate-list" id="wilson-debate-list"></ul>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- WATCH BRIAN CLIPS RAIL -->
+    <aside class="clips-rail" id="clips-rail" hidden aria-label="Watch Brian">
+      <div class="clips-rail-head">
+        <div>
+          <h2 id="clips-title">Watch Brian</h2>
+          <p class="clips-rail-sub">9 viral debate clips &amp; supercuts</p>
+        </div>
+        <div class="clips-nav-btns">
+          <button type="button" class="clips-step-btn" id="clips-prev-btn" aria-label="Previous clip" title="Previous clip">‹</button>
+          <span class="clips-counter" id="clips-counter">1/9</span>
+          <button type="button" class="clips-step-btn" id="clips-next-btn" aria-label="Next clip" title="Next clip">›</button>
+        </div>
+      </div>
+      <div class="clips-player-host" id="clips-player-host"></div>
+      <p class="clips-now" id="clips-now" aria-live="polite"></p>
+      <ul class="clips-list" id="clips-list"></ul>
+    </aside>
+  </main>
+
+  <button type="button" class="clips-fab" id="clips-fab" hidden aria-controls="clips-drawer" aria-expanded="false">▶ Watch Clips (9)</button>
+  <div class="clips-drawer" id="clips-drawer" hidden>
+    <div class="clips-drawer-panel" id="clips-drawer-panel" role="dialog" aria-modal="true" aria-labelledby="clips-drawer-title">
+      <div class="clips-drawer-bar">
+        <h2 id="clips-drawer-title">Watch Brian · 9 Clips</h2>
+        <button type="button" class="clips-drawer-close" id="clips-drawer-close" aria-label="Close">Close</button>
+      </div>
+      <div class="clips-player-host" id="clips-drawer-host"></div>
+      <p class="clips-now" id="clips-drawer-now" aria-live="polite"></p>
+      <ul class="clips-list" id="clips-drawer-list"></ul>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-channels" id="footer-channels"></div>
+    <p>
+      Transcript-grounded debate-only counts
+      · Subject: <strong>Brian Shapiro</strong> / Pushing The Limits (<em>not</em> Ben Shapiro)
+      · Kewl Vic Live (<code>@KEWLV1C</code>) for commentary seed windows &amp; reaction clips
+    </p>
+    <p id="footer-stats" class="footer-stats"></p>
+    <div class="corpus-pills" id="corpus-pills"></div>
+    <p class="footer-note">Parody &amp; media-criticism archive. All counts and timestamps are derived directly from debate captions in <code>data/phrase_ranks.json</code>.</p>
+  </footer>
+
+  <script src="./app.js"></script>
+</body>
+</html>

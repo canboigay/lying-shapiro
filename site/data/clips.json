@@ -1,0 +1,95 @@
+{
+  "version": 2,
+  "clips": [
+    {
+      "id": "what-what-ptl-raw",
+      "title": "WHAT? WHAT?",
+      "blurb": "Loomer staffer press — raw PTL",
+      "kind": "clip",
+      "durationSec": 18,
+      "poster": "./clips/posters/what-what-ptl.jpg",
+      "src": "./clips/WHAT-WHAT-PTL-raw-9x16.mp4",
+      "youtubeId": null
+    },
+    {
+      "id": "jimmy-supercut",
+      "title": "JIMMY! Let Me Talk!",
+      "blurb": "Caller Jimmy meltdown supercut — Lying Capiro",
+      "kind": "clip",
+      "durationSec": 70,
+      "poster": "./clips/posters/jimmy-supercut.jpg",
+      "src": "./clips/jimmy-supercut-9x16.mp4",
+      "youtubeId": null
+    },
+    {
+      "id": "mushroom-gobbler",
+      "title": "maga mushroom gobbler",
+      "blurb": "Nick Shirley street debate — PTL",
+      "kind": "clip",
+      "durationSec": 18,
+      "poster": "./clips/posters/mushroom-gobbler.jpg",
+      "src": "./clips/mushroom-gobbler-9x16.mp4",
+      "youtubeId": null
+    },
+    {
+      "id": "what-what-kewl",
+      "title": "WHAT? WHAT? (Kewl Reaction)",
+      "blurb": "Kewl Vic Live breakdown — @KEWLV1C",
+      "kind": "clip",
+      "durationSec": 34,
+      "poster": "./clips/posters/what-what-kewl.jpg",
+      "src": "./clips/what-what-kewl-9x16.mp4",
+      "youtubeId": null
+    },
+    {
+      "id": "glad-you-asked",
+      "title": "I'm happy to talk",
+      "blurb": "Health care vs drag queens — PTL",
+      "kind": "clip",
+      "durationSec": 20,
+      "poster": "./clips/posters/glad-you-asked.jpg",
+      "src": "./clips/glad-you-asked-9x16.mp4",
+      "youtubeId": null
+    },
+    {
+      "id": "convicted-felon",
+      "title": "Convicted felon",
+      "blurb": "Brian vs MAGA supporters — PTL",
+      "kind": "clip",
+      "durationSec": 20,
+      "poster": "./clips/posters/convicted-felon.jpg",
+      "src": "./clips/convicted-felon-9x16.mp4",
+      "youtubeId": null
+    },
+    {
+      "id": "january-6th",
+      "title": "January 6th",
+      "blurb": "Full debate vs Warren Smith — PTL",
+      "kind": "clip",
+      "durationSec": 22,
+      "poster": "./clips/posters/january-6th.jpg",
+      "src": "./clips/january-6th-9x16.mp4",
+      "youtubeId": null
+    },
+    {
+      "id": "liable-sexual-abuser",
+      "title": "Liable sexual abuser",
+      "blurb": "MAGA Brandon Tatum debate — PTL",
+      "kind": "clip",
+      "durationSec": 23,
+      "poster": "./clips/posters/liable-sexual-abuser.jpg",
+      "src": "./clips/liable-sexual-abuser-9x16.mp4",
+      "youtubeId": null
+    },
+    {
+      "id": "what-what-replay",
+      "title": "WHAT? WHAT? (Instant Replay)",
+      "blurb": "Double-take & chat reaction — @KEWLV1C",
+      "kind": "clip",
+      "durationSec": 22,
+      "poster": "./clips/posters/what-what-replay.jpg",
+      "src": "./clips/what-what-replay-9x16.mp4",
+      "youtubeId": null
+    }
+  ]
+}

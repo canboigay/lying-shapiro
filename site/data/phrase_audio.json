@@ -1,0 +1,357 @@
+{
+  "version": 4,
+  "items": [
+    {
+      "clusterId": "c001",
+      "title": "Hold on let me finish",
+      "src": "./audio/c001-let-me-talk-jimmy.m4a",
+      "durationSec": 9.5,
+      "hits": [
+        {
+          "sourceVideoId": "pHxjphcFGwQ",
+          "sourceStartSec": 1840.0,
+          "sourceEndSec": 1852.0,
+          "note": "Jimmy, Jimmy, JIMMY — you gotta let me talk now!"
+        }
+      ],
+      "sourceVideoId": "pHxjphcFGwQ",
+      "sourceStartSec": 1840.0,
+      "sourceEndSec": 1852.0,
+      "note": "Supercut: \"Jimmy, Jimmy, JIMMY, you gotta let me talk now!\""
+    },
+    {
+      "clusterId": "c002",
+      "title": "January 6th",
+      "src": "./audio/c002-january-6th-mash2.m4a",
+      "durationSec": 6.38,
+      "hits": [
+        {
+          "sourceVideoId": "Obv0qZ0z8XI",
+          "sourceStartSec": 594.5,
+          "sourceEndSec": 599.0,
+          "note": "seed: january 6th insurrectionists"
+        },
+        {
+          "sourceVideoId": "-kdPsEnuOWQ",
+          "sourceStartSec": 2314.0,
+          "sourceEndSec": 2319.0,
+          "note": "beat cops on january 6th"
+        },
+        {
+          "sourceVideoId": "w2taeqsrGW8",
+          "sourceStartSec": 2247.0,
+          "sourceEndSec": 2252.5,
+          "note": "cops were beaten on january 6th"
+        }
+      ],
+      "sourceVideoId": "Obv0qZ0z8XI",
+      "sourceStartSec": 594.5,
+      "sourceEndSec": 599.0,
+      "note": "Gentle meme mashup: 3 hits [2.10s, 2.00s, 2.15s] + 65ms gaps; total ~6.38s"
+    },
+    {
+      "clusterId": "c003",
+      "title": "Liable sexual abuser",
+      "src": "./audio/c003-liable-sexual-abuser-mash2.m4a",
+      "durationSec": 8.23,
+      "hits": [
+        {
+          "sourceVideoId": "EwSjxjtN2H8",
+          "sourceStartSec": 1324.0,
+          "sourceEndSec": 1329.0,
+          "note": "seed: he is a liable sexual abuser"
+        },
+        {
+          "sourceVideoId": "2BSU1dPfZOM",
+          "sourceStartSec": 3632.5,
+          "sourceEndSec": 3638.0,
+          "note": "donald trump is a liable sexual abuser"
+        },
+        {
+          "sourceVideoId": "3xQ8UFpVwGk",
+          "sourceStartSec": 1720.0,
+          "sourceEndSec": 1727.5,
+          "note": "liable sexual abuser proven (widened window)"
+        }
+      ],
+      "sourceVideoId": "EwSjxjtN2H8",
+      "sourceStartSec": 1324.0,
+      "sourceEndSec": 1329.0,
+      "note": "Gentle meme mashup: 3 hits [2.25s, 2.65s, 3.20s] + 65ms gaps; total ~8.23s"
+    },
+    {
+      "clusterId": "c004",
+      "title": "In the Epstein files",
+      "src": "./audio/c004-epstein-files-mash2.m4a",
+      "durationSec": 6.43,
+      "hits": [
+        {
+          "sourceVideoId": "SdOTtVda3ek",
+          "sourceStartSec": 6179.5,
+          "sourceEndSec": 6184.5,
+          "note": "seed: read in the Epstein files"
+        },
+        {
+          "sourceVideoId": "2BSU1dPfZOM",
+          "sourceStartSec": 3684.5,
+          "sourceEndSec": 3690.5,
+          "note": "named 30,000 times in the epstein files"
+        },
+        {
+          "sourceVideoId": "1tu199fs4No",
+          "sourceStartSec": 116.5,
+          "sourceEndSec": 122.0,
+          "note": "actually in the epstein files"
+        }
+      ],
+      "sourceVideoId": "SdOTtVda3ek",
+      "sourceStartSec": 6179.5,
+      "sourceEndSec": 6184.5,
+      "note": "Gentle meme mashup: 3 hits [2.00s, 2.25s, 2.05s] + 65ms gaps; total ~6.43s"
+    },
+    {
+      "clusterId": "c005",
+      "title": "I'm glad you asked",
+      "src": "./audio/c005-glad-you-asked-mash2.m4a",
+      "durationSec": 6.23,
+      "hits": [
+        {
+          "sourceVideoId": "oBNfFczvQ1U",
+          "sourceStartSec": 154.7,
+          "sourceEndSec": 156.3,
+          "note": "I'm happy to talk (from glad-full / oBNfFczvQ1U ~154.7)"
+        },
+        {
+          "sourceVideoId": "7I3W7R6kXc0",
+          "sourceStartSec": 292.5,
+          "sourceEndSec": 297.5,
+          "note": "I'm glad you asked"
+        },
+        {
+          "sourceVideoId": "A8hsEdMcLe8",
+          "sourceStartSec": 2010.5,
+          "sourceEndSec": 2015.5,
+          "note": "I'm glad you asked that"
+        }
+      ],
+      "sourceVideoId": "oBNfFczvQ1U",
+      "sourceStartSec": 155.5,
+      "sourceEndSec": 160.5,
+      "note": "Spoken forms include \"I'm happy to talk\" / \"I'm glad you asked\"; 3 hits ~6.23s"
+    },
+    {
+      "clusterId": "c006",
+      "title": "The election was stolen",
+      "src": "./audio/c006-election-stolen-mash2.m4a",
+      "durationSec": 6.48,
+      "hits": [
+        {
+          "sourceVideoId": "EwSjxjtN2H8",
+          "sourceStartSec": 1800.5,
+          "sourceEndSec": 1805.5,
+          "note": "seed: Brian yet the 2020 election was stolen"
+        },
+        {
+          "sourceVideoId": "Obv0qZ0z8XI",
+          "sourceStartSec": 624.0,
+          "sourceEndSec": 629.5,
+          "note": "doesn't say the election was stolen"
+        },
+        {
+          "sourceVideoId": "6WWLcUWJ6WY",
+          "sourceStartSec": 344.5,
+          "sourceEndSec": 350.0,
+          "note": "doesn't say the election was stolen"
+        }
+      ],
+      "sourceVideoId": "EwSjxjtN2H8",
+      "sourceStartSec": 1800.5,
+      "sourceEndSec": 1805.5,
+      "note": "Gentle meme mashup: 3 hits [2.35s, 2.00s, 2.00s] + 65ms gaps; total ~6.48s"
+    },
+    {
+      "clusterId": "c008",
+      "title": "Convicted felon",
+      "src": "./audio/c008-convicted-felon-mash2.m4a",
+      "durationSec": 7.38,
+      "hits": [
+        {
+          "sourceVideoId": "lGmTE9rVzFI",
+          "sourceStartSec": 362.0,
+          "sourceEndSec": 367.0,
+          "note": "seed: 34-count convicted felon"
+        },
+        {
+          "sourceVideoId": "1tu199fs4No",
+          "sourceStartSec": 213.5,
+          "sourceEndSec": 219.0,
+          "note": "34-count convicted felon"
+        },
+        {
+          "sourceVideoId": "6cPxwmBpI_A",
+          "sourceStartSec": 703.0,
+          "sourceEndSec": 708.5,
+          "note": "donald trump is a 34-count felon"
+        }
+      ],
+      "sourceVideoId": "lGmTE9rVzFI",
+      "sourceStartSec": 362.0,
+      "sourceEndSec": 367.0,
+      "note": "Gentle meme mashup: 3 hits [2.95s, 2.00s, 2.30s] + 65ms gaps; total ~7.38s"
+    },
+    {
+      "clusterId": "c007",
+      "title": "Answer the question",
+      "src": "./audio/c007-answer-the-question-mash2.m4a",
+      "durationSec": 6.48,
+      "hits": [
+        {
+          "sourceVideoId": "CyE7G00QW38",
+          "sourceStartSec": 113.0,
+          "sourceEndSec": 117.5,
+          "note": "seed: Answer the question"
+        },
+        {
+          "sourceVideoId": "-b0f2cbFAaw",
+          "sourceStartSec": 726.5,
+          "sourceEndSec": 731.5,
+          "note": "answer the question"
+        },
+        {
+          "sourceVideoId": "0w_3BRDl2SY",
+          "sourceStartSec": 886.5,
+          "sourceEndSec": 891.5,
+          "note": "answer the question"
+        }
+      ],
+      "sourceVideoId": "CyE7G00QW38",
+      "sourceStartSec": 113.0,
+      "sourceEndSec": 117.5,
+      "note": "Gentle meme mashup: 3 hits [2.15s, 2.00s, 2.20s] + 65ms gaps; total ~6.48s"
+    },
+    {
+      "clusterId": "c026",
+      "title": "maga mushroom gobbler",
+      "src": "./audio/c026-mushroom-gobbler-mash2.m4a",
+      "durationSec": 6.13,
+      "hits": [
+        {
+          "sourceVideoId": "NfpbfwW6x9U",
+          "sourceStartSec": 2.0,
+          "sourceEndSec": 7.0,
+          "note": "seed: trump mushroom gobbler"
+        },
+        {
+          "sourceVideoId": "AdDYlf9HgDU",
+          "sourceStartSec": 446.5,
+          "sourceEndSec": 451.5,
+          "note": "hey maga mushroom gobbler"
+        },
+        {
+          "sourceVideoId": "0IPDc2rXK-c",
+          "sourceStartSec": 1265.5,
+          "sourceEndSec": 1270.5,
+          "note": "you're a trump mushroom gobbler"
+        }
+      ],
+      "sourceVideoId": "NfpbfwW6x9U",
+      "sourceStartSec": 2.0,
+      "sourceEndSec": 7.0,
+      "note": "Gentle meme mashup: 3 hits [2.00s, 2.00s, 2.00s] + 65ms gaps; total ~6.13s"
+    },
+    {
+      "clusterId": "c009",
+      "title": "That's a fair question",
+      "src": "./audio/c009-fair-question-mash2.m4a",
+      "durationSec": 6.13,
+      "hits": [
+        {
+          "sourceVideoId": "so4q2YQxtlo",
+          "sourceStartSec": 136.0,
+          "sourceEndSec": 141.5,
+          "note": "seed: very fair question"
+        },
+        {
+          "sourceVideoId": "aEFqHwcgWOk",
+          "sourceStartSec": 548.5,
+          "sourceEndSec": 554.0,
+          "note": "very fair question"
+        },
+        {
+          "sourceVideoId": "5Ifd76CHvtM",
+          "sourceStartSec": 1023.0,
+          "sourceEndSec": 1028.5,
+          "note": "very fair question"
+        }
+      ],
+      "sourceVideoId": "so4q2YQxtlo",
+      "sourceStartSec": 136.0,
+      "sourceEndSec": 141.5,
+      "note": "Spoken often as \"very fair question\"; 3 hits ~6.13s"
+    },
+    {
+      "clusterId": "c011",
+      "title": "I'll answer that",
+      "src": "./audio/c011-ill-answer-that-mash2.m4a",
+      "durationSec": 6.93,
+      "hits": [
+        {
+          "sourceVideoId": "Vm3k0VPcx3c",
+          "sourceStartSec": 117.0,
+          "sourceEndSec": 122.0,
+          "note": "seed: okay fine I'll answer that"
+        },
+        {
+          "sourceVideoId": "0IPDc2rXK-c",
+          "sourceStartSec": 303.5,
+          "sourceEndSec": 308.5,
+          "note": "okay I'll answer that"
+        },
+        {
+          "sourceVideoId": "1JYTHB-oCCk",
+          "sourceStartSec": 43.5,
+          "sourceEndSec": 48.5,
+          "note": "yes I'll answer that"
+        }
+      ],
+      "sourceVideoId": "Vm3k0VPcx3c",
+      "sourceStartSec": 117.0,
+      "sourceEndSec": 122.0,
+      "note": "Gentle meme mashup: 3 hits [2.80s, 2.00s, 2.00s] + 65ms gaps; total ~6.93s"
+    },
+    {
+      "clusterId": "c025",
+      "title": "Whataboutism",
+      "src": "./audio/c025-whataboutism-jimmy.m4a",
+      "durationSec": 8.0,
+      "hits": [
+        {
+          "sourceVideoId": "pHxjphcFGwQ",
+          "sourceStartSec": 3033.0,
+          "sourceEndSec": 3041.0,
+          "note": "Why is it whataboutism with you all the time?"
+        }
+      ],
+      "sourceVideoId": "pHxjphcFGwQ",
+      "sourceStartSec": 3033.0,
+      "sourceEndSec": 3041.0,
+      "note": "Caller Jimmy debate: \"Why is it whataboutism with you all the time?\""
+    }
+  ],
+  "soundboardExtras": [
+    {
+      "id": "sfx-what-what",
+      "title": "WHAT?! WHAT?!",
+      "subtitle": "Loomer staffer scream",
+      "src": "./audio/what-what-scream.m4a",
+      "durationSec": 7.0
+    },
+    {
+      "id": "sfx-jimmy-rug",
+      "title": "Sweep You Under the Rug",
+      "subtitle": "Caller Jimmy meltdown",
+      "src": "./audio/jimmy-sweep-under-rug.m4a",
+      "durationSec": 10.0
+    }
+  ]
+}

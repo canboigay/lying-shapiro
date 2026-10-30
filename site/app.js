@@ -1,0 +1,1932 @@
+/**
+ * Lying Capiro - Brian Shapiro (Pushing The Limits) Catchphrase Board & Debate Corpus
+ * Data: ./data/phrase_ranks.json, ./data/phrase_audio.json, ./data/clips.json
+ * All counts, windows, and quotes come directly from the transcript corpus.
+ */
+
+const TOP_N = 10;
+const DODGE_PAGE_SIZE = 8;
+
+const TDS_BUCKETS = new Set([
+  "election_denial",
+  "january_6",
+  "felon_counts",
+  "fascism_nazi",
+  "stormy_sex_scandal",
+  "liable_abuser",
+  "epstein",
+  "trump_whatabout",
+  "cult_brainwash",
+  "grift_media",
+  "mushroom_gobbler",
+]);
+
+const TDS_TACTIC_BUCKETS = new Set([
+  "debate_procedure",
+  "polite_opener",
+]);
+
+const TDS_ABOUT_KEYS = [
+  "trump",
+  "election",
+  "january 6",
+  "january 6th",
+  "felon",
+  "epstein",
+  "stormy",
+  "harris",
+  "maga",
+  "e jean",
+  "e. jean",
+  "hush money",
+  "capitol",
+  "insurrection",
+  "nazi",
+  "fascist",
+  "liable",
+  "abuser",
+];
+
+const CATEGORIES = [
+  "all",
+  "recycled_point",
+  "polite_dodge",
+  "strawman",
+  "obfuscation",
+  "fake_smart",
+  "dodge",
+  "floor_control",
+];
+
+const CAT_LABELS = {
+  all: "All categories",
+  recycled_point: "Recycled talking point",
+  obfuscation: "Obfuscation / filibuster",
+  dodge: "Dodges the question",
+  strawman: "Straw man",
+  fake_smart: "Fake-smart flex",
+  polite_dodge: "Polite dodge",
+  floor_control: "Floor control",
+};
+
+const BUCKET_LABELS = {
+  january_6: "January 6th & Insurrection",
+  liable_abuser: "Liable Sexual Abuser / E. Jean Carroll",
+  epstein: "Epstein Files",
+  polite_opener: "Polite Opener -> Dodge",
+  election_denial: "2020 Election Denial",
+  felon_counts: "34-Count Convicted Felon",
+  debate_procedure: "Procedural Filibuster / Floor Control",
+  mushroom_gobbler: "MAGA / Trump Mushroom Gobbler",
+  fascism_nazi: "Hitler / Fascist Comparisons",
+  stormy_sex_scandal: "Stormy Daniels & Hush Money",
+  grift_media: "Right-Wing Grifter",
+  cult_brainwash: "MAGA Cult / Brainwashed",
+  trump_whatabout: "Whataboutism",
+};
+
+let DATA = null;
+let activeFilter = "all";
+let searchQuery = "";
+let sortMode = "ptl_hits";
+let expandedId = null;
+let showAll = false;
+let expandedQuotesMap = {};
+
+/** Polite dodge state */
+let dodgeFilter = "pivot_marker";
+let dodgeSearch = "";
+let dodgeVisibleCount = DODGE_PAGE_SIZE;
+
+/** Audio state */
+var PHRASE_AUDIO_BY_ID = {};
+var SOUNDBOARD_EXTRAS = [];
+var phraseAudioEl = null;
+var playingAudioKey = null;
+var reelQueue = [];
+var isReelPlaying = false;
+
+function getPhraseAudio(clusterId) {
+  if (!clusterId) return null;
+  return PHRASE_AUDIO_BY_ID[clusterId] || null;
+}
+
+function getSoundboardExtra(sfxId) {
+  for (var i = 0; i < SOUNDBOARD_EXTRAS.length; i++) {
+    if (SOUNDBOARD_EXTRAS[i].id === sfxId) return SOUNDBOARD_EXTRAS[i];
+  }
+  return null;
+}
+
+function pauseWatchBrianVideos() {
+  ["clips-player-host", "clips-drawer-host"].forEach(function (id) {
+    var host = document.getElementById(id);
+    if (!host) return;
+    host.querySelectorAll("video").forEach(function (v) {
+      try {
+        v.pause();
+      } catch (e) {}
+    });
+  });
+}
+
+function syncPhraseAudioButtons() {
+  document.querySelectorAll(".phrase-audio-btn").forEach(function (btn) {
+    var id = btn.getAttribute("data-cluster-id");
+    var on = playingAudioKey && id === playingAudioKey;
+    btn.classList.toggle("is-playing", !!on);
+    btn.setAttribute("aria-pressed", on ? "true" : "false");
+    var title = (getPhraseAudio(id) && getPhraseAudio(id).title) || id;
+    btn.setAttribute(
+      "aria-label",
+      on ? 'Stop "' + title + '"' : 'Play "' + title + '"'
+    );
+    btn.textContent = on ? "■" : "▶";
+  });
+
+  document.querySelectorAll(".sb-pad").forEach(function (pad) {
+    var key = pad.getAttribute("data-audio-key");
+    var on = playingAudioKey && key === playingAudioKey;
+    pad.classList.toggle("is-playing", !!on);
+    pad.setAttribute("aria-pressed", on ? "true" : "false");
+    var icon = pad.querySelector(".sb-pad-icon");
+    if (icon) icon.textContent = on ? "■" : "▶";
+  });
+
+  var reelBtn = document.getElementById("play-reel-btn");
+  if (reelBtn) {
+    reelBtn.classList.toggle("is-playing", !!isReelPlaying);
+    reelBtn.setAttribute("aria-pressed", isReelPlaying ? "true" : "false");
+    reelBtn.textContent = isReelPlaying ? "▶ Playing Reel..." : "▶ Play All Mashups";
+  }
+
+  var stopBtn = document.getElementById("stop-audio-btn");
+  if (stopBtn) {
+    stopBtn.hidden = !playingAudioKey && !isReelPlaying;
+  }
+}
+
+function ensurePhraseAudioEl() {
+  if (phraseAudioEl) return phraseAudioEl;
+  phraseAudioEl = document.createElement("audio");
+  phraseAudioEl.preload = "none";
+  phraseAudioEl.addEventListener("ended", function () {
+    if (isReelPlaying && reelQueue.length > 0) {
+      var nextKey = reelQueue.shift();
+      playAudioByKey(nextKey, true);
+      return;
+    }
+    isReelPlaying = false;
+    playingAudioKey = null;
+    syncPhraseAudioButtons();
+  });
+  phraseAudioEl.addEventListener("error", function () {
+    if (isReelPlaying && reelQueue.length > 0) {
+      var nextKey = reelQueue.shift();
+      playAudioByKey(nextKey, true);
+      return;
+    }
+    isReelPlaying = false;
+    playingAudioKey = null;
+    syncPhraseAudioButtons();
+  });
+  document.body.appendChild(phraseAudioEl);
+  return phraseAudioEl;
+}
+
+function stopPhraseAudio() {
+  isReelPlaying = false;
+  reelQueue = [];
+  if (phraseAudioEl) {
+    try {
+      phraseAudioEl.pause();
+      phraseAudioEl.removeAttribute("src");
+      phraseAudioEl.load();
+    } catch (e) {}
+  }
+  playingAudioKey = null;
+  syncPhraseAudioButtons();
+}
+
+function playAudioByKey(key, fromReel) {
+  if (!fromReel) {
+    isReelPlaying = false;
+    reelQueue = [];
+  }
+  var item = getPhraseAudio(key) || getSoundboardExtra(key);
+  if (!item || !item.src) return;
+  if (!fromReel && playingAudioKey === key) {
+    stopPhraseAudio();
+    return;
+  }
+  pauseWatchBrianVideos();
+  var el = ensurePhraseAudioEl();
+  playingAudioKey = key;
+  el.src = item.src;
+  syncPhraseAudioButtons();
+  var p = el.play();
+  if (p && typeof p.catch === "function") {
+    p.catch(function () {
+      isReelPlaying = false;
+      playingAudioKey = null;
+      syncPhraseAudioButtons();
+    });
+  }
+}
+
+function playPhraseAudio(clusterId) {
+  playAudioByKey(clusterId, false);
+}
+
+function startMashupReel() {
+  if (isReelPlaying) {
+    stopPhraseAudio();
+    return;
+  }
+  var ordered = sortedClusters()
+    .map(function (c) {
+      return c.cluster_id;
+    })
+    .filter(function (id) {
+      return !!getPhraseAudio(id);
+    });
+  SOUNDBOARD_EXTRAS.forEach(function (s) {
+    ordered.push(s.id);
+  });
+  if (!ordered.length) return;
+  isReelPlaying = true;
+  reelQueue = ordered.slice(1);
+  playAudioByKey(ordered[0], true);
+}
+
+function phraseAudioButtonHtml(clusterId) {
+  var item = getPhraseAudio(clusterId);
+  if (!item || !item.src) return "";
+  var title = item.title || clusterId;
+  return (
+    '<button type="button" class="phrase-audio-btn" data-cluster-id="' +
+    escapeAttr(clusterId) +
+    '" aria-label="Play &quot;' +
+    escapeAttr(title) +
+    '&quot;" aria-pressed="false">▶</button>'
+  );
+}
+
+function loadPhraseAudio() {
+  return fetch("./data/phrase_audio.json")
+    .then(function (res) {
+      if (!res.ok) throw new Error("phrase_audio " + res.status);
+      return res.json();
+    })
+    .then(function (data) {
+      PHRASE_AUDIO_BY_ID = {};
+      (data.items || []).forEach(function (it) {
+        if (it && it.clusterId && it.src) PHRASE_AUDIO_BY_ID[it.clusterId] = it;
+      });
+      SOUNDBOARD_EXTRAS = Array.isArray(data.soundboardExtras)
+        ? data.soundboardExtras
+        : [];
+    })
+    .catch(function () {
+      PHRASE_AUDIO_BY_ID = {};
+      SOUNDBOARD_EXTRAS = [];
+    });
+}
+
+function boardLabel(c) {
+  return (
+    c.key_phrase ||
+    c.canonical_label ||
+    c.phrase ||
+    c.display_title ||
+    c.cluster_id ||
+    "(untitled)"
+  );
+}
+
+function quotedTitle(c) {
+  let raw = String(boardLabel(c) || "").trim();
+  raw = raw.replace(/^["\u201C\u201D]+/, "").replace(/["\u201C\u201D]+$/, "").trim();
+  return "\u201C" + raw + "\u201D";
+}
+
+function timesUsedLabel(n) {
+  const x = Number(n) || 0;
+  if (x === 1) return "used 1 time";
+  return "used " + x.toLocaleString() + " times";
+}
+
+function tryAvatar() {
+  const img = document.getElementById("avatar-img");
+  const wrap = document.getElementById("avatar-wrap");
+  if (!img || !wrap) return;
+  img.onload = function () {
+    wrap.hidden = false;
+  };
+  img.onerror = function () {
+    wrap.hidden = true;
+  };
+  img.src = "./brand/avatar.png";
+}
+
+/**
+ * Clean rolling YouTube auto-caption stutters where a 3-8 word phrase is repeated back-to-back.
+ */
+function cleanRollingStutter(text) {
+  if (!text) return "";
+  let s = String(text).replace(/\s+/g, " ").trim();
+  for (let pass = 0; pass < 3; pass++) {
+    const words = s.split(" ");
+    const out = [];
+    let i = 0;
+    while (i < words.length) {
+      let skipped = false;
+      for (let len = Math.min(9, Math.floor((words.length - i) / 2)); len >= 3; len--) {
+        const a = words.slice(i, i + len).join(" ").toLowerCase();
+        const b = words.slice(i + len, i + 2 * len).join(" ").toLowerCase();
+        if (a === b) {
+          for (let k = 0; k < len; k++) out.push(words[i + k]);
+          i += 2 * len;
+          skipped = true;
+          break;
+        }
+      }
+      if (!skipped) {
+        out.push(words[i]);
+        i++;
+      }
+    }
+    s = out.join(" ");
+  }
+  return s;
+}
+
+function highlightSpanHtml(quoteText, spanText) {
+  const cleaned = cleanRollingStutter(quoteText);
+  const truncated = truncate(cleaned, 440);
+  if (!spanText) return escapeHtml(truncated);
+  const needle = String(spanText).trim();
+  if (!needle || needle.length < 3) return escapeHtml(truncated);
+  const lower = truncated.toLowerCase();
+  const idx = lower.indexOf(needle.toLowerCase());
+  if (idx === -1) return escapeHtml(truncated);
+  const before = truncated.slice(0, idx);
+  const match = truncated.slice(idx, idx + needle.length);
+  const after = truncated.slice(idx + needle.length);
+  return (
+    escapeHtml(before) +
+    "<mark>" +
+    escapeHtml(match) +
+    "</mark>" +
+    escapeHtml(after)
+  );
+}
+
+async function main() {
+  tryAvatar();
+  const board = document.getElementById("quote-board");
+  try {
+    const [res] = await Promise.all([
+      fetch("./data/phrase_ranks.json"),
+      loadPhraseAudio(),
+    ]);
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    DATA = await res.json();
+  } catch (err) {
+    console.error(err);
+    if (board) {
+      board.innerHTML =
+        '<p class="board-empty">Could not load phrase ranks: ' +
+        escapeHtml(String(err && err.message ? err.message : err)) +
+        "</p>";
+    }
+    const blurb = document.getElementById("tds-blurb");
+    if (blurb) blurb.textContent = "Failed to load data.";
+    return;
+  }
+
+  const clusters = sortedClusters();
+  renderTicker(clusters);
+  renderHeroStats();
+  renderTds(clusters);
+  renderTdsBreakdown(clusters);
+  renderSoundboard(clusters);
+  renderCorpusPills();
+  renderFilters();
+  bindBoardControls();
+  refreshBoard();
+  renderDodgeLab();
+  renderWilsonSection();
+  renderFooter();
+  bindShowMore();
+  initClipsRail();
+}
+
+function sortedClusters(mode) {
+  const m = mode || sortMode || "ptl_hits";
+  return (DATA.clusters || []).slice().sort(function (a, b) {
+    if (m === "debates") {
+      return (b.videos_hit_ptl || 0) - (a.videos_hit_ptl || 0) || (b.hit_count_ptl || 0) - (a.hit_count_ptl || 0);
+    }
+    if (m === "wilson") {
+      return (b.wilson_videos_hit || 0) - (a.wilson_videos_hit || 0) || (b.wilson_weighted_score || 0) - (a.wilson_weighted_score || 0);
+    }
+    if (m === "kewl") {
+      return (b.hit_count_kewl_vic_live || 0) - (a.hit_count_kewl_vic_live || 0) || (b.hit_count_ptl || 0) - (a.hit_count_ptl || 0);
+    }
+    if (m === "rate") {
+      return (b.rate_per_1k_ptl || 0) - (a.rate_per_1k_ptl || 0) || (b.hit_count_ptl || 0) - (a.hit_count_ptl || 0);
+    }
+    return (b.hit_count_ptl || 0) - (a.hit_count_ptl || 0);
+  });
+}
+
+function isCatchphraseForBoard(c) {
+  if (!c) return false;
+  if (c.exclude_from_catchphrase_board === true) return false;
+  if (c.is_catchphrase === false) return false;
+  return true;
+}
+
+function boardClusters() {
+  return sortedClusters().filter(isCatchphraseForBoard);
+}
+
+function floorControlClusters() {
+  return sortedClusters().filter(function (c) {
+    return c.category === "floor_control" || c.board_role === "filler_floor_control";
+  });
+}
+
+function mainBoardClusters() {
+  if (activeFilter === "floor_control") return floorControlClusters();
+  return boardClusters();
+}
+
+function refreshBoard() {
+  renderBoard(mainBoardClusters());
+  renderFloorSection();
+}
+
+function jumpToCluster(clusterId) {
+  if (!clusterId || !DATA) return;
+  const target = (DATA.clusters || []).find(function (c) {
+    return c.cluster_id === clusterId;
+  });
+  if (!target) return;
+  const isFloor = target.category === "floor_control" || target.board_role === "filler_floor_control";
+  if (isFloor && activeFilter !== "all" && activeFilter !== "floor_control") {
+    activeFilter = "all";
+  } else if (!isFloor && activeFilter !== "all" && activeFilter !== target.category) {
+    activeFilter = "all";
+  }
+  searchQuery = "";
+  const searchInput = document.getElementById("board-search");
+  const clearBtn = document.getElementById("board-search-clear");
+  if (searchInput) searchInput.value = "";
+  if (clearBtn) clearBtn.hidden = true;
+  showAll = true;
+  expandedId = clusterId;
+  renderFilters();
+  refreshBoard();
+  const card = document.querySelector('.quote-card[data-id="' + clusterId + '"]');
+  if (card) {
+    card.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+}
+
+function renderTicker(clusters) {
+  const inner = document.getElementById("ticker-inner");
+  if (!inner) return;
+  const items = clusters.map(function (c) {
+    const label = boardLabel(c).toUpperCase();
+    const hits = c.hit_count_ptl || 0;
+    return (
+      '<button type="button" class="ticker-item" data-jump-id="' +
+      escapeAttr(c.cluster_id) +
+      '">' +
+      escapeHtml(label) +
+      ' <span class="mul">' +
+      hits +
+      "×</span></button>"
+    );
+  });
+  inner.innerHTML = items.concat(items).join('<span class="studio-sep">·</span>');
+  inner.querySelectorAll(".ticker-item").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      jumpToCluster(btn.getAttribute("data-jump-id"));
+    });
+  });
+}
+
+function renderHeroStats() {
+  const strip = document.getElementById("hero-stat-strip");
+  if (!strip || !DATA) return;
+  const corpus = DATA.corpus || {};
+  const stats = [
+    ["Debates Indexed", corpus.included_debates || 364],
+    ["Catchphrase Hits", (corpus.hits_extracted || 5205).toLocaleString()],
+    ["PTL Words", (corpus.ptl_words || 3068864).toLocaleString()],
+    ["Polite-Dodge Windows", (DATA.polite_dodge_windows || []).length || 164],
+    ["Andrew Wilson Debates", (DATA.wilson_debates || []).length || 14],
+  ];
+  strip.innerHTML = stats
+    .map(function (s) {
+      return (
+        '<span class="hero-stat-pill"><strong>' +
+        escapeHtml(String(s[1])) +
+        "</strong> " +
+        escapeHtml(s[0]) +
+        "</span>"
+      );
+    })
+    .join("");
+}
+
+function renderSoundboard(clusters) {
+  const grid = document.getElementById("soundboard-grid");
+  if (!grid) return;
+  const pads = [];
+  clusters.forEach(function (c) {
+    const aud = getPhraseAudio(c.cluster_id);
+    if (!aud) return;
+    pads.push({
+      key: c.cluster_id,
+      title: boardLabel(c),
+      meta: (c.hit_count_ptl || 0) + " hits · " + Math.round(aud.durationSec || 6) + "s",
+      isSfx: false,
+    });
+  });
+  SOUNDBOARD_EXTRAS.forEach(function (sfx) {
+    pads.push({
+      key: sfx.id,
+      title: sfx.title,
+      meta: (sfx.subtitle || "Meltdown cut") + " · " + Math.round(sfx.durationSec || 7) + "s",
+      isSfx: true,
+    });
+  });
+
+  grid.innerHTML = pads
+    .map(function (p) {
+      return (
+        '<button type="button" class="sb-pad' +
+        (p.isSfx ? " sb-pad-sfx" : "") +
+        '" data-audio-key="' +
+        escapeAttr(p.key) +
+        '" aria-pressed="false">' +
+        '<span class="sb-pad-icon">▶</span>' +
+        '<span class="sb-pad-text">' +
+        '<span class="sb-pad-title">' +
+        escapeHtml(p.title) +
+        "</span>" +
+        '<span class="sb-pad-meta">' +
+        escapeHtml(p.meta) +
+        "</span>" +
+        "</span></button>"
+      );
+    })
+    .join("");
+
+  grid.querySelectorAll(".sb-pad").forEach(function (pad) {
+    pad.addEventListener("click", function () {
+      var key = pad.getAttribute("data-audio-key");
+      if (key) playAudioByKey(key, false);
+    });
+  });
+
+  const reelBtn = document.getElementById("play-reel-btn");
+  if (reelBtn && !reelBtn._bound) {
+    reelBtn._bound = true;
+    reelBtn.addEventListener("click", startMashupReel);
+  }
+  const stopBtn = document.getElementById("stop-audio-btn");
+  if (stopBtn && !stopBtn._bound) {
+    stopBtn._bound = true;
+    stopBtn.addEventListener("click", stopPhraseAudio);
+  }
+  syncPhraseAudioButtons();
+}
+
+function clusterTrumpWeight(c) {
+  const bucket = c.topic_bucket || "";
+  if (TDS_BUCKETS.has(bucket)) return 1;
+
+  const about = Array.isArray(c.about) ? c.about.join(" ") : "";
+  const blob = (
+    (c.display_title || "") +
+    " " +
+    (c.canonical_label || "") +
+    " " +
+    (c.tactic || "") +
+    " " +
+    about +
+    " " +
+    bucket
+  ).toLowerCase();
+  const hasKey = TDS_ABOUT_KEYS.some(function (k) {
+    return blob.indexOf(k) !== -1;
+  });
+  if (!hasKey) return 0;
+
+  if (TDS_TACTIC_BUCKETS.has(bucket)) return 0.65;
+  if (
+    ["polite_dodge", "obfuscation", "dodge", "fake_smart", "strawman"].indexOf(
+      c.category
+    ) !== -1
+  ) {
+    return 0.65;
+  }
+  return 0;
+}
+
+function computeTds(clusters) {
+  let hTds = 0;
+  let hAll = 0;
+  let vTds = 0;
+  let vAll = 0;
+  for (let i = 0; i < clusters.length; i++) {
+    const c = clusters[i];
+    const h = Number(c.hit_count_ptl) || 0;
+    const v = Number(c.videos_hit_ptl) || 0;
+    const w = clusterTrumpWeight(c);
+    hAll += h;
+    vAll += v;
+    hTds += h * w;
+    vTds += v * w;
+  }
+  const hitShare = hTds / Math.max(hAll, 1);
+  const videoShare = vTds / Math.max(vAll, 1);
+  const raw = 100 * (0.7 * hitShare + 0.3 * videoShare);
+  const eased = 100 * (1 - Math.pow(1 - Math.min(raw / 100, 1), 1.15));
+  const score = Math.max(0, Math.min(96, Math.round(eased)));
+  return {
+    score: score,
+    hitShare: hitShare,
+    videoShare: videoShare,
+    hTds: Math.round(hTds),
+    hAll: hAll,
+    vTds: Math.round(vTds),
+    vAll: vAll,
+  };
+}
+
+function renderTds(clusters) {
+  const t = computeTds(clusters);
+  const fill = document.getElementById("tds-fill");
+  const needle = document.getElementById("tds-needle");
+  const scoreEl = document.getElementById("tds-score");
+  const gauge = document.getElementById("tds-gauge");
+  const blurb = document.getElementById("tds-blurb");
+
+  requestAnimationFrame(function () {
+    fill.style.width = "100%";
+    fill.style.height = t.score + "%";
+    needle.style.left = "";
+    needle.style.bottom = "calc(" + t.score + "% - 1px)";
+    scoreEl.textContent = String(t.score);
+    gauge.setAttribute("aria-valuenow", String(t.score));
+  });
+
+  const pctHits = (t.hitShare * 100).toFixed(1);
+  let band = "low";
+  if (t.score >= 80) band = "very high";
+  else if (t.score >= 60) band = "high";
+  else if (t.score >= 40) band = "moderate";
+  else if (t.score >= 20) band = "elevated";
+
+  if (blurb) {
+    blurb.textContent = band;
+    blurb.title =
+      "Score " +
+      t.score +
+      "/100 (" +
+      band +
+      "). " +
+      pctHits +
+      "% of Pushing The Limits phrase hits (" +
+      t.hTds.toLocaleString() +
+      " of " +
+      t.hAll.toLocaleString() +
+      " weighted) are Trump topics or Trump-related debate tactics. Across debates: " +
+      (t.videoShare * 100).toFixed(1) +
+      "%.";
+  }
+}
+
+function renderTdsBreakdown(clusters) {
+  const panel = document.getElementById("tds-breakdown");
+  const grid = document.getElementById("tds-breakdown-grid");
+  const side = document.getElementById("tds-side");
+  const closeBtn = document.getElementById("tds-breakdown-close");
+  if (!panel || !grid) return;
+
+  const bucketMap = {};
+  let totalBoardHits = 0;
+  clusters.forEach(function (c) {
+    if (c.exclude_from_catchphrase_board) return;
+    const b = c.topic_bucket || "other";
+    const h = Number(c.hit_count_ptl) || 0;
+    const v = Number(c.videos_hit_ptl) || 0;
+    totalBoardHits += h;
+    if (!bucketMap[b]) {
+      bucketMap[b] = { bucket: b, hits: 0, videos: 0, clusters: 0 };
+    }
+    bucketMap[b].hits += h;
+    bucketMap[b].videos = Math.max(bucketMap[b].videos, v);
+    bucketMap[b].clusters += 1;
+  });
+
+  const rows = Object.values(bucketMap).sort(function (a, b) {
+    return b.hits - a.hits;
+  });
+  const maxHits = rows.length ? rows[0].hits : 1;
+
+  grid.innerHTML = rows
+    .map(function (r) {
+      const pct = ((r.hits / Math.max(totalBoardHits, 1)) * 100).toFixed(1);
+      const barW = Math.max(6, Math.round((r.hits / maxHits) * 100));
+      const label = BUCKET_LABELS[r.bucket] || r.bucket.replace(/_/g, " ");
+      return (
+        '<div class="tds-bucket-card">' +
+        '<div class="tds-bucket-top"><span>' +
+        escapeHtml(label) +
+        "</span><span>" +
+        r.hits +
+        " hits (" +
+        pct +
+        "%)</span></div>" +
+        '<div class="tds-bucket-bar"><div style="width:' +
+        barW +
+        '%"></div></div>' +
+        '<div class="tds-bucket-meta">Peak ' +
+        r.videos +
+        " debates · " +
+        r.clusters +
+        " phrase group" +
+        (r.clusters === 1 ? "" : "s") +
+        "</div></div>"
+      );
+    })
+    .join("");
+
+  function toggleBreakdown() {
+    const nextHidden = !panel.hidden;
+    panel.hidden = nextHidden;
+    if (side) side.setAttribute("aria-expanded", nextHidden ? "false" : "true");
+  }
+
+  if (side && !side._bound) {
+    side._bound = true;
+    side.addEventListener("click", toggleBreakdown);
+    side.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        toggleBreakdown();
+      }
+    });
+  }
+  if (closeBtn && !closeBtn._bound) {
+    closeBtn._bound = true;
+    closeBtn.addEventListener("click", function () {
+      panel.hidden = true;
+      if (side) side.setAttribute("aria-expanded", "false");
+    });
+  }
+}
+
+function renderCorpusPills() {
+  const corpus = DATA.corpus || {};
+  const pills = [
+    ["Debates included", corpus.included_debates],
+    ["Pushing The Limits videos", corpus.ptl_videos],
+    ["Kewl Vic Live videos", corpus.kewl_vic_live_videos],
+    [
+      "Phrase clusters",
+      corpus.clusters_kept != null
+        ? corpus.clusters_kept
+        : (DATA.clusters || []).length,
+    ],
+    ["Phrase hits", corpus.hits_extracted],
+    ["Polite-dodge windows", (DATA.polite_dodge_windows || []).length || corpus.polite_dodge_windows],
+    ["Andrew Wilson debates", (DATA.wilson_debates || []).length || corpus.wilson_debates],
+  ];
+  const el = document.getElementById("corpus-pills");
+  if (!el) return;
+  el.innerHTML = pills
+    .filter(function (p) {
+      return p[1] != null;
+    })
+    .map(function (p) {
+      return (
+        '<span class="corpus-pill">' +
+        escapeHtml(p[0]) +
+        " <strong>" +
+        escapeHtml(String(p[1])) +
+        "</strong></span>"
+      );
+    })
+    .join("");
+}
+
+function getCategoryCount(cat) {
+  if (!DATA || !Array.isArray(DATA.clusters)) return 0;
+  if (cat === "all") return boardClusters().length;
+  if (cat === "floor_control") return floorControlClusters().length;
+  return boardClusters().filter(function (c) {
+    return c.category === cat;
+  }).length;
+}
+
+function renderFilters() {
+  const el = document.getElementById("filters");
+  if (!el) return;
+  el.innerHTML = CATEGORIES.map(function (cat) {
+    const active = cat === activeFilter ? " active" : "";
+    const count = getCategoryCount(cat);
+    return (
+      '<button type="button" class="filter-chip cat-filter-' +
+      cat +
+      active +
+      '" data-cat="' +
+      cat +
+      '">' +
+      escapeHtml(CAT_LABELS[cat] || cat) +
+      ' <span class="filter-chip-count">(' +
+      count +
+      ")</span></button>"
+    );
+  }).join("");
+  el.querySelectorAll(".filter-chip").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      activeFilter = btn.dataset.cat;
+      expandedId = null;
+      showAll = false;
+      renderFilters();
+      refreshBoard();
+    });
+  });
+}
+
+function bindBoardControls() {
+  const searchInput = document.getElementById("board-search");
+  const clearBtn = document.getElementById("board-search-clear");
+  const sortSelect = document.getElementById("board-sort");
+
+  if (searchInput && !searchInput._bound) {
+    searchInput._bound = true;
+    searchInput.addEventListener("input", function () {
+      searchQuery = String(searchInput.value || "").trim().toLowerCase();
+      if (clearBtn) clearBtn.hidden = !searchQuery;
+      refreshBoard();
+    });
+  }
+  if (clearBtn && !clearBtn._bound) {
+    clearBtn._bound = true;
+    clearBtn.addEventListener("click", function () {
+      searchQuery = "";
+      if (searchInput) searchInput.value = "";
+      clearBtn.hidden = true;
+      refreshBoard();
+    });
+  }
+  if (sortSelect && !sortSelect._bound) {
+    sortSelect._bound = true;
+    sortSelect.addEventListener("change", function () {
+      sortMode = sortSelect.value || "ptl_hits";
+      refreshBoard();
+    });
+  }
+}
+
+function bindShowMore() {
+  const btn = document.getElementById("show-more-btn");
+  if (!btn || btn.dataset.bound) return;
+  btn.dataset.bound = "1";
+  btn.addEventListener("click", function () {
+    showAll = !showAll;
+    refreshBoard();
+  });
+}
+
+function matchesSearch(c, q) {
+  if (!q) return true;
+  const hay = [
+    boardLabel(c),
+    c.canonical_label,
+    c.display_title,
+    c.tactic,
+    c.topic_bucket,
+    Array.isArray(c.about) ? c.about.join(" ") : "",
+    Array.isArray(c.member_lines)
+      ? c.member_lines.map(function (m) { return m.text || ""; }).join(" ")
+      : "",
+    Array.isArray(c.examples)
+      ? c.examples.map(function (ex) { return (ex.quote || "") + " " + (ex.title || ""); }).join(" ")
+      : "",
+  ]
+    .join(" ")
+    .toLowerCase();
+  return hay.indexOf(q) !== -1;
+}
+
+function filteredRows(clusters) {
+  let rows = clusters;
+  if (activeFilter !== "all" && activeFilter !== "floor_control") {
+    rows = rows.filter(function (c) {
+      return c.category === activeFilter;
+    });
+  }
+  if (searchQuery) {
+    rows = rows.filter(function (c) {
+      return matchesSearch(c, searchQuery);
+    });
+  }
+  return rows;
+}
+
+function renderQuoteCards(container, rows, rankSource, opts) {
+  opts = opts || {};
+  const compactMode = !!opts.compact;
+  const rankMap = new Map();
+  rankSource.forEach(function (c, i) {
+    rankMap.set(c.cluster_id, i + 1);
+  });
+
+  const html = [];
+  for (let i = 0; i < rows.length; i++) {
+    const c = rows[i];
+    const rank = rankMap.get(c.cluster_id) || i + 1;
+    const id = c.cluster_id;
+    const isOpen = expandedId === id;
+    const compact = compactMode || (!!opts.markCompactFrom && i >= opts.markCompactFrom);
+    const kewlHits = Number(c.hit_count_kewl_vic_live) || 0;
+    const wilsonHits = Number(c.wilson_videos_hit) || 0;
+
+    html.push(
+      '<article class="quote-card' +
+        (isOpen ? " is-open" : "") +
+        (compact ? " quote-card-compact" : "") +
+        (opts.floor ? " quote-card-floor" : "") +
+        '" data-id="' +
+        escapeAttr(id) +
+        '">' +
+        '<div class="quote-trigger" role="button" tabindex="0" aria-expanded="' +
+        isOpen +
+        '" id="trigger-' +
+        escapeAttr(id) +
+        '" aria-controls="drawer-' +
+        escapeAttr(id) +
+        '">' +
+        '<div class="quote-rank">' +
+        '<span class="quote-rank-num">' +
+        (opts.floor ? "FC" : "#" + rank) +
+        "</span>" +
+        phraseAudioButtonHtml(id) +
+        "</div>" +
+        '<div class="quote-main">' +
+        '<h3 class="quote-title">' +
+        escapeHtml(quotedTitle(c)) +
+        "</h3>" +
+        '<div class="quote-meta-row">' +
+        '<span class="quote-hits">' +
+        escapeHtml(timesUsedLabel(c.hit_count_ptl != null ? c.hit_count_ptl : 0)) +
+        "</span>" +
+        '<span class="quote-debates">' +
+        (c.videos_hit_ptl != null ? c.videos_hit_ptl : 0) +
+        " debates</span>" +
+        (kewlHits > 0
+          ? '<span class="quote-source-badge">+' + kewlHits + " Kewl overlay</span>"
+          : "") +
+        (wilsonHits > 0
+          ? '<span class="quote-source-badge">' + wilsonHits + " Wilson debate" + (wilsonHits === 1 ? "" : "s") + "</span>"
+          : "") +
+        '<span class="cat-pill cat-' +
+        escapeAttr(c.category || "dodge") +
+        '">' +
+        escapeHtml(prettyCat(c.category)) +
+        "</span>" +
+        "</div>" +
+        "</div>" +
+        '<span class="quote-chevron" aria-hidden="true"></span>' +
+        "</div>" +
+        '<div class="quote-drawer" id="drawer-' +
+        escapeAttr(id) +
+        '" role="region" aria-labelledby="trigger-' +
+        escapeAttr(id) +
+        '">' +
+        renderDrawer(c) +
+        "</div>" +
+        "</article>"
+    );
+  }
+  container.innerHTML = html.join("");
+
+  function toggleQuoteCard(trigger) {
+    const card = trigger.closest(".quote-card");
+    const id = card && card.dataset.id;
+    if (!id) return;
+    expandedId = expandedId === id ? null : id;
+    refreshBoard();
+    const open =
+      document.querySelector(".quote-card.is-open") ||
+      document.querySelector("#floor-board .quote-card.is-open");
+    if (open) open.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }
+
+  container.querySelectorAll(".quote-trigger").forEach(function (btn) {
+    btn.addEventListener("click", function (ev) {
+      if (ev.target.closest(".phrase-audio-btn")) return;
+      toggleQuoteCard(btn);
+    });
+    btn.addEventListener("keydown", function (ev) {
+      if (ev.target.closest(".phrase-audio-btn")) return;
+      if (ev.key !== "Enter" && ev.key !== " ") return;
+      ev.preventDefault();
+      toggleQuoteCard(btn);
+    });
+  });
+
+  container.querySelectorAll(".phrase-audio-btn").forEach(function (btn) {
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var id = btn.getAttribute("data-cluster-id");
+      if (id) playPhraseAudio(id);
+    });
+  });
+
+  container.querySelectorAll(".more-quotes-btn").forEach(function (btn) {
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var cid = btn.getAttribute("data-cluster-id");
+      if (!cid) return;
+      expandedQuotesMap[cid] = !expandedQuotesMap[cid];
+      refreshBoard();
+    });
+  });
+
+  syncPhraseAudioButtons();
+}
+
+function renderFloorSection() {
+  const section = document.getElementById("floor-section");
+  const floorBoard = document.getElementById("floor-board");
+  if (!section || !floorBoard) return;
+
+  if (activeFilter !== "all") {
+    section.hidden = true;
+    floorBoard.innerHTML = "";
+    return;
+  }
+
+  const floors = floorControlClusters();
+  if (!floors.length) {
+    section.hidden = true;
+    floorBoard.innerHTML = "";
+    return;
+  }
+
+  section.hidden = false;
+  renderQuoteCards(floorBoard, floors, floors, { floor: true, compact: true });
+}
+
+function renderBoard(clusters) {
+  const board = document.getElementById("quote-board");
+  const moreWrap = document.getElementById("board-more-wrap");
+  const moreBtn = document.getElementById("show-more-btn");
+  const rows = filteredRows(clusters);
+
+  if (!rows.length) {
+    board.innerHTML =
+      '<p class="board-empty">No catchphrases match this filter or search query.</p>';
+    if (moreWrap) moreWrap.hidden = true;
+    return;
+  }
+
+  const isFloorFilter = activeFilter === "floor_control";
+  const showAllEffective = showAll || isFloorFilter || !!searchQuery;
+  const visible = showAllEffective ? rows : rows.slice(0, TOP_N);
+  const leftover = showAllEffective ? 0 : Math.max(0, rows.length - TOP_N);
+
+  renderQuoteCards(board, visible, clusters, {
+    floor: isFloorFilter,
+    markCompactFrom: isFloorFilter ? null : TOP_N,
+  });
+
+  if (moreWrap && moreBtn) {
+    if (rows.length > TOP_N && !isFloorFilter && !searchQuery) {
+      moreWrap.hidden = false;
+      moreBtn.textContent = showAll
+        ? "Show top " + TOP_N + " only"
+        : "Show all " + rows.length + " catchphrases (+" + leftover + " more)";
+    } else {
+      moreWrap.hidden = true;
+    }
+  }
+}
+
+function formatSecTimestamp(sec) {
+  const s = Math.max(0, Math.floor(Number(sec) || 0));
+  const m = Math.floor(s / 60);
+  const rem = s % 60;
+  return m + ":" + (rem < 10 ? "0" : "") + rem;
+}
+
+function renderDrawer(c) {
+  const examples = Array.isArray(c.examples) ? c.examples : [];
+  const about = Array.isArray(c.about) ? c.about : [];
+  const parts = [];
+
+  var audioItem = getPhraseAudio(c.cluster_id);
+  var audioBtn = phraseAudioButtonHtml(c.cluster_id);
+  if (audioBtn && audioItem) {
+    var hitsHtml = "";
+    if (Array.isArray(audioItem.hits) && audioItem.hits.length) {
+      hitsHtml =
+        '<div class="mashup-sources">' +
+        audioItem.hits
+          .map(function (h, idx) {
+            var vid = h.sourceVideoId;
+            var start = Math.floor(Number(h.sourceStartSec) || 0);
+            var ytUrl = vid
+              ? "https://www.youtube.com/watch?v=" +
+                encodeURIComponent(vid) +
+                "&t=" +
+                start +
+                "s"
+              : "#";
+            var label =
+              "Hit #" +
+              (idx + 1) +
+              " (" +
+              formatSecTimestamp(start) +
+              ")" +
+              (h.note ? " · " + h.note.replace(/^seed:\s*/i, "") : "");
+            return (
+              '<a class="mashup-chip" href="' +
+              escapeAttr(ytUrl) +
+              '" target="_blank" rel="noopener noreferrer">' +
+              escapeHtml(label) +
+              " ↗</a>"
+            );
+          })
+          .join("") +
+        "</div>";
+    }
+    parts.push(
+      '<div class="drawer-audio-row">' +
+        audioBtn +
+        '<span class="drawer-audio-label">Hear the mashup (' +
+        Math.round(audioItem.durationSec || 6) +
+        "s)</span>" +
+        hitsHtml +
+        "</div>"
+    );
+  }
+
+  const metaBits = [];
+  if (c.videos_hit_ptl != null) {
+    metaBits.push(
+      "Appears in " + c.videos_hit_ptl + " PTL debate" + (c.videos_hit_ptl === 1 ? "" : "s")
+    );
+  }
+  if (c.rate_per_1k_ptl != null) {
+    metaBits.push(
+      Number(c.rate_per_1k_ptl).toFixed(3) + " per 1,000 PTL words"
+    );
+  }
+  if (c.hit_count_kewl_vic_live) {
+    metaBits.push(c.hit_count_kewl_vic_live + " Kewl Vic Live hits");
+  }
+  if (c.wilson_videos_hit) {
+    metaBits.push(c.wilson_videos_hit + " Andrew Wilson debates");
+  }
+  if (c.merged_count && c.merged_count > 1) {
+    metaBits.push("Merged from " + c.merged_count + " caption clusters");
+  }
+
+  if (metaBits.length) {
+    parts.push(
+      '<p class="drawer-stats">' + escapeHtml(metaBits.join(" · ")) + "</p>"
+    );
+  }
+
+  if (c.tactic) {
+    const keyBit = c.key_phrase || c.canonical_label;
+    parts.push(
+      '<div class="expand-tactic">Tactic: ' +
+        escapeHtml(c.tactic) +
+        (keyBit ? " · Canonical phrase: " + escapeHtml(keyBit) : "") +
+        "</div>"
+    );
+  }
+
+  if (about.length) {
+    parts.push(
+      '<div class="about-tags">' +
+        about
+          .map(function (t) {
+            return '<span class="about-tag">' + escapeHtml(t) + "</span>";
+          })
+          .join("") +
+        "</div>"
+    );
+  }
+
+  const memberLines = Array.isArray(c.member_lines) ? c.member_lines : [];
+  if (memberLines.length) {
+    parts.push(
+      '<div class="drawer-members">' +
+        "<strong>Associated lines &amp; spoken variants (" +
+        memberLines.length +
+        ")</strong>" +
+        '<ul class="member-line-list">' +
+        memberLines
+          .map(function (m) {
+            const text = (m && (m.text || m.span || m.phrase)) || "";
+            const n =
+              m && (m.hit_count_ptl != null ? m.hit_count_ptl : m.count != null ? m.count : null);
+            const countBit =
+              n != null
+                ? ' <span class="member-count">' +
+                  escapeHtml(String(n)) +
+                  "</span>"
+                : "";
+            return (
+              '<li><span class="member-text">' +
+              escapeHtml(text) +
+              "</span>" +
+              countBit +
+              "</li>"
+            );
+          })
+          .join("") +
+        "</ul></div>"
+    );
+  }
+
+  if (!examples.length) {
+    parts.push(
+      '<p class="expand-empty">No example quotes stored for this cluster.</p>'
+    );
+    return '<div class="expand-panel">' + parts.join("") + "</div>";
+  }
+
+  const sampleTitles = [];
+  const seenTitles = {};
+  examples.forEach(function (ex) {
+    const t = ex.title || "";
+    if (t && !seenTitles[t]) {
+      seenTitles[t] = true;
+      sampleTitles.push(t);
+    }
+  });
+  if (sampleTitles.length) {
+    parts.push(
+      '<div class="drawer-samples">' +
+        "<strong>Debates sampled (" +
+        sampleTitles.length +
+        ")</strong>" +
+        "<ul>" +
+        sampleTitles
+          .slice(0, 6)
+          .map(function (t) {
+            return "<li>" + escapeHtml(t) + "</li>";
+          })
+          .join("") +
+        "</ul></div>"
+    );
+  }
+
+  const showAllEx = !!expandedQuotesMap[c.cluster_id];
+  const visibleEx = showAllEx ? examples : examples.slice(0, 4);
+
+  parts.push(
+    '<strong class="drawer-quotes-head">Timestamped transcript quotes (' +
+      visibleEx.length +
+      " of " +
+      examples.length +
+      ")</strong>"
+  );
+
+  const quotes = visibleEx.map(function (ex) {
+    const quote = ex.quote || ex.span || "(no quote)";
+    const span = ex.span || c.key_phrase || "";
+    const title = ex.title || "";
+    const url =
+      ex.url ||
+      (ex.video_id ? "https://www.youtube.com/watch?v=" + ex.video_id : "");
+    const ts = ex.timestamp || "";
+    return (
+      '<blockquote class="expand-quote">“' +
+      highlightSpanHtml(quote, span) +
+      "”</blockquote>" +
+      '<div class="expand-meta">' +
+      escapeHtml(title) +
+      (ts ? " · @" + escapeHtml(ts) : "") +
+      (url
+        ? ' · <a href="' +
+          escapeAttr(url) +
+          '" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a>'
+        : "") +
+      "</div>"
+    );
+  });
+  parts.push(quotes.join(""));
+
+  if (examples.length > 4) {
+    parts.push(
+      '<button type="button" class="more-quotes-btn" data-cluster-id="' +
+        escapeAttr(c.cluster_id) +
+        '">' +
+        (showAllEx
+          ? "Show fewer quotes"
+          : "Show all " + examples.length + " transcript quotes (+" + (examples.length - 4) + " more)") +
+        "</button>"
+    );
+  }
+
+  return '<div class="expand-panel">' + parts.join("") + "</div>";
+}
+
+/* ===== POLITE DODGE LAB (164 WINDOWS) ===== */
+function renderDodgeLab() {
+  const grid = document.getElementById("dodge-grid");
+  const tabsWrap = document.getElementById("dodge-tabs");
+  const searchInput = document.getElementById("dodge-search");
+  const moreWrap = document.getElementById("dodge-more-wrap");
+  const moreBtn = document.getElementById("dodge-more-btn");
+  if (!grid || !DATA) return;
+
+  const allWindows = Array.isArray(DATA.polite_dodge_windows)
+    ? DATA.polite_dodge_windows
+    : [];
+
+  const pivotCount = allWindows.filter(function (w) {
+    return w.evidence_type === "pivot_marker";
+  }).length;
+  const abandonCount = allWindows.length - pivotCount;
+
+  const elAll = document.getElementById("dodge-count-all");
+  const elPivot = document.getElementById("dodge-count-pivot");
+  const elAbandon = document.getElementById("dodge-count-abandon");
+  const navDodge = document.getElementById("nav-dodge-count");
+  if (elAll) elAll.textContent = String(allWindows.length);
+  if (elPivot) elPivot.textContent = String(pivotCount);
+  if (elAbandon) elAbandon.textContent = String(abandonCount);
+  if (navDodge) navDodge.textContent = String(allWindows.length);
+
+  if (tabsWrap && !tabsWrap._bound) {
+    tabsWrap._bound = true;
+    tabsWrap.querySelectorAll(".dodge-tab").forEach(function (tab) {
+      tab.addEventListener("click", function () {
+        dodgeFilter = tab.getAttribute("data-dodge-filter") || "all";
+        dodgeVisibleCount = DODGE_PAGE_SIZE;
+        tabsWrap.querySelectorAll(".dodge-tab").forEach(function (t) {
+          t.classList.toggle("active", t === tab);
+        });
+        renderDodgeLab();
+      });
+    });
+  }
+
+  if (searchInput && !searchInput._bound) {
+    searchInput._bound = true;
+    searchInput.addEventListener("input", function () {
+      dodgeSearch = String(searchInput.value || "").trim().toLowerCase();
+      dodgeVisibleCount = DODGE_PAGE_SIZE;
+      renderDodgeLab();
+    });
+  }
+
+  if (moreBtn && !moreBtn._bound) {
+    moreBtn._bound = true;
+    moreBtn.addEventListener("click", function () {
+      dodgeVisibleCount += 12;
+      renderDodgeLab();
+    });
+  }
+
+  let filtered = allWindows.filter(function (w) {
+    if (dodgeFilter !== "all" && w.evidence_type !== dodgeFilter) return false;
+    if (dodgeSearch) {
+      const blob = (
+        (w.title || "") +
+        " " +
+        (w.opener_span || "") +
+        " " +
+        (w.pivot_span || "") +
+        " " +
+        (w.pivot_marker || "")
+      ).toLowerCase();
+      if (blob.indexOf(dodgeSearch) === -1) return false;
+    }
+    return true;
+  });
+
+  if (!filtered.length) {
+    grid.innerHTML =
+      '<p class="board-empty">No polite-dodge windows match this filter.</p>';
+    if (moreWrap) moreWrap.hidden = true;
+    return;
+  }
+
+  const visible = filtered.slice(0, dodgeVisibleCount);
+  grid.innerHTML = visible
+    .map(function (w) {
+      const isPivot = w.evidence_type === "pivot_marker";
+      const badgeText = isPivot
+        ? "Pivot: “" + (w.pivot_marker || "pivot") + "”"
+        : "90s Topic Abandon";
+      const openerQuote = cleanRollingStutter(w.opener_span || "");
+      const pivotQuote = w.pivot_span
+        ? highlightSpanHtml(w.pivot_span, w.pivot_marker)
+        : "<em>Caller’s topic never returned to within 90-second window.</em>";
+
+      return (
+        '<article class="dodge-card">' +
+        '<div class="dodge-card-top">' +
+        '<div class="dodge-debate-title">' +
+        escapeHtml(w.title || "Debate") +
+        "</div>" +
+        '<span class="dodge-badge' +
+        (isPivot ? "" : " is-abandon") +
+        '">' +
+        escapeHtml(badgeText) +
+        "</span></div>" +
+        '<div class="dodge-steps">' +
+        '<div class="dodge-step">' +
+        '<span class="dodge-step-label">1. Polite Opener (@' +
+        escapeHtml(w.opener_timestamp || "0:00") +
+        ")</span>" +
+        '<div class="dodge-step-quote">“' +
+        escapeHtml(openerQuote) +
+        "”</div></div>" +
+        '<div class="dodge-step dodge-step-pivot">' +
+        '<span class="dodge-step-label">2. ' +
+        (isPivot ? "Immediate Pivot" : "Topic Abandon Check") +
+        " (@" +
+        escapeHtml(w.pivot_timestamp || "") +
+        ")</span>" +
+        '<div class="dodge-step-quote">' +
+        (w.pivot_span ? "“" + pivotQuote + "”" : pivotQuote) +
+        "</div></div></div>" +
+        '<div class="dodge-card-foot">' +
+        "<span>Window: " +
+        escapeHtml(w.opener_timestamp || "0:00") +
+        " → " +
+        escapeHtml(w.pivot_timestamp || "") +
+        "</span>" +
+        (w.url_start
+          ? '<a href="' +
+            escapeAttr(w.url_start) +
+            '" target="_blank" rel="noopener noreferrer">Watch @ ' +
+            escapeHtml(w.opener_timestamp || "clip") +
+            " ↗</a>"
+          : "") +
+        "</div></article>"
+      );
+    })
+    .join("");
+
+  if (moreWrap && moreBtn) {
+    const remaining = filtered.length - visible.length;
+    if (remaining > 0) {
+      moreWrap.hidden = false;
+      moreBtn.textContent =
+        "Show more dodge windows (+" + remaining + " remaining)";
+    } else {
+      moreWrap.hidden = true;
+    }
+  }
+}
+
+/* ===== ANDREW WILSON FILES (14 DEBATES) ===== */
+function renderWilsonSection() {
+  const barsEl = document.getElementById("wilson-bars");
+  const listEl = document.getElementById("wilson-debate-list");
+  if (!barsEl || !listEl || !DATA) return;
+
+  const wilsonClusters = Array.isArray(DATA.clusters_wilson_priority)
+    ? DATA.clusters_wilson_priority
+    : [];
+  const wilsonDebates = Array.isArray(DATA.wilson_debates)
+    ? DATA.wilson_debates
+    : [];
+
+  const clusterLookup = {};
+  (DATA.clusters || []).forEach(function (c) {
+    clusterLookup[c.cluster_id] = c;
+  });
+
+  const maxVids = wilsonClusters.reduce(function (m, x) {
+    return Math.max(m, Number(x.wilson_videos_hit) || 0);
+  }, 1);
+
+  barsEl.innerHTML = wilsonClusters
+    .map(function (w) {
+      const full = clusterLookup[w.cluster_id];
+      const label = full ? boardLabel(full) : w.canonical_label || w.cluster_id;
+      const vids = Number(w.wilson_videos_hit) || 0;
+      const totalHits = Number(w.hit_count_ptl) || 0;
+      const pct = Math.max(8, Math.round((vids / maxVids) * 100));
+      return (
+        '<button type="button" class="wilson-bar-row" data-jump-id="' +
+        escapeAttr(w.cluster_id) +
+        '">' +
+        '<div class="wilson-bar-top">' +
+        "<span>“" +
+        escapeHtml(label) +
+        "”</span>" +
+        '<span class="wilson-bar-stats">' +
+        vids +
+        "/14 Wilson debates · " +
+        totalHits +
+        " PTL hits</span></div>" +
+        '<div class="wilson-bar-track"><div class="wilson-bar-fill" style="width:' +
+        pct +
+        '%"></div></div></button>'
+      );
+    })
+    .join("");
+
+  barsEl.querySelectorAll(".wilson-bar-row").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      jumpToCluster(btn.getAttribute("data-jump-id"));
+    });
+  });
+
+  listEl.innerHTML = wilsonDebates
+    .map(function (d, idx) {
+      return (
+        "<li>" +
+        '<a href="' +
+        escapeAttr(d.url || "#") +
+        '" target="_blank" rel="noopener noreferrer">' +
+        "<span><strong>#" +
+        (idx + 1) +
+        "</strong> " +
+        escapeHtml(d.title || d.id) +
+        "</span>" +
+        '<span class="yt-tag">YouTube ↗</span>' +
+        "</a></li>"
+      );
+    })
+    .join("");
+}
+
+function renderFooter() {
+  const corpus = DATA.corpus || {};
+  const subject = DATA.subject || "Brian Shapiro";
+  const gen = DATA.generated_at ? DATA.generated_at.slice(0, 10) : "";
+  const wilson = Array.isArray(DATA.wilson_debates)
+    ? DATA.wilson_debates.length
+    : 0;
+  const polite = Array.isArray(DATA.polite_dodge_windows)
+    ? DATA.polite_dodge_windows.length
+    : corpus.polite_dodge_windows;
+
+  const channelsEl = document.getElementById("footer-channels");
+  if (channelsEl && Array.isArray(DATA.channels)) {
+    channelsEl.innerHTML = DATA.channels
+      .map(function (ch) {
+        return (
+          '<a class="footer-channel-link" href="' +
+          escapeAttr(ch.url || "#") +
+          '" target="_blank" rel="noopener noreferrer">' +
+          escapeHtml(ch.name) +
+          " (" +
+          escapeHtml(ch.handle || "") +
+          ") ↗</a>"
+        );
+      })
+      .join("");
+  }
+
+  const parts = [
+    "Subject: " + subject,
+    corpus.included_debates != null
+      ? corpus.included_debates + " debates included"
+      : null,
+    corpus.excluded_non_debate != null
+      ? corpus.excluded_non_debate + " non-debate excluded"
+      : null,
+    corpus.ptl_words != null
+      ? Number(corpus.ptl_words).toLocaleString() + " Pushing The Limits words"
+      : null,
+    corpus.kewl_words != null
+      ? Number(corpus.kewl_words).toLocaleString() + " Kewl Vic Live words"
+      : null,
+    polite != null ? polite + " polite-dodge windows" : null,
+    wilson ? wilson + " Andrew Wilson debates" : null,
+    gen ? "corpus snapshot " + gen : null,
+  ].filter(Boolean);
+  document.getElementById("footer-stats").textContent = parts.join(" · ");
+}
+
+function prettyCat(cat) {
+  if (!cat) return "-";
+  if (CAT_LABELS[cat]) return CAT_LABELS[cat];
+  return String(cat).replace(/_/g, " ");
+}
+
+function truncate(s, n) {
+  const t = String(s || "");
+  return t.length <= n ? t : t.slice(0, n - 1) + "…";
+}
+
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function escapeAttr(s) {
+  return escapeHtml(s).replace(/'/g, "&#39;");
+}
+
+/* ===== Watch Brian clips rail (Single active player — no double audio) ===== */
+let CLIPS = [];
+let activeClipId = null;
+
+async function initClipsRail() {
+  const rail = document.getElementById("clips-rail");
+  const fab = document.getElementById("clips-fab");
+  if (!rail || !fab) return;
+
+  try {
+    const res = await fetch("./data/clips.json");
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const data = await res.json();
+    CLIPS = Array.isArray(data.clips) ? data.clips : [];
+  } catch (err) {
+    console.warn("clips.json unavailable", err);
+    return;
+  }
+
+  rail.hidden = false;
+  fab.hidden = false;
+  fab.textContent = "▶ Watch Clips (" + CLIPS.length + ")";
+  bindClipsChrome();
+  renderClipsLists();
+  if (CLIPS.length) {
+    selectClip(CLIPS[0], { autoplay: false });
+  } else {
+    showClipsEmpty();
+  }
+}
+
+function showClipsEmpty() {
+  ["clips-list", "clips-drawer-list"].forEach(function (id) {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = '<li><p class="clips-empty">More clips coming.</p></li>';
+  });
+  ["clips-player-host", "clips-drawer-host"].forEach(function (id) {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = "";
+  });
+  ["clips-now", "clips-drawer-now"].forEach(function (id) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = "";
+  });
+}
+
+function stepClip(delta) {
+  if (!CLIPS.length) return;
+  const idx = CLIPS.findIndex(function (c) {
+    return c.id === activeClipId;
+  });
+  const nextIdx = (idx + delta + CLIPS.length) % CLIPS.length;
+  selectClip(CLIPS[nextIdx], { autoplay: true });
+}
+
+function bindClipsChrome() {
+  const fab = document.getElementById("clips-fab");
+  const drawer = document.getElementById("clips-drawer");
+  const closeBtn = document.getElementById("clips-drawer-close");
+  const prevBtn = document.getElementById("clips-prev-btn");
+  const nextBtn = document.getElementById("clips-next-btn");
+
+  if (fab && !fab._bound) {
+    fab._bound = true;
+    fab.addEventListener("click", openClipsDrawer);
+  }
+  if (closeBtn && !closeBtn._bound) {
+    closeBtn._bound = true;
+    closeBtn.addEventListener("click", closeClipsDrawer);
+  }
+  if (prevBtn && !prevBtn._bound) {
+    prevBtn._bound = true;
+    prevBtn.addEventListener("click", function () {
+      stepClip(-1);
+    });
+  }
+  if (nextBtn && !nextBtn._bound) {
+    nextBtn._bound = true;
+    nextBtn.addEventListener("click", function () {
+      stepClip(1);
+    });
+  }
+  if (drawer && !drawer._bound) {
+    drawer._bound = true;
+    drawer.addEventListener("click", function (e) {
+      if (e.target === drawer) closeClipsDrawer();
+    });
+  }
+  if (!document._clipsEsc) {
+    document._clipsEsc = true;
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") closeClipsDrawer();
+    });
+  }
+}
+
+function openClipsDrawer() {
+  const drawer = document.getElementById("clips-drawer");
+  const fab = document.getElementById("clips-fab");
+  const desktopHost = document.getElementById("clips-player-host");
+  if (!drawer) return;
+  if (desktopHost) stopAllClipMedia(desktopHost);
+  drawer.hidden = false;
+  if (fab) fab.setAttribute("aria-expanded", "true");
+  const current =
+    CLIPS.find(function (c) {
+      return c.id === activeClipId;
+    }) || CLIPS[0];
+  if (current) selectClip(current, { autoplay: false });
+}
+
+function closeClipsDrawer() {
+  const drawer = document.getElementById("clips-drawer");
+  const fab = document.getElementById("clips-fab");
+  const host = document.getElementById("clips-drawer-host");
+  if (drawer) drawer.hidden = true;
+  if (fab) fab.setAttribute("aria-expanded", "false");
+  if (host) {
+    stopAllClipMedia(host);
+    host.innerHTML = "";
+  }
+}
+
+function renderClipsLists() {
+  ["clips-list", "clips-drawer-list"].forEach(function (id) {
+    const ul = document.getElementById(id);
+    if (!ul) return;
+    ul.innerHTML = CLIPS.map(function (clip) {
+      const poster = clip.poster
+        ? '<img src="' + escapeAttr(clip.poster) + '" alt="" loading="lazy" />'
+        : "<span></span>";
+      return (
+        '<li><button type="button" class="clips-list-btn" data-clip-id="' +
+        escapeAttr(clip.id) +
+        '">' +
+        poster +
+        "<span><strong>" +
+        escapeHtml(clip.title || "Clip") +
+        "</strong><em>" +
+        escapeHtml(
+          [clip.blurb, formatClipDuration(clip.durationSec)].filter(Boolean).join(" · ")
+        ) +
+        "</em></span></button></li>"
+      );
+    }).join("");
+    ul.querySelectorAll(".clips-list-btn").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        const clip = CLIPS.find(function (c) {
+          return c.id === btn.getAttribute("data-clip-id");
+        });
+        if (clip) selectClip(clip, { autoplay: true });
+      });
+    });
+  });
+}
+
+function formatClipDuration(sec) {
+  const n = Math.round(Number(sec) || 0);
+  return n ? "~" + n + "s" : "";
+}
+
+/**
+ * Only mount & play the <video> inside the currently active/visible host
+ * so desktop and mobile drawer never double-play simultaneously.
+ */
+function selectClip(clip, opts) {
+  opts = opts || {};
+  activeClipId = clip.id;
+
+  const idx = CLIPS.findIndex(function (c) {
+    return c.id === clip.id;
+  });
+  const counterEl = document.getElementById("clips-counter");
+  if (counterEl && idx !== -1) {
+    counterEl.textContent = idx + 1 + "/" + CLIPS.length;
+  }
+
+  document.querySelectorAll(".clips-list-btn").forEach(function (btn) {
+    btn.classList.toggle(
+      "is-active",
+      btn.getAttribute("data-clip-id") === clip.id
+    );
+  });
+
+  const nowHtml =
+    escapeHtml(clip.title || "Clip") +
+    "<span>" +
+    escapeHtml(
+      [clip.blurb, formatClipDuration(clip.durationSec)].filter(Boolean).join(" · ")
+    ) +
+    "</span>";
+  const now = document.getElementById("clips-now");
+  const nowD = document.getElementById("clips-drawer-now");
+  if (now) now.innerHTML = nowHtml;
+  if (nowD) nowD.innerHTML = nowHtml;
+
+  const desktopHost = document.getElementById("clips-player-host");
+  const drawerHost = document.getElementById("clips-drawer-host");
+  const drawer = document.getElementById("clips-drawer");
+  const isDrawerOpen = drawer && !drawer.hidden;
+
+  if (desktopHost) {
+    stopAllClipMedia(desktopHost);
+    desktopHost.innerHTML = "";
+  }
+  if (drawerHost) {
+    stopAllClipMedia(drawerHost);
+    drawerHost.innerHTML = "";
+  }
+
+  const targetHost = isDrawerOpen ? drawerHost : desktopHost;
+  if (!targetHost) return;
+
+  if (opts.autoplay) {
+    stopPhraseAudio();
+  }
+
+  const playerNode = buildPlayerNode(clip);
+  targetHost.appendChild(playerNode);
+
+  const video = targetHost.querySelector("video");
+  if (video) {
+    video.addEventListener("play", function () {
+      stopPhraseAudio();
+    });
+    if (opts.autoplay) {
+      const p = video.play();
+      if (p && p.catch) p.catch(function () {});
+    }
+  }
+}
+
+function buildPlayerNode(clip) {
+  const host = document.createElement("div");
+  host.className = "clips-player-inner";
+  host.style.width = "100%";
+  host.style.height = "100%";
+  if (clip.youtubeId) {
+    const iframe = document.createElement("iframe");
+    iframe.src =
+      "https://www.youtube-nocookie.com/embed/" +
+      encodeURIComponent(clip.youtubeId) +
+      "?rel=0&modestbranding=1";
+    iframe.allow =
+      "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+    iframe.allowFullscreen = true;
+    iframe.title = clip.title || "Watch Brian clip";
+    iframe.style.width = "100%";
+    iframe.style.height = "100%";
+    host.appendChild(iframe);
+  } else if (clip.src) {
+    const video = document.createElement("video");
+    video.controls = true;
+    video.playsInline = true;
+    if (clip.poster) video.poster = clip.poster;
+    video.src = clip.src;
+    video.style.width = "100%";
+    video.style.height = "100%";
+    host.appendChild(video);
+  } else {
+    host.textContent = "Clip unavailable";
+  }
+  return host;
+}
+
+function stopAllClipMedia(root) {
+  if (!root) return;
+  root.querySelectorAll("video").forEach(function (v) {
+    try {
+      v.pause();
+    } catch (e) {}
+    v.removeAttribute("src");
+    try {
+      v.load();
+    } catch (e2) {}
+  });
+  root.querySelectorAll("iframe").forEach(function (f) {
+    f.src = "about:blank";
+  });
+}
+
+main();
