@@ -21,6 +21,15 @@
   .h-wall span.hot { color:rgba(229,43,56,.14); }
   @keyframes h-drift { from { transform:translateX(110vw);} to { transform:translateX(-120%);} }
 
+
+  /* Brian head that lives in the background after the intro hands off */
+  .h-brian-bg { position:absolute; z-index:-2; left:var(--ls-fx, 50%); top:var(--ls-fy, 38%); width:var(--ls-fs, min(58vmin,420px)); aspect-ratio:1; translate:-50% -50%; border-radius:50%; background:url(./brand/face-800.jpg) center/cover; opacity:.24; box-shadow:0 0 0 3px rgba(229,43,56,.7), 0 0 120px rgba(229,43,56,.4); pointer-events:none; animation:h-breathe 6s ease-in-out infinite; }
+  @keyframes h-breathe { 0%,100% { scale:1; } 50% { scale:1.045; } }
+  /* content eases in as the intro dissolves */
+  .h-top, .h-stage, .h-dock { transition:opacity 1.2s ease, transform 1.2s ease; }
+  .h-stage { transition-delay:.35s; } .h-dock { transition-delay:.6s; }
+  html.ls-playing .h-top, html.ls-playing .h-stage, html.ls-playing .h-dock { opacity:0; transform:translateY(16px); }
+
   /* TOP BAR */
   .h-top { display:flex; align-items:center; justify-content:space-between; padding:.8rem 1rem; padding-top:calc(.8rem + env(safe-area-inset-top,0px)); }
   .h-logo { font-family:var(--font-display, Impact, sans-serif); letter-spacing:.06em; font-size:1.05rem; }
@@ -85,7 +94,7 @@
 
   @media (max-width: 860px) {
     .h-stage { grid-template-columns:1fr; gap:1rem; padding-top:0; }
-    .h-podium { order:-1; max-width:min(250px, 62vw); }
+    .h-podium { order:0; max-width:min(250px, 62vw); margin-top:.5rem; }
     .h-title { font-size:clamp(2.3rem,12vw,3.4rem); }
     .h-score .h-stat:nth-child(n+3) { display:none; }
     .h-eyebrow { font-size:.62rem; }
@@ -97,6 +106,7 @@
 <section class="h-hero" id="hero">
   <div class="h-bg-frame" id="bg"></div>
   <div class="h-bg-shade"></div>
+  <div class="h-brian-bg" aria-hidden="true"></div>
   <div class="h-wall" id="wall" aria-hidden="true"></div>
 
   <div class="h-top">
@@ -206,6 +216,7 @@ function ask(question) {
   if (match < 0) match = Math.floor(Math.random() * CLIPS.length);
   dodges++; $("s-dodges").textContent = dodges;
   type(DODGES[Math.floor(Math.random() * DODGES.length)]);
+  if (window.innerWidth <= 860) { var pod = document.querySelector('.h-podium'); if (pod) pod.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
   setClip(match, true);
   $("tag").textContent = "BRIAN IS DODGING";
 }
@@ -234,6 +245,7 @@ $("vol").addEventListener("input", e => {
 });
 vid.volume = .8;
 setClip(0, false);
+window.addEventListener('resize', function(){ ['--ls-fx','--ls-fy','--ls-fs'].forEach(function(k){ document.documentElement.style.removeProperty(k); }); });
 </script>
 </body>
 </html>
