@@ -2091,3 +2091,236 @@ body {
 }
 
 .x-card-about { border-left: 3px solid var(--gold); }
+
+
+/* ===== STUDIO TAB MENU & PAGES NAVIGATION ===== */
+.studio-tab-menu-wrap {
+  position: sticky;
+  top: 0;
+  z-index: 35;
+  background: rgba(8, 8, 10, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+}
+
+.studio-tab-menu {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0.5rem clamp(1rem, 3vw, 1.5rem);
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.studio-tab-menu::-webkit-scrollbar {
+  display: none;
+}
+
+.tab-menu-item {
+  flex: 0 0 auto;
+  background: var(--bg-card);
+  color: var(--muted);
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  padding: 0.45rem 0.9rem;
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+}
+
+.tab-menu-item:hover {
+  background: var(--bg-card-hover);
+  color: var(--cream);
+  border-color: var(--border);
+}
+
+.tab-menu-item.active {
+  background: rgba(255, 0, 0, 0.16);
+  color: #ffffff;
+  border-color: var(--red-hot);
+  box-shadow: 0 0 14px rgba(255, 0, 0, 0.35);
+}
+
+.tab-item-icon {
+  font-size: 0.9rem;
+}
+
+.tab-item-badge {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.08rem 0.42rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--muted);
+  transition: all 0.18s ease;
+}
+
+.tab-menu-item.active .tab-item-badge {
+  background: var(--red-hot);
+  color: #ffffff;
+}
+
+/* Studio Nav Button in Top Bar */
+.studio-nav-btn {
+  background: none;
+  border: none;
+  color: var(--cream);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.45rem;
+  cursor: pointer;
+  opacity: 0.75;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: all 0.15s ease;
+}
+
+.studio-nav-btn:hover {
+  opacity: 1;
+  color: var(--red-hot);
+}
+
+.studio-nav-btn.active {
+  opacity: 1;
+  color: var(--red-hot);
+  font-weight: 700;
+}
+
+.studio-nav-btn.active .nav-badge {
+  background: var(--red-hot);
+  color: #fff;
+}
+
+/* ===== TAB PANELS ===== */
+.tab-panel {
+  min-width: 0;
+  animation: tabFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tab-panel[hidden] {
+  display: none !important;
+}
+
+@keyframes tabFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Floor Section in its own Tab */
+.tab-panel#tab-panel-floor .floor-section {
+  display: block;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+/* ===== VIDEO VAULT (WATCH CLIPS TAB) ===== */
+.clips-tab-section {
+  padding: 0.5rem 0 1.5rem;
+}
+
+.clips-tab-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(280px, 1fr);
+  gap: 1.5rem;
+  margin-top: 1.25rem;
+  align-items: start;
+}
+
+.clips-tab-player-wrap {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.clips-tab-now-bar {
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border-soft);
+}
+
+.clips-tab-sidebar {
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.clips-tab-sidebar-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.clips-tab-sidebar-title {
+  font-family: var(--display);
+  font-size: 1.2rem;
+  letter-spacing: 0.04em;
+  color: var(--text);
+}
+
+@media (max-width: 860px) {
+  .clips-tab-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .studio-tab-menu {
+    gap: 0.35rem;
+    padding: 0.4rem 0.75rem;
+  }
+  .tab-menu-item {
+    font-size: 0.75rem;
+    padding: 0.35rem 0.7rem;
+  }
+}
+
+
+.tab-panel .dodge-section,
+.tab-panel .wilson-section,
+.tab-panel .feuds-section,
+.tab-panel .x-section,
+.tab-panel .soundboard-section,
+.tab-panel .floor-section,
+.tab-panel .board-panel {
+  border-top: none;
+  margin-top: 0;
+  padding-top: 0.25rem;
+}
+
+.layout-with-clips.clips-tab-active {
+  grid-template-columns: 1fr;
+}
+
+.layout-with-clips.clips-tab-active .clips-rail {
+  display: none !important;
+}

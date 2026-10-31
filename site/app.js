@@ -421,6 +421,7 @@ async function main() {
   renderFooter();
   bindShowMore();
   initClipsRail();
+  initTabMenu();
 }
 
 function sortedClusters(mode) {
@@ -476,6 +477,7 @@ function jumpToCluster(clusterId) {
   });
   if (!target) return;
   const isFloor = target.category === "floor_control" || target.board_role === "filler_floor_control";
+  switchTab(isFloor ? "floor" : "catchphrases", false);
   if (isFloor && activeFilter !== "all" && activeFilter !== "floor_control") {
     activeFilter = "all";
   } else if (!isFloor && activeFilter !== "all" && activeFilter !== target.category) {
@@ -490,10 +492,12 @@ function jumpToCluster(clusterId) {
   expandedId = clusterId;
   renderFilters();
   refreshBoard();
-  const card = document.querySelector('.quote-card[data-id="' + clusterId + '"]');
-  if (card) {
-    card.scrollIntoView({ behavior: "smooth", block: "center" });
-  }
+  setTimeout(function () {
+    const card = document.querySelector('.quote-card[data-id="' + clusterId + '"]');
+    if (card) {
+      card.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, 60);
 }
 
 function renderTicker(clusters) {
@@ -542,6 +546,39 @@ function renderHeroStats() {
       );
     })
     .join("");
+
+  // Update tab and top nav badges
+  const bPhrases = document.getElementById("tab-badge-catchphrases");
+  const bFloor = document.getElementById("tab-badge-floor");
+  const bDodge = document.getElementById("tab-badge-dodge");
+  const bWilson = document.getElementById("tab-badge-wilson");
+  const bFeuds = document.getElementById("tab-badge-feuds");
+  const bX = document.getElementById("tab-badge-x");
+  const bClips = document.getElementById("tab-badge-clips");
+
+  const phrasesCount = boardClusters().length;
+  const floorCount = floorControlClusters().length;
+  const dodgeCount = (DATA.polite_dodge_windows || []).length || 178;
+  const wilsonCount = (DATA.wilson_debates || []).length || 20;
+
+  if (bPhrases) bPhrases.textContent = String(phrasesCount);
+  if (bFloor) bFloor.textContent = String(floorCount);
+  if (bDodge) bDodge.textContent = String(dodgeCount);
+  if (bWilson) bWilson.textContent = String(wilsonCount);
+  if (bFeuds) bFeuds.textContent = "12";
+  if (bX) bX.textContent = "25";
+  if (bClips) bClips.textContent = String(CLIPS.length || 9);
+
+  const navD = document.getElementById("nav-dodge-count");
+  const navW = document.getElementById("nav-wilson-count");
+  const navF = document.getElementById("nav-feuds-count");
+  const navX = document.getElementById("nav-x-count");
+  const navC = document.getElementById("nav-clips-count");
+  if (navD) navD.textContent = String(dodgeCount);
+  if (navW) navW.textContent = String(wilsonCount);
+  if (navF) navF.textContent = "12";
+  if (navX) navX.textContent = "25";
+  if (navC) navC.textContent = String(CLIPS.length || 9);
 }
 
 function renderSoundboard(clusters) {
@@ -1071,25 +1108,17 @@ function renderQuoteCards(container, rows, rankSource, opts) {
 }
 
 function renderFloorSection() {
-  const section = document.getElementById("floor-section");
   const floorBoard = document.getElementById("floor-board");
-  if (!section || !floorBoard) return;
-
-  if (activeFilter !== "all") {
-    section.hidden = true;
-    floorBoard.innerHTML = "";
-    return;
-  }
+  if (!floorBoard) return;
 
   const floors = floorControlClusters();
   if (!floors.length) {
-    section.hidden = true;
-    floorBoard.innerHTML = "";
+    floorBoard.innerHTML = '<p class="board-empty">No floor control tics indexed.</p>';
     return;
   }
 
-  section.hidden = false;
-  renderQuoteCards(floorBoard, floors, floors, { floor: true, compact: true });
+  renderQuoteCards(floorBoard, floors, floors, { floor: true, compact: false });
+  syncPhraseAudioButtons();
 }
 
 function renderBoard(clusters) {
@@ -2059,7 +2088,7 @@ function closeClipsDrawer() {
 }
 
 function renderClipsLists() {
-  ["clips-list", "clips-drawer-list"].forEach(function (id) {
+  ["clips-list", "clips-drawer-list", "clips-tab-list"].forEach(function (id) {
     const ul = document.getElementById(id);
     if (!ul) return;
     ul.innerHTML = CLIPS.map(function (clip) {
@@ -2098,7 +2127,7 @@ function formatClipDuration(sec) {
 
 /**
  * Only mount & play the <video> inside the currently active/visible host
- * so desktop and mobile drawer never double-play simultaneously.
+ * so desktop, tab, and mobile drawer never double-play simultaneously.
  */
 function selectClip(clip, opts) {
   opts = opts || {};
@@ -2110,6 +2139,10 @@ function selectClip(clip, opts) {
   const counterEl = document.getElementById("clips-counter");
   if (counterEl && idx !== -1) {
     counterEl.textContent = idx + 1 + "/" + CLIPS.length;
+  }
+  const counterTab = document.getElementById("clips-tab-counter");
+  if (counterTab && idx !== -1) {
+    counterTab.textContent = idx + 1 + "/" + CLIPS.length;
   }
 
   document.querySelectorAll(".clips-list-btn").forEach(function (btn) {
@@ -2128,11 +2161,14 @@ function selectClip(clip, opts) {
     "</span>";
   const now = document.getElementById("clips-now");
   const nowD = document.getElementById("clips-drawer-now");
+  const nowTab = document.getElementById("clips-tab-now");
   if (now) now.innerHTML = nowHtml;
   if (nowD) nowD.innerHTML = nowHtml;
+  if (nowTab) nowTab.innerHTML = nowHtml;
 
   const desktopHost = document.getElementById("clips-player-host");
   const drawerHost = document.getElementById("clips-drawer-host");
+  const tabHost = document.getElementById("clips-tab-player-host");
   const drawer = document.getElementById("clips-drawer");
   const isDrawerOpen = drawer && !drawer.hidden;
 
@@ -2144,8 +2180,17 @@ function selectClip(clip, opts) {
     stopAllClipMedia(drawerHost);
     drawerHost.innerHTML = "";
   }
+  if (tabHost) {
+    stopAllClipMedia(tabHost);
+    tabHost.innerHTML = "";
+  }
 
-  const targetHost = isDrawerOpen ? drawerHost : desktopHost;
+  let targetHost = desktopHost;
+  if (activeTab === "clips" && tabHost) {
+    targetHost = tabHost;
+  } else if (isDrawerOpen && drawerHost) {
+    targetHost = drawerHost;
+  }
   if (!targetHost) return;
 
   if (opts.autoplay) {
@@ -2214,6 +2259,146 @@ function stopAllClipMedia(root) {
   root.querySelectorAll("iframe").forEach(function (f) {
     f.src = "about:blank";
   });
+}
+
+/* ===== TAB NAVIGATION & PAGES ROUTER ===== */
+let activeTab = "catchphrases";
+
+function initTabMenu() {
+  const tabBtns = document.querySelectorAll(".tab-menu-item, .studio-nav-btn");
+  tabBtns.forEach(function (btn) {
+    btn.addEventListener("click", function (e) {
+      e.preventDefault();
+      const tab = btn.getAttribute("data-tab");
+      if (tab) switchTab(tab, true);
+    });
+  });
+
+  // Keyboard navigation for tabs
+  const tabContainer = document.getElementById("studio-tab-menu");
+  if (tabContainer) {
+    tabContainer.addEventListener("keydown", function (e) {
+      const items = Array.from(tabContainer.querySelectorAll(".tab-menu-item"));
+      const idx = items.findIndex(function (b) {
+        return b.classList.contains("active");
+      });
+      if (idx === -1) return;
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        const next = items[(idx + 1) % items.length];
+        next.focus();
+        switchTab(next.getAttribute("data-tab"), true);
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        const prev = items[(idx - 1 + items.length) % items.length];
+        prev.focus();
+        switchTab(prev.getAttribute("data-tab"), true);
+      }
+    });
+  }
+
+  window.addEventListener("hashchange", function () {
+    const raw = (location.hash || "").replace(/^#/, "");
+    if (raw) switchTab(raw, false);
+  });
+
+  const initial = (location.hash || "").replace(/^#/, "");
+  switchTab(initial || "catchphrases", false);
+}
+
+function switchTab(targetId, shouldScroll) {
+  const validTabs = [
+    "catchphrases",
+    "soundboard",
+    "floor",
+    "dodge",
+    "wilson",
+    "feuds",
+    "x",
+    "clips",
+  ];
+  const aliases = {
+    phrases: "catchphrases",
+    board: "catchphrases",
+    "board-panel": "catchphrases",
+    "board-title": "catchphrases",
+    "soundboard-section": "soundboard",
+    soundboard: "soundboard",
+    "floor-section": "floor",
+    floor: "floor",
+    "dodge-section": "dodge",
+    dodge: "dodge",
+    "wilson-section": "wilson",
+    wilson: "wilson",
+    "feuds-section": "feuds",
+    feuds: "feuds",
+    "x-section": "x",
+    x: "x",
+    receipts: "x",
+    "clips-tab-section": "clips",
+    "clips-rail": "clips",
+    clips: "clips",
+    watch: "clips",
+  };
+
+  targetId = aliases[targetId] || targetId;
+  if (validTabs.indexOf(targetId) === -1) targetId = "catchphrases";
+
+  activeTab = targetId;
+
+  // Toggle tab panel visibility
+  validTabs.forEach(function (id) {
+    const panel = document.getElementById("tab-panel-" + id);
+    if (panel) {
+      const isActive = id === targetId;
+      panel.hidden = !isActive;
+      panel.classList.toggle("tab-panel-active", isActive);
+    }
+  });
+
+  // Toggle active styling on tab buttons
+  document.querySelectorAll(".tab-menu-item, .studio-nav-btn").forEach(function (btn) {
+    const isTarget = btn.getAttribute("data-tab") === targetId;
+    btn.classList.toggle("active", isTarget);
+    if (btn.hasAttribute("aria-selected")) {
+      btn.setAttribute("aria-selected", isTarget ? "true" : "false");
+    }
+  });
+
+  // Sync layout mode (e.g. clips tab gets full width)
+  const layout = document.getElementById("main-layout");
+  if (layout) {
+    layout.classList.toggle("clips-tab-active", targetId === "clips");
+  }
+
+  // Update URL hash cleanly without page jump
+  if (history.replaceState) {
+    history.replaceState(null, "", "#" + targetId);
+  }
+
+  // If switched to clips tab, ensure clip is loaded in the tab host
+  if (targetId === "clips" && CLIPS.length) {
+    const current =
+      CLIPS.find(function (c) {
+        return c.id === activeClipId;
+      }) || CLIPS[0];
+    if (current) selectClip(current, { autoplay: false });
+  }
+
+  // Smooth scroll to top of tab container if user clicked
+  if (shouldScroll) {
+    const wrap = document.getElementById("studio-tab-menu-wrap");
+    if (wrap) {
+      const rect = wrap.getBoundingClientRect();
+      if (rect.top < 0 || rect.top > 200) {
+        wrap.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  }
+
+  if (typeof track === "function") {
+    track("tab_switch", { tab: targetId });
+  }
 }
 
 main();

@@ -29,14 +29,15 @@
       <span class="studio-sep" aria-hidden="true">·</span>
       <span>Pushing The Limits Corpus</span>
     </div>
-    <nav class="studio-nav">
-      <a href="#board-title">Catchphrases</a>
-      <a href="#soundboard-section">Soundboard</a>
-      <a href="#floor-section">Floor Control</a>
-      <a href="#dodge-section">Polite Dodge Lab <span class="nav-badge" id="nav-dodge-count">164</span></a>
-      <a href="#wilson-section">Wilson Files <span class="nav-badge" id="nav-wilson-count">14</span></a>
-      <a href="#feuds-section">Feuds <span class="nav-badge" id="nav-feuds-count">0</span></a>
-      <a href="#x-section">X Receipts <span class="nav-badge" id="nav-x-count">0</span></a>
+    <nav class="studio-nav" id="studio-top-nav">
+      <button type="button" class="studio-nav-btn active" data-tab="catchphrases">Catchphrases</button>
+      <button type="button" class="studio-nav-btn" data-tab="soundboard">Soundboard</button>
+      <button type="button" class="studio-nav-btn" data-tab="floor">Floor Control</button>
+      <button type="button" class="studio-nav-btn" data-tab="dodge">Polite Dodge <span class="nav-badge" id="nav-dodge-count">178</span></button>
+      <button type="button" class="studio-nav-btn" data-tab="wilson">Wilson Files <span class="nav-badge" id="nav-wilson-count">20</span></button>
+      <button type="button" class="studio-nav-btn" data-tab="feuds">Feuds <span class="nav-badge" id="nav-feuds-count">12</span></button>
+      <button type="button" class="studio-nav-btn" data-tab="x">X Receipts <span class="nav-badge" id="nav-x-count">25</span></button>
+      <button type="button" class="studio-nav-btn" data-tab="clips">Clips <span class="nav-badge" id="nav-clips-count">9</span></button>
     </nav>
   </div>
 
@@ -88,138 +89,226 @@
     </section>
   </header>
 
-  <main class="layout layout-with-clips">
-    <div class="main-column">
-      <!-- INSTANT SOUNDBOARD -->
-      <section class="soundboard-section" id="soundboard-section" aria-labelledby="soundboard-title">
-        <div class="soundboard-head">
-          <div>
-            <h2 id="soundboard-title">Instant Soundboard</h2>
-            <p class="soundboard-sub">Tap any button to hear the 3-hit debate mashup or meltdown cut</p>
-          </div>
-          <div class="soundboard-actions">
-            <button type="button" class="reel-btn" id="play-reel-btn" aria-pressed="false">▶ Play All Mashups</button>
-            <button type="button" class="reel-stop-btn" id="stop-audio-btn" hidden>■ Stop</button>
-          </div>
-        </div>
-        <div class="soundboard-grid" id="soundboard-grid" role="group" aria-label="Audio mashup soundboard"></div>
-      </section>
+  <!-- STICKY PRIMARY TAB MENU -->
+  <div class="studio-tab-menu-wrap" id="studio-tab-menu-wrap">
+    <nav class="studio-tab-menu" id="studio-tab-menu" role="tablist" aria-label="Archive Sections">
+      <button type="button" class="tab-menu-item active" role="tab" id="tab-btn-catchphrases" aria-selected="true" aria-controls="tab-panel-catchphrases" data-tab="catchphrases">
+        <span class="tab-item-icon">🎙️</span>
+        <span class="tab-item-title">Catchphrases</span>
+        <span class="tab-item-badge" id="tab-badge-catchphrases">26</span>
+      </button>
+      <button type="button" class="tab-menu-item" role="tab" id="tab-btn-soundboard" aria-selected="false" aria-controls="tab-panel-soundboard" data-tab="soundboard">
+        <span class="tab-item-icon">🔊</span>
+        <span class="tab-item-title">Soundboard</span>
+        <span class="tab-item-badge" id="tab-badge-soundboard">14</span>
+      </button>
+      <button type="button" class="tab-menu-item" role="tab" id="tab-btn-floor" aria-selected="false" aria-controls="tab-panel-floor" data-tab="floor">
+        <span class="tab-item-icon">🛑</span>
+        <span class="tab-item-title">Floor Control</span>
+        <span class="tab-item-badge" id="tab-badge-floor">3</span>
+      </button>
+      <button type="button" class="tab-menu-item" role="tab" id="tab-btn-dodge" aria-selected="false" aria-controls="tab-panel-dodge" data-tab="dodge">
+        <span class="tab-item-icon">🎯</span>
+        <span class="tab-item-title">Polite Dodge Lab</span>
+        <span class="tab-item-badge" id="tab-badge-dodge">178</span>
+      </button>
+      <button type="button" class="tab-menu-item" role="tab" id="tab-btn-wilson" aria-selected="false" aria-controls="tab-panel-wilson" data-tab="wilson">
+        <span class="tab-item-icon">🥊</span>
+        <span class="tab-item-title">Wilson Files</span>
+        <span class="tab-item-badge" id="tab-badge-wilson">20</span>
+      </button>
+      <button type="button" class="tab-menu-item" role="tab" id="tab-btn-feuds" aria-selected="false" aria-controls="tab-panel-feuds" data-tab="feuds">
+        <span class="tab-item-icon">🔥</span>
+        <span class="tab-item-title">Feuds &amp; Meltdowns</span>
+        <span class="tab-item-badge" id="tab-badge-feuds">12</span>
+      </button>
+      <button type="button" class="tab-menu-item" role="tab" id="tab-btn-x" aria-selected="false" aria-controls="tab-panel-x" data-tab="x">
+        <span class="tab-item-icon">📱</span>
+        <span class="tab-item-title">X Receipts</span>
+        <span class="tab-item-badge" id="tab-badge-x">25</span>
+      </button>
+      <button type="button" class="tab-menu-item" role="tab" id="tab-btn-clips" aria-selected="false" aria-controls="tab-panel-clips" data-tab="clips">
+        <span class="tab-item-icon">🎬</span>
+        <span class="tab-item-title">Watch Clips</span>
+        <span class="tab-item-badge" id="tab-badge-clips">9</span>
+      </button>
+    </nav>
+  </div>
 
-      <!-- MAIN CATCHPHRASE BOARD -->
-      <section class="board-panel" aria-labelledby="board-title">
-        <div class="board-head">
-          <div class="board-head-top">
+  <main class="layout layout-with-clips" id="main-layout">
+    <div class="main-column" id="main-column">
+
+      <!-- TAB 1: CATCHPHRASES -->
+      <div class="tab-panel active" id="tab-panel-catchphrases" role="tabpanel" aria-labelledby="tab-btn-catchphrases">
+        <section class="board-panel" id="board-panel" aria-labelledby="board-title">
+          <div class="board-head">
+            <div class="board-head-top">
+              <div>
+                <h2 id="board-title">Most-Used Catchphrases</h2>
+                <p class="board-sub">The most-repeated lines across 415 debates. Click any quote for associated variants, audio mashup sources, and timestamped transcript proof.</p>
+              </div>
+            </div>
+
+            <div class="board-toolbar">
+              <div class="search-wrap">
+                <input type="search" id="board-search" class="board-search" placeholder="Search phrases, variants, or transcript quotes..." aria-label="Search catchphrases and quotes" />
+                <button type="button" id="board-search-clear" class="board-search-clear" hidden aria-label="Clear search">×</button>
+              </div>
+              <div class="sort-wrap">
+                <label for="board-sort" class="sort-label">Sort:</label>
+                <select id="board-sort" class="board-sort" aria-label="Sort catchphrases">
+                  <option value="ptl_hits">Most Used (PTL Hits)</option>
+                  <option value="debates">Most Debates Hit</option>
+                  <option value="wilson">Andrew Wilson Debates</option>
+                  <option value="kewl">Kewl Vic Live Overlays</option>
+                  <option value="rate">Density (Per 1k Words)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="filters" id="filters" role="group" aria-label="Category filters">
+            <!-- filled by JS -->
+          </div>
+
+          <div class="quote-board" id="quote-board" aria-live="polite">
+            <p class="board-loading">Loading catchphrases...</p>
+          </div>
+
+          <div class="board-more-wrap" id="board-more-wrap" hidden>
+            <button type="button" class="show-more-btn" id="show-more-btn">Show more phrases</button>
+          </div>
+        </section>
+      </div>
+
+      <!-- TAB 2: INSTANT SOUNDBOARD -->
+      <div class="tab-panel" id="tab-panel-soundboard" role="tabpanel" aria-labelledby="tab-btn-soundboard" hidden>
+        <section class="soundboard-section" id="soundboard-section" aria-labelledby="soundboard-title">
+          <div class="soundboard-head">
             <div>
-              <h2 id="board-title">Most-Used Catchphrases</h2>
-              <p class="board-sub">The most-repeated lines across 364 debates. Click any quote for associated variants, audio mashup sources, and timestamped transcript proof.</p>
+              <div class="section-kicker">14 ONE-TAP AUDIO MASHUPS &amp; MELTDOWNS</div>
+              <h2 id="soundboard-title">Instant Soundboard</h2>
+              <p class="soundboard-sub">Tap any button to hear the 3-hit debate mashup or meltdown cut. Use "Play All Mashups" for sequential radio-reel playback.</p>
+            </div>
+            <div class="soundboard-actions">
+              <button type="button" class="reel-btn" id="play-reel-btn" aria-pressed="false">▶ Play All Mashups</button>
+              <button type="button" class="reel-stop-btn" id="stop-audio-btn" hidden>■ Stop</button>
             </div>
           </div>
+          <div class="soundboard-grid" id="soundboard-grid" role="group" aria-label="Audio mashup soundboard"></div>
+        </section>
+      </div>
 
-          <div class="board-toolbar">
-            <div class="search-wrap">
-              <input type="search" id="board-search" class="board-search" placeholder="Search phrases, variants, or transcript quotes..." aria-label="Search catchphrases and quotes" />
-              <button type="button" id="board-search-clear" class="board-search-clear" hidden aria-label="Clear search">×</button>
-            </div>
-            <div class="sort-wrap">
-              <label for="board-sort" class="sort-label">Sort:</label>
-              <select id="board-sort" class="board-sort" aria-label="Sort catchphrases">
-                <option value="ptl_hits">Most Used (PTL Hits)</option>
-                <option value="debates">Most Debates Hit</option>
-                <option value="wilson">Andrew Wilson Debates</option>
-                <option value="kewl">Kewl Vic Live Overlays</option>
-                <option value="rate">Density (Per 1k Words)</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <div class="filters" id="filters" role="group" aria-label="Category filters">
-          <!-- filled by JS -->
-        </div>
-
-        <div class="quote-board" id="quote-board" aria-live="polite">
-          <p class="board-loading">Loading catchphrases...</p>
-        </div>
-
-        <div class="board-more-wrap" id="board-more-wrap" hidden>
-          <button type="button" class="show-more-btn" id="show-more-btn">Show more phrases</button>
-        </div>
-
-        <!-- FLOOR CONTROL -->
-        <section class="floor-section" id="floor-section" hidden aria-labelledby="floor-title">
-          <div class="floor-head">
-            <h3 id="floor-title">Floor Control &amp; Interruption Tics</h3>
-            <p class="floor-sub">Debate fillers used to filibuster or grab the mic mid-point (708 hits across 205 debates). Shown separately so they don’t drown out topical catchphrases.</p>
+      <!-- TAB 3: FLOOR CONTROL & INTERRUPTION TICS -->
+      <div class="tab-panel" id="tab-panel-floor" role="tabpanel" aria-labelledby="tab-btn-floor" hidden>
+        <section class="floor-section" id="floor-section" aria-labelledby="floor-title">
+          <div class="section-head">
+            <div class="section-kicker">PROCEDURAL CRUTCHES · 708+ HITS ACROSS 205+ DEBATES</div>
+            <h2 id="floor-title">Floor Control &amp; Interruption Tics</h2>
+            <p class="section-sub">Procedural fillers used to filibuster, cut callers off, or grab the mic mid-point (<em>“Hold on let me finish”</em>, <em>“Get off my show”</em>, <em>“Don’t interrupt”</em>). Cataloged here so they don’t drown out topical policy debates.</p>
           </div>
           <div class="quote-board floor-board" id="floor-board"></div>
         </section>
-      </section>
+      </div>
 
-      <!-- POLITE DODGE LAB (164 WINDOWS) -->
-      <section class="dodge-section" id="dodge-section" aria-labelledby="dodge-title">
-        <div class="section-head">
-          <div class="section-kicker">BEHAVIORAL PATTERN LAB · 164 TIMESTAMPED WINDOWS</div>
-          <h2 id="dodge-title">The “Polite Dodge” Tracker</h2>
-          <p class="section-sub">How the signature move works: open with a polite concession (<em>“I’m glad you asked”</em>, <em>“Okay let’s talk about that”</em>, <em>“Very fair question”</em>), then immediately pivot away with <em>“in a second”</em>, <em>“let me ask you”</em>, or abandon the caller’s topic within 90 seconds.</p>
-        </div>
-
-        <div class="dodge-controls">
-          <div class="dodge-tabs" id="dodge-tabs" role="group" aria-label="Polite dodge filter">
-            <button type="button" class="dodge-tab active" data-dodge-filter="pivot_marker">Explicit Pivot Caught <span id="dodge-count-pivot">49</span></button>
-            <button type="button" class="dodge-tab" data-dodge-filter="all">All Dodge Windows <span id="dodge-count-all">164</span></button>
-            <button type="button" class="dodge-tab" data-dodge-filter="no_topic_return_heuristic">90s Topic Abandon <span id="dodge-count-abandon">115</span></button>
+      <!-- TAB 4: POLITE DODGE LAB -->
+      <div class="tab-panel" id="tab-panel-dodge" role="tabpanel" aria-labelledby="tab-btn-dodge" hidden>
+        <section class="dodge-section" id="dodge-section" aria-labelledby="dodge-title">
+          <div class="section-head">
+            <div class="section-kicker">BEHAVIORAL PATTERN LAB · 178 TIMESTAMPED WINDOWS</div>
+            <h2 id="dodge-title">The “Polite Dodge” Tracker</h2>
+            <p class="section-sub">How the signature move works: open with a polite concession (<em>“I’m glad you asked”</em>, <em>“Okay let’s talk about that”</em>, <em>“Very fair question”</em>), then immediately pivot away with <em>“in a second”</em>, <em>“let me ask you”</em>, or abandon the caller’s topic within 90 seconds.</p>
           </div>
-          <input type="search" id="dodge-search" class="dodge-search" placeholder="Filter by debate title or quote..." aria-label="Filter polite dodge windows" />
-        </div>
 
-        <div class="dodge-grid" id="dodge-grid" aria-live="polite"></div>
-
-        <div class="board-more-wrap" id="dodge-more-wrap" hidden>
-          <button type="button" class="show-more-btn" id="dodge-more-btn">Show more dodge windows</button>
-        </div>
-      </section>
-
-      <!-- ANDREW WILSON FILES (14 DEBATES) -->
-      <section class="wilson-section" id="wilson-section" aria-labelledby="wilson-title">
-        <div class="section-head">
-          <div class="section-kicker" id="wilson-kicker">HEAD-TO-HEAD SUB-CORPUS · 14 DEBATES</div>
-          <h2 id="wilson-title">The Andrew Wilson Files</h2>
-          <p class="section-sub">When debating Andrew Wilson, Brian leans heavily on procedural floor-control and four recurring talking points. Click any cluster to inspect its full transcript drawer above.</p>
-        </div>
-
-        <div class="wilson-layout">
-          <div class="wilson-clusters-col">
-            <h3 class="wilson-col-title">Top Crutch Lines vs. Andrew Wilson</h3>
-            <div class="wilson-bars" id="wilson-bars"></div>
+          <div class="dodge-controls">
+            <div class="dodge-tabs" id="dodge-tabs" role="group" aria-label="Polite dodge filter">
+              <button type="button" class="dodge-tab active" data-dodge-filter="pivot_marker">Explicit Pivot Caught <span id="dodge-count-pivot">49</span></button>
+              <button type="button" class="dodge-tab" data-dodge-filter="all">All Dodge Windows <span id="dodge-count-all">178</span></button>
+              <button type="button" class="dodge-tab" data-dodge-filter="no_topic_return_heuristic">90s Topic Abandon <span id="dodge-count-abandon">129</span></button>
+            </div>
+            <input type="search" id="dodge-search" class="dodge-search" placeholder="Filter by debate title or quote..." aria-label="Filter polite dodge windows" />
           </div>
-          <div class="wilson-debates-col">
-            <h3 class="wilson-col-title" id="wilson-list-title">All Indexed Wilson Debates</h3>
-            <ul class="wilson-debate-list" id="wilson-debate-list"></ul>
+
+          <div class="dodge-grid" id="dodge-grid" aria-live="polite"></div>
+
+          <div class="board-more-wrap" id="dodge-more-wrap" hidden>
+            <button type="button" class="show-more-btn" id="dodge-more-btn">Show more dodge windows</button>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
 
-      <!-- HEAD-TO-HEAD FEUDS -->
-      <section class="feuds-section" id="feuds-section" aria-labelledby="feuds-title">
-        <div class="section-head">
-          <div class="section-kicker">CROSS-CHANNEL CLASHES · 2026-10 SWEEP</div>
-          <h2 id="feuds-title">Head-to-Head Feuds &amp; Meltdowns</h2>
-          <p class="section-sub">Every opponent Brian has squared off with on his own show or other channels, with a caption transcript behind each video.</p>
-        </div>
-        <div class="feuds-grid" id="feuds-grid"></div>
-      </section>
+      <!-- TAB 5: ANDREW WILSON FILES -->
+      <div class="tab-panel" id="tab-panel-wilson" role="tabpanel" aria-labelledby="tab-btn-wilson" hidden>
+        <section class="wilson-section" id="wilson-section" aria-labelledby="wilson-title">
+          <div class="section-head">
+            <div class="section-kicker" id="wilson-kicker">HEAD-TO-HEAD SUB-CORPUS · 20 DEBATES</div>
+            <h2 id="wilson-title">The Andrew Wilson Files</h2>
+            <p class="section-sub">When debating Andrew Wilson across 20 full episodes, Brian leans heavily on procedural floor-control and four recurring talking points. Click any crutch line to inspect its quotes in the Catchphrases tab.</p>
+          </div>
 
-      <!-- X RECEIPTS -->
-      <section class="x-section" id="x-section" aria-labelledby="x-title">
-        <div class="section-head">
-          <div class="section-kicker">@TheBrianShapiro · @PTLRadioShow</div>
-          <h2 id="x-title">X Receipts</h2>
-          <p class="section-sub">Posts quoted word for word from public search-index captures of x.com status pages. Each card links to the original post.</p>
-        </div>
-        <div class="x-filters" id="x-filters" role="group" aria-label="Filter X posts"></div>
-        <div class="x-grid" id="x-grid"></div>
-        <div class="x-about" id="x-about"></div>
-      </section>
+          <div class="wilson-layout">
+            <div class="wilson-clusters-col">
+              <h3 class="wilson-col-title">Top Crutch Lines vs. Andrew Wilson</h3>
+              <div class="wilson-bars" id="wilson-bars"></div>
+            </div>
+            <div class="wilson-debates-col">
+              <h3 class="wilson-col-title" id="wilson-list-title">All 20 Indexed Wilson Debates</h3>
+              <ul class="wilson-debate-list" id="wilson-debate-list"></ul>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- TAB 6: HEAD-TO-HEAD FEUDS -->
+      <div class="tab-panel" id="tab-panel-feuds" role="tabpanel" aria-labelledby="tab-btn-feuds" hidden>
+        <section class="feuds-section" id="feuds-section" aria-labelledby="feuds-title">
+          <div class="section-head">
+            <div class="section-kicker">CROSS-CHANNEL CLASHES · VERIFIED CAPTIONS</div>
+            <h2 id="feuds-title">Head-to-Head Feuds &amp; Meltdowns</h2>
+            <p class="section-sub">Every opponent Brian has squared off with on his own show or other channels (Gavin McInnes, Warren Smith, DragonFistTV, Larry Elder, Tim Pool, etc.), with full caption transcripts behind each clash.</p>
+          </div>
+          <div class="feuds-grid" id="feuds-grid"></div>
+        </section>
+      </div>
+
+      <!-- TAB 7: X RECEIPTS -->
+      <div class="tab-panel" id="tab-panel-x" role="tabpanel" aria-labelledby="tab-btn-x" hidden>
+        <section class="x-section" id="x-section" aria-labelledby="x-title">
+          <div class="section-head">
+            <div class="section-kicker">@TheBrianShapiro · @PTLRadioShow SOCIAL ARCHIVE</div>
+            <h2 id="x-title">X Receipts</h2>
+            <p class="section-sub">Posts quoted word for word from public search-index captures of x.com status pages. Each card links to the original post and connects to on-air catchphrases.</p>
+          </div>
+          <div class="x-filters" id="x-filters" role="group" aria-label="Filter X posts"></div>
+          <div class="x-grid" id="x-grid"></div>
+          <div class="x-about" id="x-about"></div>
+        </section>
+      </div>
+
+      <!-- TAB 8: WATCH BRIAN CLIPS VAULT -->
+      <div class="tab-panel" id="tab-panel-clips" role="tabpanel" aria-labelledby="tab-btn-clips" hidden>
+        <section class="clips-tab-section" id="clips-tab-section" aria-labelledby="clips-tab-title">
+          <div class="section-head">
+            <div class="section-kicker">VIDEO VAULT · 9 VIRAL DEBATE CLIPS &amp; SUPERCUTS</div>
+            <h2 id="clips-tab-title">Watch Brian: Video Vault</h2>
+            <p class="section-sub">Stream viral debate clips, meltdown cuts, and the full Jimmy supercut with synchronized video, audio, and transcript notes.</p>
+          </div>
+          <div class="clips-tab-layout">
+            <div class="clips-tab-player-wrap">
+              <div class="clips-player-host" id="clips-tab-player-host"></div>
+              <p class="clips-now" id="clips-tab-now" aria-live="polite"></p>
+            </div>
+            <div class="clips-tab-sidebar">
+              <div class="clips-tab-sidebar-head">
+                <span class="clips-tab-sidebar-title">All 9 Debate Clips</span>
+                <span class="clips-counter" id="clips-tab-counter">1/9</span>
+              </div>
+              <ul class="clips-list" id="clips-tab-list"></ul>
+            </div>
+          </div>
+        </section>
+      </div>
+
     </div>
 
     <!-- WATCH BRIAN CLIPS RAIL -->
