@@ -425,7 +425,6 @@ async function main() {
   }
 
   const clusters = sortedClusters();
-  renderTicker(clusters);
   renderHeroStats();
   renderTds(clusters);
   renderTdsBreakdown(clusters);
@@ -518,30 +517,6 @@ function jumpToCluster(clusterId) {
       card.scrollIntoView({ behavior: "smooth", block: "center" });
     }
   }, 60);
-}
-
-function renderTicker(clusters) {
-  const inner = document.getElementById("ticker-inner");
-  if (!inner) return;
-  const items = clusters.map(function (c) {
-    const label = boardLabel(c).toUpperCase();
-    const hits = c.hit_count_ptl || 0;
-    return (
-      '<button type="button" class="ticker-item" data-jump-id="' +
-      escapeAttr(c.cluster_id) +
-      '">' +
-      escapeHtml(label) +
-      ' <span class="mul">' +
-      hits +
-      "×</span></button>"
-    );
-  });
-  inner.innerHTML = items.concat(items).join('<span class="studio-sep">·</span>');
-  inner.querySelectorAll(".ticker-item").forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      jumpToCluster(btn.getAttribute("data-jump-id"));
-    });
-  });
 }
 
 function renderHeroStats() {
@@ -2637,7 +2612,7 @@ function initSwipeGestures() {
           target &&
           target.closest &&
           target.closest(
-            ".filters, .ticker, .studio-tab-menu, .x-filters, .clips-list, .wilson-bars, .mobile-sheet, .mobile-bottom-dock, .sub-view-nav"
+            ".filters, .studio-tab-menu, .x-filters, .clips-list, .wilson-bars, .mobile-sheet, .mobile-bottom-dock, .sub-view-nav"
           )
         ) {
           return;
