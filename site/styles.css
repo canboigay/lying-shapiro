@@ -2668,6 +2668,66 @@ body {
   .studio-home-link {
     white-space: nowrap;
   }
+
+  /* On a phone, orientation comes from the tab bar, so the masthead line, the
+     kicker and the explainer are three paragraphs of chrome between the tab
+     and the first result. Keep the page title, drop the rest. */
+  .archive-line,
+  .section-kicker,
+  .section-sub,
+  .board-sub {
+    display: none;
+  }
+
+  /* Two stacked titles is the density problem in one picture: the section
+     heading says where you are, the tab bar says what else exists. */
+  .archive-masthead {
+    display: none;
+  }
+
+  /* Filter rows scroll sideways instead of wrapping into a second block */
+  .filters,
+  .dodge-tabs,
+  .x-filters,
+  .sub-view-nav {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .filters::-webkit-scrollbar,
+  .dodge-tabs::-webkit-scrollbar,
+  .x-filters::-webkit-scrollbar,
+  .sub-view-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .filters > *,
+  .dodge-tabs > *,
+  .x-filters > *,
+  .sub-view-nav > * {
+    flex: 0 0 auto;
+  }
+
+  .site-header {
+    padding: 0.5rem 0.75rem 0.35rem;
+  }
+
+  /* one line of debate title; the quote below carries the card */
+  .dodge-debate-title {
+    -webkit-line-clamp: 1;
+    font-size: 0.6rem;
+  }
+
+  .dodge-card {
+    gap: 0.45rem;
+    padding: 0.75rem 0.8rem;
+  }
+
+  .dodge-quote {
+    font-size: 0.96rem;
+  }
   .studio-nav {
     display: none; /* replaced by thumb-accessible mobile dock */
   }
