@@ -1907,8 +1907,6 @@ function flushTrack() {
 
 function renderFooter() {
   const corpus = DATA.corpus || {};
-  const subject = DATA.subject || "Brian Shapiro";
-  const gen = DATA.generated_at ? DATA.generated_at.slice(0, 10) : "";
   const wilson = Array.isArray(DATA.wilson_debates)
     ? DATA.wilson_debates.length
     : 0;
@@ -1925,33 +1923,24 @@ function renderFooter() {
           escapeAttr(ch.url || "#") +
           '" target="_blank" rel="noopener noreferrer">' +
           escapeHtml(ch.name) +
-          " (" +
+          " " +
           escapeHtml(ch.handle || "") +
-          ") ↗</a>"
+          " ↗</a>"
         );
       })
       .join("");
   }
 
-  const parts = [
-    "Subject: " + subject,
-    corpus.included_debates != null
-      ? corpus.included_debates + " debates included"
-      : null,
-    corpus.excluded_non_debate != null
-      ? corpus.excluded_non_debate + " non-debate excluded"
-      : null,
-    corpus.ptl_words != null
-      ? Number(corpus.ptl_words).toLocaleString() + " Pushing The Limits words"
-      : null,
-    corpus.kewl_words != null
-      ? Number(corpus.kewl_words).toLocaleString() + " Kewl Vic Live words"
-      : null,
-    polite != null ? polite + " polite-dodge windows" : null,
-    wilson ? wilson + " Andrew Wilson debates" : null,
-    gen ? "corpus snapshot " + gen : null,
-  ].filter(Boolean);
-  document.getElementById("footer-stats").textContent = parts.join(" · ");
+  const statsEl = document.getElementById("footer-stats");
+  if (statsEl) {
+    const parts = [];
+    if (corpus.included_debates) parts.push(corpus.included_debates + " Debates");
+    const totalWords = (corpus.ptl_words || 0) + (corpus.kewl_words || 0);
+    if (totalWords > 0) parts.push((totalWords / 1000000).toFixed(2) + "M Words");
+    if (polite) parts.push(polite + " Polite Dodges");
+    if (wilson) parts.push(wilson + " Wilson Bouts");
+    statsEl.textContent = parts.join(" · ");
+  }
 }
 
 function prettyCat(cat) {
