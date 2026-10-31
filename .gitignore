@@ -1,3 +1,7 @@
+.dev.vars
 .DS_Store
+.wrangler/
 *.bak
 *.log
+data-raw/
+node_modules/

@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Lying Shapiro · Analytics</title>
+  <style>
+    :root { --bg:#000; --card:#121215; --b:rgba(255,255,255,.1); --t:#f5f5f5; --m:#9a9aa2; --r:#ff2424; --g:#f5b942; --mono:ui-monospace,"IBM Plex Mono",monospace; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--bg); color:var(--t); font:14px/1.45 Inter,system-ui,sans-serif; }
+    header { display:flex; flex-wrap:wrap; gap:.75rem; align-items:center; justify-content:space-between; padding:1rem 1.25rem; border-bottom:1px solid var(--b); position:sticky; top:0; background:#000d; backdrop-filter:blur(6px); z-index:2; }
+    h1 { margin:0; font:700 1.1rem var(--mono); letter-spacing:.06em; } h1 span { color:var(--r); }
+    .ctl { display:flex; gap:.4rem; align-items:center; font-family:var(--mono); font-size:.75rem; }
+    button, select { background:var(--card); color:var(--t); border:1px solid var(--b); border-radius:6px; padding:.35rem .6rem; font:inherit; cursor:pointer; }
+    button.on { border-color:var(--r); color:var(--r); }
+    main { padding:1.25rem; display:grid; gap:1rem; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); }
+    .kpis { grid-column:1/-1; display:grid; gap:.75rem; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); }
+    .kpi, .card { background:var(--card); border:1px solid var(--b); border-radius:10px; padding:.8rem .9rem; }
+    .kpi b { display:block; font:700 1.6rem var(--mono); } .kpi small { color:var(--m); font-family:var(--mono); font-size:.68rem; text-transform:uppercase; letter-spacing:.08em; }
+    .kpi.live b { color:#3ddc84; }
+    .card h2 { margin:0 0 .6rem; font:600 .72rem var(--mono); text-transform:uppercase; letter-spacing:.1em; color:var(--m); }
+    .wide { grid-column:1/-1; }
+    .row { display:grid; grid-template-columns:1fr auto; gap:.5rem; align-items:center; padding:.18rem 0; font-size:.8rem; position:relative; }
+    .row .bar { position:absolute; left:0; top:2px; bottom:2px; background:rgba(255,36,36,.14); border-radius:3px; z-index:0; }
+    .row span, .row em { position:relative; z-index:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .row em { font-style:normal; font-family:var(--mono); color:var(--g); }
+    svg { width:100%; height:160px; display:block; }
+    .feed { max-height:420px; overflow:auto; font:12px var(--mono); }
+    .feed div { padding:.25rem 0; border-bottom:1px solid var(--b); display:grid; grid-template-columns:70px 110px 1fr auto; gap:.5rem; }
+    .feed .t { color:var(--m); } .feed .ty { color:var(--r); } .feed .bot { opacity:.45; }
+    .empty { color:var(--m); font-size:.8rem; }
+    #login { max-width:380px; margin:15vh auto; padding:1.25rem; }
+    #login input { width:100%; padding:.6rem; margin:.6rem 0; background:#000; color:var(--t); border:1px solid var(--b); border-radius:6px; font:inherit; }
+    .err { color:var(--r); font-size:.8rem; min-height:1em; }
+  </style>
+</head>
+<body>
+  <div id="login" class="card" hidden>
+    <h1>LYING<span>SHAPIRO</span> · analytics</h1>
+    <p class="empty">Enter the admin token (set with <code>wrangler secret put ADMIN_TOKEN</code>). It's stored only in this browser.</p>
+    <form id="login-form"><input id="tok" type="password" autocomplete="current-password" placeholder="Admin token" /><button>Unlock</button></form>
+    <p class="err" id="login-err"></p>
+  </div>
+
+  <div id="app" hidden>
+    <header>
+      <h1>LYING<span>SHAPIRO</span> · analytics</h1>
+      <div class="ctl">
+        <span id="updated"></span>
+        <button data-d="1">24h</button><button data-d="7" class="on">7d</button><button data-d="30">30d</button><button data-d="90">90d</button>
+        <button id="refresh">↻</button><button id="logout">Log out</button>
+      </div>
+    </header>
+    <main>
+      <section class="kpis" id="kpis"></section>
+      <section class="card wide"><h2>Visitors &amp; pageviews per day</h2><div id="chart"></div></section>
+      <section class="card"><h2>Top referrers</h2><div id="referrers"></div></section>
+      <section class="card"><h2>Countries (visitors)</h2><div id="countries"></div></section>
+      <section class="card"><h2>Cities</h2><div id="cities"></div></section>
+      <section class="card"><h2>Section reach (sessions)</h2><div id="sections"></div></section>
+      <section class="card"><h2>Soundboard / audio plays</h2><div id="sounds"></div></section>
+      <section class="card"><h2>Clip plays</h2><div id="clips"></div></section>
+      <section class="card"><h2>Searches</h2><div id="searches"></div></section>
+      <section class="card"><h2>Outbound clicks (YouTube / X)</h2><div id="outbound"></div></section>
+      <section class="card"><h2>Event types</h2><div id="events"></div></section>
+      <section class="card"><h2>Devices</h2><div id="devices"></div></section>
+      <section class="card"><h2>Browsers</h2><div id="browsers"></div></section>
+      <section class="card"><h2>OS</h2><div id="oses"></div></section>
+      <section class="card"><h2>Hour of day (UTC)</h2><div id="hourly"></div></section>
+      <section class="card"><h2>Pages</h2><div id="pages"></div></section>
+      <section class="card"><h2>Bots &amp; crawlers (excluded above)</h2><div id="bots"></div></section>
+      <section class="card"><h2>JS errors</h2><div id="errors"></div></section>
+      <section class="card wide"><h2>Live feed · auto-refresh 15s</h2><div class="feed" id="feed"></div></section>
+    </main>
+  </div>
+
+<script>
+(function () {
+  var KEY = "ls_admin_token";
+  var days = 7, timer = null;
+  var $ = function (id) { return document.getElementById(id); };
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function tok() { return localStorage.getItem(KEY) || ""; }
+  function api(path) {
+    return fetch(path, { headers: { Authorization: "Bearer " + tok() }, cache: "no-store" }).then(function (r) {
+      if (r.status === 401) { throw new Error("unauthorized"); }
+      return r.json();
+    });
+  }
+  function list(id, rows, keyFn, valFn) {
+    var el = $(id);
+    if (!rows || !rows.length) { el.innerHTML = '<p class="empty">No data yet.</p>'; return; }
+    var max = Math.max.apply(null, rows.map(valFn)) || 1;
+    el.innerHTML = rows.map(function (r) {
+      var v = valFn(r);
+      return '<div class="row"><i class="bar" style="width:' + Math.max(2, (v / max) * 100) + '%"></i><span title="' + esc(keyFn(r)) + '">' + esc(keyFn(r)) + "</span><em>" + v.toLocaleString() + "</em></div>";
+    }).join("");
+  }
+  var K = function (r) { return r.k == null ? "(none)" : r.k; }, N = function (r) { return r.n; };
+
+  function chart(daily) {
+    var el = $("chart");
+    if (!daily.length) { el.innerHTML = '<p class="empty">No traffic yet.</p>'; return; }
+    var W = 1000, H = 160, P = 24;
+    var maxV = Math.max.apply(null, daily.map(function (d) { return d.pageviews; })) || 1;
+    var step = daily.length > 1 ? (W - 2 * P) / (daily.length - 1) : 0;
+    function pts(key) { return daily.map(function (d, i) { return (P + i * step) + "," + (H - P - (d[key] / maxV) * (H - 2 * P)); }).join(" "); }
+    var labels = daily.map(function (d, i) {
+      if (daily.length > 14 && i % Math.ceil(daily.length / 10)) return "";
+      return '<text x="' + (P + i * step) + '" y="' + (H - 6) + '" fill="#9a9aa2" font-size="10" text-anchor="middle">' + d.day.slice(5) + "</text>";
+    }).join("");
+    el.innerHTML = '<svg viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none">' +
+      '<polyline fill="none" stroke="#ff2424" stroke-width="2" points="' + pts("pageviews") + '"/>' +
+      '<polyline fill="none" stroke="#f5b942" stroke-width="2" points="' + pts("visitors") + '"/>' + labels +
+      '<text x="' + P + '" y="14" fill="#ff2424" font-size="11">pageviews (max ' + maxV + ')</text><text x="' + (P + 160) + '" y="14" fill="#f5b942" font-size="11">visitors</text></svg>';
+  }
+
+  function load() {
+    return api("/api/stats?days=" + days).then(function (s) {
+      var t = s.totals || {};
+      var ppv = t.visitors ? (t.pageviews / t.visitors).toFixed(2) : "0";
+      var k = [
+        ["Live (5 min)", t.live_sessions_5m || 0, "live"], ["Visitors", t.visitors || 0], ["Pageviews", t.pageviews || 0],
+        ["Pages / visitor", ppv], ["Avg time (s)", t.avg_secs || 0], ["Avg scroll %", t.avg_depth || 0], ["Bot hits", t.bot_hits || 0],
+      ];
+      $("kpis").innerHTML = k.map(function (x) { return '<div class="kpi ' + (x[2] || "") + '"><b>' + Number(x[1]).toLocaleString() + "</b><small>" + x[0] + "</small></div>"; }).join("");
+      chart(s.daily || []);
+      list("referrers", s.referrers, K, N); list("countries", s.countries, K, N); list("cities", s.cities, K, N);
+      list("sections", s.sections, K, N); list("sounds", s.sounds, K, N); list("clips", s.clips, K, N);
+      list("searches", s.searches, K, N); list("outbound", s.outbound, K, N);
+      list("events", s.events, function (r) { return r.k + " · " + r.sessions + " sessions"; }, N);
+      list("devices", s.devices, K, N); list("browsers", s.browsers, K, N); list("oses", s.oses, K, N);
+      list("hourly", s.hourly, function (r) { return String(r.hour).padStart(2, "0") + ":00"; }, N);
+      list("pages", s.pages, function (r) { return r.path; }, N); list("bots", s.bots, K, N);
+      list("errors", s.errors, function (r) { return (r.k || "") + " " + (r.item || ""); }, N);
+      $("updated").textContent = "updated " + new Date().toLocaleTimeString();
+    });
+  }
+  function feed() {
+    return api("/api/live?limit=60").then(function (d) {
+      var rows = [];
+      (d.events || []).forEach(function (e) { rows.push({ ts: e.ts, ty: e.type, what: (e.item || e.label || e.path || ""), where: [e.country, e.device, e.ref_host].filter(Boolean).join(" · ") }); });
+      (d.requests || []).forEach(function (r) { rows.push({ ts: r.ts, ty: r.is_bot ? "bot:" + (r.bot_name || "") : "request", what: r.path + " (" + r.status + ")", where: [r.city, r.country, r.device, r.browser, r.ref_host].filter(Boolean).join(" · "), bot: r.is_bot }); });
+      rows.sort(function (a, b) { return b.ts - a.ts; });
+      $("feed").innerHTML = rows.slice(0, 100).map(function (r) {
+        return '<div class="' + (r.bot ? "bot" : "") + '"><span class="t">' + new Date(r.ts).toLocaleTimeString() + '</span><span class="ty">' + esc(r.ty) + "</span><span>" + esc(r.what) + "</span><span class=\"t\">" + esc(r.where) + "</span></div>";
+      }).join("") || '<p class="empty">No events yet.</p>';
+    });
+  }
+  function start() {
+    $("login").hidden = true; $("app").hidden = false;
+    Promise.all([load(), feed()]).catch(fail);
+    clearInterval(timer);
+    timer = setInterval(function () { feed().catch(fail); }, 15000);
+  }
+  function fail(e) {
+    if (String(e && e.message) === "unauthorized") { localStorage.removeItem(KEY); showLogin("Invalid token."); }
+    else console.error(e);
+  }
+  function showLogin(msg) { clearInterval(timer); $("app").hidden = true; $("login").hidden = false; $("login-err").textContent = msg || ""; }
+
+  $("login-form").addEventListener("submit", function (e) { e.preventDefault(); localStorage.setItem(KEY, $("tok").value.trim()); start(); });
+  $("logout").addEventListener("click", function () { localStorage.removeItem(KEY); showLogin(); });
+  $("refresh").addEventListener("click", function () { load().catch(fail); feed().catch(fail); });
+  document.querySelectorAll("[data-d]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      days = +b.getAttribute("data-d");
+      document.querySelectorAll("[data-d]").forEach(function (x) { x.classList.toggle("on", x === b); });
+      load().catch(fail);
+    });
+  });
+  tok() ? start() : showLogin();
+})();
+</script>
+</body>
+</html>

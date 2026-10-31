@@ -1,4 +1,5 @@
 name = "lying-shapiro"
+main = "src/worker.js"
 compatibility_date = "2026-10-01"
 
 routes = [
@@ -8,3 +9,19 @@ routes = [
 
 [assets]
 directory = "./site"
+binding = "ASSETS"
+# Worker runs first so every request (including no-JS visitors and bots) is logged.
+run_worker_first = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "lying-shapiro-analytics"
+database_id = "24387942-c0fa-4e03-8288-a6ad543a5551"
+migrations_dir = "migrations"
+
+[observability]
+enabled = true
+
+# Secrets (set with `wrangler secret put`):
+#   ADMIN_TOKEN   bearer token for /api/stats and the /admin dashboard
+#   HASH_SALT     salt for daily visitor hashing (raw IPs are never stored)

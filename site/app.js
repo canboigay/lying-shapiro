@@ -417,6 +417,7 @@ async function main() {
   refreshBoard();
   renderDodgeLab();
   renderWilsonSection();
+  renderFeudsAndX();
   renderFooter();
   bindShowMore();
   initClipsRail();
@@ -1541,7 +1542,9 @@ function renderWilsonSection() {
         "”</span>" +
         '<span class="wilson-bar-stats">' +
         vids +
-        "/14 Wilson debates · " +
+        "/" +
+        wilsonDebates.length +
+        " Wilson debates · " +
         totalHits +
         " PTL hits</span></div>" +
         '<div class="wilson-bar-track"><div class="wilson-bar-fill" style="width:' +
@@ -1574,7 +1577,291 @@ function renderWilsonSection() {
       );
     })
     .join("");
+
+  const n = wilsonDebates.length;
+  const navW = document.getElementById("nav-wilson-count");
+  const kick = document.getElementById("wilson-kicker");
+  const lt = document.getElementById("wilson-list-title");
+  if (navW) navW.textContent = String(n);
+  if (kick) kick.textContent = "HEAD-TO-HEAD SUB-CORPUS · " + n + " DEBATES";
+  if (lt) lt.textContent = "All " + n + " Indexed Wilson Debates";
 }
+
+/* ===== FEUDS + X RECEIPTS ===== */
+async function renderFeudsAndX() {
+  const [feuds, xc] = await Promise.all([
+    fetch("./data/feuds.json").then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
+    fetch("./data/x_corpus.json").then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
+  ]);
+
+  const fg = document.getElementById("feuds-grid");
+  if (fg && feuds && Array.isArray(feuds.feuds)) {
+    const navF = document.getElementById("nav-feuds-count");
+    if (navF) navF.textContent = String(feuds.feuds.length);
+    fg.innerHTML = feuds.feuds
+      .map(function (f) {
+        return (
+          '<article class="feud-card"><header><h3>vs. ' +
+          escapeHtml(f.opponent) +
+          '</h3><span class="feud-count">' +
+          f.videos.length +
+          (f.videos.length === 1 ? " clash" : " clashes") +
+          "</span></header><ul>" +
+          f.videos
+            .map(function (v) {
+              return (
+                '<li><a href="https://www.youtube.com/watch?v=' +
+                escapeAttr(v.id) +
+                '" target="_blank" rel="noopener noreferrer" data-track="feud_click" data-track-id="' +
+                escapeAttr(v.id) +
+                '"><span>' +
+                escapeHtml(v.title) +
+                '</span><small>' +
+                escapeHtml(v.channel) +
+                " ↗</small></a></li>"
+              );
+            })
+            .join("") +
+          "</ul></article>"
+        );
+      })
+      .join("");
+  }
+
+  const xg = document.getElementById("x-grid");
+  if (!xg || !xc || !Array.isArray(xc.posts)) return;
+  const navX = document.getElementById("nav-x-count");
+  if (navX) navX.textContent = String(xc.posts.length);
+  const filters = [
+    ["all", "All"],
+    ["insult", "Insults"],
+    ["feud", "Feuds"],
+    ["trump", "Trump"],
+    ["sarcasm", "\u201cIt was sarcasm\u201d"],
+  ];
+  let active = "all";
+  const fx = document.getElementById("x-filters");
+  function draw() {
+    const posts = xc.posts.filter(function (p) {
+      if (active === "all") return true;
+      if (active === "sarcasm") return p.tags.indexOf("sarcasm") !== -1 || p.tags.indexOf("i_never_said_that") !== -1;
+      return p.tags.indexOf(active) !== -1;
+    });
+    xg.innerHTML = posts
+      .map(function (p) {
+        const url = "https://x.com/" + p.handle + "/status/" + p.id;
+        const jump = p.cluster_id
+          ? '<button type="button" class="x-jump" data-jump-id="' + escapeAttr(p.cluster_id) + '">See it on air →</button>'
+          : "";
+        return (
+          '<blockquote class="x-card"><p>' +
+          escapeHtml(p.text) +
+          '</p><footer><a href="' +
+          escapeAttr(url) +
+          '" target="_blank" rel="noopener noreferrer" data-track="x_click" data-track-id="' +
+          escapeAttr(p.id) +
+          '">@' +
+          escapeHtml(p.handle) +
+          " ↗</a>" +
+          jump +
+          "</footer></blockquote>"
+        );
+      })
+      .join("");
+    xg.querySelectorAll(".x-jump").forEach(function (b) {
+      b.addEventListener("click", function () {
+        jumpToCluster(b.getAttribute("data-jump-id"));
+      });
+    });
+  }
+  if (fx) {
+    fx.innerHTML = filters
+      .map(function (f) {
+        return '<button type="button" class="dodge-tab' + (f[0] === active ? " active" : "") + '" data-x="' + f[0] + '">' + escapeHtml(f[1]) + "</button>";
+      })
+      .join("");
+    fx.addEventListener("click", function (e) {
+      const b = e.target.closest("[data-x]");
+      if (!b) return;
+      active = b.getAttribute("data-x");
+      fx.querySelectorAll("[data-x]").forEach(function (x) {
+        x.classList.toggle("active", x === b);
+      });
+      track("x_filter", { filter: active });
+      draw();
+    });
+  }
+  draw();
+
+  const about = document.getElementById("x-about");
+  if (about && Array.isArray(xc.about_brian)) {
+    about.innerHTML =
+      "<h3>What others posted about him</h3>" +
+      xc.about_brian
+        .map(function (a) {
+          return (
+            '<blockquote class="x-card x-card-about"><p>' +
+            escapeHtml(a.text) +
+            '</p><footer><a href="' +
+            escapeAttr(a.url) +
+            '" target="_blank" rel="noopener noreferrer">' +
+            escapeHtml(a.source) +
+            " ↗</a></footer></blockquote>"
+          );
+        })
+        .join("");
+  }
+}
+
+/* ===== FIRST-PARTY ANALYTICS =====
+ * Sends small JSON beacons to the Worker at /api/event. No cookies, no third parties.
+ * The visitor id lives in sessionStorage only, so it resets per tab session. */
+const ANALYTICS_ENDPOINT =
+  location.hostname.endsWith("lyingshapiro.com") || location.hostname === "localhost" || location.hostname === "127.0.0.1"
+    ? "/api/event"
+    : "https://lyingshapiro.com/api/event";
+const SESSION_ID = (function () {
+  try {
+    let s = sessionStorage.getItem("ls_sid");
+    if (!s) {
+      s = Math.random().toString(36).slice(2) + Date.now().toString(36);
+      sessionStorage.setItem("ls_sid", s);
+    }
+    return s;
+  } catch (e) {
+    return "nostorage";
+  }
+})();
+const TRACK_QUEUE = [];
+let trackTimer = null;
+
+function track(type, props) {
+  if (navigator.doNotTrack === "1") return;
+  TRACK_QUEUE.push({
+    type: String(type).slice(0, 40),
+    props: props || {},
+    path: location.pathname + location.hash,
+    ts: Date.now(),
+  });
+  if (TRACK_QUEUE.length >= 10) flushTrack();
+  else if (!trackTimer) trackTimer = setTimeout(flushTrack, 4000);
+}
+
+function flushTrack() {
+  clearTimeout(trackTimer);
+  trackTimer = null;
+  if (!TRACK_QUEUE.length) return;
+  const body = JSON.stringify({
+    sid: SESSION_ID,
+    ref: document.referrer || "",
+    vw: window.innerWidth,
+    events: TRACK_QUEUE.splice(0, TRACK_QUEUE.length),
+  });
+  try {
+    if (navigator.sendBeacon && navigator.sendBeacon(ANALYTICS_ENDPOINT, new Blob([body], { type: "text/plain" }))) return;
+  } catch (e) {}
+  fetch(ANALYTICS_ENDPOINT, { method: "POST", body: body, keepalive: true, headers: { "content-type": "text/plain" } }).catch(function () {});
+}
+
+(function initAnalytics() {
+  const t0 = Date.now();
+  track("pageview", { title: document.title, utm: location.search.slice(0, 200) });
+
+  // Generic click tracking: soundboard pads, filters, clips, outbound links, explicit data-track hooks.
+  document.addEventListener(
+    "click",
+    function (e) {
+      const el = e.target.closest("[data-track], button, a");
+      if (!el) return;
+      const explicit = el.getAttribute("data-track");
+      const label = (el.getAttribute("aria-label") || el.textContent || "").trim().slice(0, 80);
+      const id =
+        el.getAttribute("data-track-id") ||
+        el.getAttribute("data-jump-id") ||
+        el.getAttribute("data-cluster-id") ||
+        el.getAttribute("data-audio-key") ||
+        el.getAttribute("data-clip-id") ||
+        el.getAttribute("data-cat") ||
+        el.getAttribute("data-id") ||
+        (el.closest("[data-id]") && el.closest("[data-id]").getAttribute("data-id")) ||
+        el.id ||
+        "";
+      let type = explicit;
+      if (!type) {
+        if (el.closest("#soundboard-grid")) type = "sound_play";
+        else if (el.closest("#filters")) type = "filter";
+        else if (el.closest(".clips-list")) type = "clip_select";
+        else if (el.tagName === "A" && el.host && el.host !== location.host) type = "outbound";
+        else if (el.closest(".studio-nav")) type = "nav";
+        else type = "click";
+      }
+      track(type, { id: id, label: label, href: el.tagName === "A" ? el.href : undefined });
+    },
+    true
+  );
+
+  // Section visibility (which sections people actually scroll to).
+  if ("IntersectionObserver" in window) {
+    const seen = {};
+    const io = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (en) {
+          if (en.isIntersecting && !seen[en.target.id]) {
+            seen[en.target.id] = 1;
+            track("section_view", { id: en.target.id });
+          }
+        });
+      },
+      { threshold: 0.35 }
+    );
+    ["soundboard-section", "floor-section", "dodge-section", "wilson-section", "feuds-section", "x-section", "clips-rail"].forEach(function (id) {
+      const el = document.getElementById(id);
+      if (el) io.observe(el);
+    });
+  }
+
+  // Debounced search terms.
+  let st = null;
+  document.addEventListener("input", function (e) {
+    if (!e.target.matches || !e.target.matches("input[type=search]")) return;
+    clearTimeout(st);
+    const v = e.target.value.trim();
+    st = setTimeout(function () {
+      if (v.length >= 2) track("search", { box: e.target.id, q: v.slice(0, 60) });
+    }, 1200);
+  });
+
+  // Media plays (audio + video).
+  document.addEventListener(
+    "play",
+    function (e) {
+      const m = e.target;
+      if (!m || !m.currentSrc) return;
+      track(m.tagName === "VIDEO" ? "video_play" : "audio_play", { src: m.currentSrc.split("/").pop().slice(0, 80) });
+    },
+    true
+  );
+
+  // Max scroll depth + time on page, sent when the tab is hidden.
+  let maxDepth = 0;
+  window.addEventListener(
+    "scroll",
+    function () {
+      const h = document.documentElement.scrollHeight - window.innerHeight;
+      if (h > 0) maxDepth = Math.max(maxDepth, Math.round((window.scrollY / h) * 100));
+    },
+    { passive: true }
+  );
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "hidden") {
+      track("engagement", { depth: maxDepth, secs: Math.round((Date.now() - t0) / 1000) });
+      flushTrack();
+    }
+  });
+  window.addEventListener("error", function (e) {
+    track("js_error", { msg: String(e.message).slice(0, 160), src: String(e.filename || "").split("/").pop() });
+  });
+})();
 
 function renderFooter() {
   const corpus = DATA.corpus || {};

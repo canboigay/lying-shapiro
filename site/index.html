@@ -35,6 +35,8 @@
       <a href="#floor-section">Floor Control</a>
       <a href="#dodge-section">Polite Dodge Lab <span class="nav-badge" id="nav-dodge-count">164</span></a>
       <a href="#wilson-section">Wilson Files <span class="nav-badge" id="nav-wilson-count">14</span></a>
+      <a href="#feuds-section">Feuds <span class="nav-badge" id="nav-feuds-count">0</span></a>
+      <a href="#x-section">X Receipts <span class="nav-badge" id="nav-x-count">0</span></a>
     </nav>
   </div>
 
@@ -180,9 +182,9 @@
       <!-- ANDREW WILSON FILES (14 DEBATES) -->
       <section class="wilson-section" id="wilson-section" aria-labelledby="wilson-title">
         <div class="section-head">
-          <div class="section-kicker">HEAD-TO-HEAD SUB-CORPUS · 14 DEBATES</div>
+          <div class="section-kicker" id="wilson-kicker">HEAD-TO-HEAD SUB-CORPUS · 14 DEBATES</div>
           <h2 id="wilson-title">The Andrew Wilson Files</h2>
-          <p class="section-sub">When debating Andrew Wilson across 14 full episodes, Brian leans heavily on procedural floor-control and four recurring talking points. Click any cluster to inspect its full transcript drawer above.</p>
+          <p class="section-sub">When debating Andrew Wilson, Brian leans heavily on procedural floor-control and four recurring talking points. Click any cluster to inspect its full transcript drawer above.</p>
         </div>
 
         <div class="wilson-layout">
@@ -191,10 +193,32 @@
             <div class="wilson-bars" id="wilson-bars"></div>
           </div>
           <div class="wilson-debates-col">
-            <h3 class="wilson-col-title">All 14 Indexed Wilson Debates</h3>
+            <h3 class="wilson-col-title" id="wilson-list-title">All Indexed Wilson Debates</h3>
             <ul class="wilson-debate-list" id="wilson-debate-list"></ul>
           </div>
         </div>
+      </section>
+
+      <!-- HEAD-TO-HEAD FEUDS -->
+      <section class="feuds-section" id="feuds-section" aria-labelledby="feuds-title">
+        <div class="section-head">
+          <div class="section-kicker">CROSS-CHANNEL CLASHES · 2026-10 SWEEP</div>
+          <h2 id="feuds-title">Head-to-Head Feuds &amp; Meltdowns</h2>
+          <p class="section-sub">Every opponent Brian has squared off with on his own show or other channels, with a caption transcript behind each video.</p>
+        </div>
+        <div class="feuds-grid" id="feuds-grid"></div>
+      </section>
+
+      <!-- X RECEIPTS -->
+      <section class="x-section" id="x-section" aria-labelledby="x-title">
+        <div class="section-head">
+          <div class="section-kicker">@TheBrianShapiro · @PTLRadioShow</div>
+          <h2 id="x-title">X Receipts</h2>
+          <p class="section-sub">Posts quoted word for word from public search-index captures of x.com status pages. Each card links to the original post.</p>
+        </div>
+        <div class="x-filters" id="x-filters" role="group" aria-label="Filter X posts"></div>
+        <div class="x-grid" id="x-grid"></div>
+        <div class="x-about" id="x-about"></div>
       </section>
     </div>
 
