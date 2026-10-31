@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#08080a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Lying Capiro" />
   <title>Lying Capiro · Brian Shapiro Catchphrase Board &amp; Debate Corpus</title>
   <meta name="description" content="Transcript-grounded ranking of recycled Brian Shapiro (Pushing The Limits) debate catchphrases, audio mashup soundboard, 164 polite-dodge windows, and video clips across 364 debates." />
   <link rel="canonical" href="https://lyingshapiro.com/" />
@@ -340,6 +344,102 @@
       <div class="clips-player-host" id="clips-drawer-host"></div>
       <p class="clips-now" id="clips-drawer-now" aria-live="polite"></p>
       <ul class="clips-list" id="clips-drawer-list"></ul>
+    </div>
+  </div>
+
+  <!-- IMMERSIVE LIVE AUDIO DOCK (MINI-PLAYER) -->
+  <div class="audio-dock-bar" id="audio-dock-bar" hidden aria-live="polite">
+    <div class="audio-dock-inner">
+      <div class="audio-dock-eq" aria-hidden="true">
+        <span class="eq-bar eq-1"></span>
+        <span class="eq-bar eq-2"></span>
+        <span class="eq-bar eq-3"></span>
+        <span class="eq-bar eq-4"></span>
+      </div>
+      <div class="audio-dock-info">
+        <span class="audio-dock-kicker">ON AIR · AUDIO PLAYING</span>
+        <span class="audio-dock-title" id="audio-dock-title">Mashup playing...</span>
+      </div>
+      <div class="audio-dock-controls">
+        <button type="button" class="audio-dock-stop" id="audio-dock-stop-btn" aria-label="Stop audio">■ Stop</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- IMMERSIVE MOBILE BOTTOM APP DOCK -->
+  <nav class="mobile-bottom-dock" id="mobile-bottom-dock" aria-label="Mobile Navigation">
+    <button type="button" class="dock-item active" data-tab="catchphrases">
+      <span class="dock-icon">🎙️</span>
+      <span class="dock-label">Phrases</span>
+    </button>
+    <button type="button" class="dock-item" data-tab="soundboard">
+      <span class="dock-icon">🔊</span>
+      <span class="dock-label">Audio</span>
+    </button>
+    <button type="button" class="dock-item" data-tab="dodge">
+      <span class="dock-icon">🎯</span>
+      <span class="dock-label">Dodge</span>
+    </button>
+    <button type="button" class="dock-item" data-tab="wilson">
+      <span class="dock-icon">🥊</span>
+      <span class="dock-label">Wilson</span>
+    </button>
+    <button type="button" class="dock-item" data-tab="clips">
+      <span class="dock-icon">🎬</span>
+      <span class="dock-label">Clips</span>
+    </button>
+    <button type="button" class="dock-item" id="mobile-more-btn" aria-haspopup="dialog" aria-expanded="false">
+      <span class="dock-icon">☰</span>
+      <span class="dock-label">More</span>
+    </button>
+  </nav>
+
+  <!-- MOBILE SLIDE-UP BOTTOM SHEET FOR "MORE" -->
+  <div class="mobile-sheet-backdrop" id="mobile-sheet-backdrop" hidden></div>
+  <div class="mobile-sheet" id="mobile-sheet" hidden role="dialog" aria-modal="true" aria-label="More Sections">
+    <div class="mobile-sheet-handle-bar">
+      <div class="mobile-sheet-handle"></div>
+    </div>
+    <div class="mobile-sheet-head">
+      <h3>More Sections &amp; Tools</h3>
+      <button type="button" class="mobile-sheet-close" id="mobile-sheet-close" aria-label="Close menu">✕</button>
+    </div>
+    <div class="mobile-sheet-grid">
+      <button type="button" class="sheet-tile" data-tab="floor">
+        <span class="sheet-icon">🛑</span>
+        <div>
+          <span class="sheet-title">Floor Control</span>
+          <span class="sheet-desc">Filibusters &amp; mic-grabs (708+ hits across 205 debates)</span>
+        </div>
+      </button>
+      <button type="button" class="sheet-tile" data-tab="feuds">
+        <span class="sheet-icon">🔥</span>
+        <div>
+          <span class="sheet-title">Feuds &amp; Meltdowns</span>
+          <span class="sheet-desc">Head-to-head clash cards (Gavin, Warren, DragonFist, etc.)</span>
+        </div>
+      </button>
+      <button type="button" class="sheet-tile" data-tab="x">
+        <span class="sheet-icon">📱</span>
+        <div>
+          <span class="sheet-title">X Receipts</span>
+          <span class="sheet-desc">25 verified public posts &amp; commentary</span>
+        </div>
+      </button>
+      <button type="button" class="sheet-tile" id="sheet-tds-btn">
+        <span class="sheet-icon">🌡️</span>
+        <div>
+          <span class="sheet-title">TDS Topic Breakdown</span>
+          <span class="sheet-desc">Interactive gauge &amp; Trump focus analysis</span>
+        </div>
+      </button>
+      <a href="/admin" class="sheet-tile" target="_blank" rel="noopener noreferrer">
+        <span class="sheet-icon">📊</span>
+        <div>
+          <span class="sheet-title">Analytics Dashboard</span>
+          <span class="sheet-desc">Live visitors, referrers, and search queries</span>
+        </div>
+      </a>
     </div>
   </div>
 

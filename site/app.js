@@ -164,6 +164,20 @@ function syncPhraseAudioButtons() {
   if (stopBtn) {
     stopBtn.hidden = !playingAudioKey && !isReelPlaying;
   }
+
+  // Update floating live audio dock
+  var dock = document.getElementById("audio-dock-bar");
+  var dockTitle = document.getElementById("audio-dock-title");
+  if (dock) {
+    if (playingAudioKey) {
+      var item = getPhraseAudio(playingAudioKey) || getSoundboardExtra(playingAudioKey);
+      var title = (item && item.title) || playingAudioKey;
+      if (dockTitle) dockTitle.textContent = title;
+      dock.hidden = false;
+    } else {
+      dock.hidden = true;
+    }
+  }
 }
 
 function ensurePhraseAudioEl() {
@@ -422,6 +436,7 @@ async function main() {
   bindShowMore();
   initClipsRail();
   initTabMenu();
+  initSwipeGestures();
 }
 
 function sortedClusters(mode) {
@@ -2274,7 +2289,68 @@ function initTabMenu() {
     });
   });
 
-  // Keyboard navigation for tabs
+  // Mobile bottom dock buttons
+  document.querySelectorAll(".dock-item[data-tab]").forEach(function (btn) {
+    btn.addEventListener("click", function (e) {
+      e.preventDefault();
+      closeMobileSheet();
+      const tab = btn.getAttribute("data-tab");
+      if (tab) switchTab(tab, true);
+    });
+  });
+
+  // Mobile bottom sheet ("More" drawer)
+  const moreBtn = document.getElementById("mobile-more-btn");
+  const sheet = document.getElementById("mobile-sheet");
+  const backdrop = document.getElementById("mobile-sheet-backdrop");
+  const closeSheetBtn = document.getElementById("mobile-sheet-close");
+
+  function openMobileSheet() {
+    if (sheet) sheet.hidden = false;
+    if (backdrop) backdrop.hidden = false;
+    if (moreBtn) moreBtn.setAttribute("aria-expanded", "true");
+  }
+
+  function closeMobileSheet() {
+    if (sheet) sheet.hidden = true;
+    if (backdrop) backdrop.hidden = true;
+    if (moreBtn) moreBtn.setAttribute("aria-expanded", "false");
+  }
+
+  if (moreBtn) moreBtn.addEventListener("click", openMobileSheet);
+  if (closeSheetBtn) closeSheetBtn.addEventListener("click", closeMobileSheet);
+  if (backdrop) backdrop.addEventListener("click", closeMobileSheet);
+
+  document.querySelectorAll(".sheet-tile[data-tab]").forEach(function (btn) {
+    btn.addEventListener("click", function (e) {
+      e.preventDefault();
+      const tab = btn.getAttribute("data-tab");
+      closeMobileSheet();
+      if (tab) switchTab(tab, true);
+    });
+  });
+
+  const sheetTdsBtn = document.getElementById("sheet-tds-btn");
+  if (sheetTdsBtn) {
+    sheetTdsBtn.addEventListener("click", function () {
+      closeMobileSheet();
+      const breakdown = document.getElementById("tds-breakdown");
+      if (breakdown) {
+        breakdown.hidden = false;
+        breakdown.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+  }
+
+  // Audio dock stop button
+  const dockStop = document.getElementById("audio-dock-stop-btn");
+  if (dockStop) {
+    dockStop.addEventListener("click", function () {
+      stopPhraseAudio();
+    });
+  }
+
+  // Keyboard navigation for top tabs
   const tabContainer = document.getElementById("studio-tab-menu");
   if (tabContainer) {
     tabContainer.addEventListener("keydown", function (e) {
@@ -2356,13 +2432,19 @@ function switchTab(targetId, shouldScroll) {
     }
   });
 
-  // Toggle active styling on tab buttons
+  // Toggle active styling on desktop top tab buttons
   document.querySelectorAll(".tab-menu-item, .studio-nav-btn").forEach(function (btn) {
     const isTarget = btn.getAttribute("data-tab") === targetId;
     btn.classList.toggle("active", isTarget);
     if (btn.hasAttribute("aria-selected")) {
       btn.setAttribute("aria-selected", isTarget ? "true" : "false");
     }
+  });
+
+  // Toggle active styling on mobile bottom dock items
+  document.querySelectorAll(".dock-item[data-tab]").forEach(function (btn) {
+    const isTarget = btn.getAttribute("data-tab") === targetId;
+    btn.classList.toggle("active", isTarget);
   });
 
   // Sync layout mode (e.g. clips tab gets full width)
@@ -2385,13 +2467,15 @@ function switchTab(targetId, shouldScroll) {
     if (current) selectClip(current, { autoplay: false });
   }
 
-  // Smooth scroll to top of tab container if user clicked
+  // Smooth scroll to top of content on tab switch
   if (shouldScroll) {
     const wrap = document.getElementById("studio-tab-menu-wrap");
-    if (wrap) {
-      const rect = wrap.getBoundingClientRect();
-      if (rect.top < 0 || rect.top > 200) {
-        wrap.scrollIntoView({ behavior: "smooth", block: "start" });
+    const header = document.querySelector(".site-header");
+    const targetScroll = (window.innerWidth <= 768 && header) ? header : wrap;
+    if (targetScroll) {
+      const rect = targetScroll.getBoundingClientRect();
+      if (rect.top < 0 || rect.top > 250) {
+        targetScroll.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     }
   }
@@ -2399,6 +2483,71 @@ function switchTab(targetId, shouldScroll) {
   if (typeof track === "function") {
     track("tab_switch", { tab: targetId });
   }
+}
+
+/* ===== IMMERSIVE TOUCH SWIPE GESTURES ===== */
+function initSwipeGestures() {
+  let startX = 0;
+  let startY = 0;
+  let endX = 0;
+  let endY = 0;
+  const tabsList = [
+    "catchphrases",
+    "soundboard",
+    "floor",
+    "dodge",
+    "wilson",
+    "feuds",
+    "x",
+    "clips",
+  ];
+
+  document.addEventListener(
+    "touchstart",
+    function (e) {
+      if (e.touches.length !== 1) return;
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+    },
+    { passive: true }
+  );
+
+  document.addEventListener(
+    "touchend",
+    function (e) {
+      if (e.changedTouches.length !== 1) return;
+      endX = e.changedTouches[0].clientX;
+      endY = e.changedTouches[0].clientY;
+
+      const dx = endX - startX;
+      const dy = endY - startY;
+
+      // Predominantly horizontal swipe with at least 65px distance
+      if (Math.abs(dx) > 65 && Math.abs(dy) < 45) {
+        const target = e.target;
+        if (
+          target &&
+          target.closest &&
+          target.closest(
+            ".filters, .ticker, .studio-tab-menu, .x-filters, .clips-list, .wilson-bars, .mobile-sheet, .mobile-bottom-dock"
+          )
+        ) {
+          return;
+        }
+        const curIdx = tabsList.indexOf(activeTab);
+        if (curIdx === -1) return;
+
+        if (dx < 0 && curIdx < tabsList.length - 1) {
+          // Swiped left -> next tab
+          switchTab(tabsList[curIdx + 1], true);
+        } else if (dx > 0 && curIdx > 0) {
+          // Swiped right -> prev tab
+          switchTab(tabsList[curIdx - 1], true);
+        }
+      }
+    },
+    { passive: true }
+  );
 }
 
 main();
