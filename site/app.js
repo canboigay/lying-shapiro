@@ -564,36 +564,44 @@ function renderHeroStats() {
 
   // Update tab and top nav badges
   const bPhrases = document.getElementById("tab-badge-catchphrases");
-  const bFloor = document.getElementById("tab-badge-floor");
+  const bSoundboard = document.getElementById("tab-badge-soundboard");
   const bDodge = document.getElementById("tab-badge-dodge");
-  const bWilson = document.getElementById("tab-badge-wilson");
-  const bFeuds = document.getElementById("tab-badge-feuds");
-  const bX = document.getElementById("tab-badge-x");
+  const bDebates = document.getElementById("tab-badge-debates");
   const bClips = document.getElementById("tab-badge-clips");
+  const bX = document.getElementById("tab-badge-x");
+
+  const subPhrases = document.getElementById("sub-badge-phrases");
+  const subFloor = document.getElementById("sub-badge-floor");
+  const subWilson = document.getElementById("sub-badge-wilson");
+  const subFeuds = document.getElementById("sub-badge-feuds");
 
   const phrasesCount = boardClusters().length;
   const floorCount = floorControlClusters().length;
   const dodgeCount = (DATA.polite_dodge_windows || []).length || 178;
   const wilsonCount = (DATA.wilson_debates || []).length || 20;
+  const feudsCount = 12;
+  const clipsCount = CLIPS.length || 9;
+  const xCount = 25;
 
-  if (bPhrases) bPhrases.textContent = String(phrasesCount);
-  if (bFloor) bFloor.textContent = String(floorCount);
+  if (bPhrases) bPhrases.textContent = String(phrasesCount + floorCount);
+  if (subPhrases) subPhrases.textContent = String(phrasesCount);
+  if (subFloor) subFloor.textContent = String(floorCount);
+  if (bSoundboard) bSoundboard.textContent = "14";
   if (bDodge) bDodge.textContent = String(dodgeCount);
-  if (bWilson) bWilson.textContent = String(wilsonCount);
-  if (bFeuds) bFeuds.textContent = "12";
-  if (bX) bX.textContent = "25";
-  if (bClips) bClips.textContent = String(CLIPS.length || 9);
+  if (bDebates) bDebates.textContent = String(wilsonCount + feudsCount);
+  if (subWilson) subWilson.textContent = String(wilsonCount);
+  if (subFeuds) subFeuds.textContent = String(feudsCount);
+  if (bClips) bClips.textContent = String(clipsCount);
+  if (bX) bX.textContent = String(xCount);
 
   const navD = document.getElementById("nav-dodge-count");
-  const navW = document.getElementById("nav-wilson-count");
-  const navF = document.getElementById("nav-feuds-count");
+  const navDebates = document.getElementById("nav-debates-count");
   const navX = document.getElementById("nav-x-count");
   const navC = document.getElementById("nav-clips-count");
   if (navD) navD.textContent = String(dodgeCount);
-  if (navW) navW.textContent = String(wilsonCount);
-  if (navF) navF.textContent = "12";
-  if (navX) navX.textContent = "25";
-  if (navC) navC.textContent = String(CLIPS.length || 9);
+  if (navDebates) navDebates.textContent = String(wilsonCount + feudsCount);
+  if (navX) navX.textContent = String(xCount);
+  if (navC) navC.textContent = String(clipsCount);
 }
 
 function renderSoundboard(clusters) {
@@ -2278,6 +2286,36 @@ function stopAllClipMedia(root) {
 
 /* ===== TAB NAVIGATION & PAGES ROUTER ===== */
 let activeTab = "catchphrases";
+let activeCatchphraseSubView = "phrases"; // "phrases" | "floor"
+let activeDebatesSubView = "wilson";       // "wilson" | "feuds"
+
+function setCatchphraseSubView(subView) {
+  activeCatchphraseSubView = subView === "floor" ? "floor" : "phrases";
+  const btnPhrases = document.getElementById("sub-btn-phrases");
+  const btnFloor = document.getElementById("sub-btn-floor");
+  const boardPanel = document.getElementById("board-panel");
+  const floorSection = document.getElementById("floor-section");
+
+  if (btnPhrases) btnPhrases.classList.toggle("active", activeCatchphraseSubView === "phrases");
+  if (btnFloor) btnFloor.classList.toggle("active", activeCatchphraseSubView === "floor");
+
+  if (boardPanel) boardPanel.hidden = activeCatchphraseSubView !== "phrases";
+  if (floorSection) floorSection.hidden = activeCatchphraseSubView !== "floor";
+}
+
+function setDebatesSubView(subView) {
+  activeDebatesSubView = subView === "feuds" ? "feuds" : "wilson";
+  const btnWilson = document.getElementById("sub-btn-wilson");
+  const btnFeuds = document.getElementById("sub-btn-feuds");
+  const wilsonSection = document.getElementById("wilson-section");
+  const feudsSection = document.getElementById("feuds-section");
+
+  if (btnWilson) btnWilson.classList.toggle("active", activeDebatesSubView === "wilson");
+  if (btnFeuds) btnFeuds.classList.toggle("active", activeDebatesSubView === "feuds");
+
+  if (wilsonSection) wilsonSection.hidden = activeDebatesSubView !== "wilson";
+  if (feudsSection) feudsSection.hidden = activeDebatesSubView !== "feuds";
+}
 
 function initTabMenu() {
   const tabBtns = document.querySelectorAll(".tab-menu-item, .studio-nav-btn");
@@ -2288,6 +2326,34 @@ function initTabMenu() {
       if (tab) switchTab(tab, true);
     });
   });
+
+  // Catchphrase sub-view buttons
+  const btnSubPhrases = document.getElementById("sub-btn-phrases");
+  const btnSubFloor = document.getElementById("sub-btn-floor");
+  if (btnSubPhrases) {
+    btnSubPhrases.addEventListener("click", function () {
+      setCatchphraseSubView("phrases");
+    });
+  }
+  if (btnSubFloor) {
+    btnSubFloor.addEventListener("click", function () {
+      setCatchphraseSubView("floor");
+    });
+  }
+
+  // Head-to-Head sub-view buttons
+  const btnSubWilson = document.getElementById("sub-btn-wilson");
+  const btnSubFeuds = document.getElementById("sub-btn-feuds");
+  if (btnSubWilson) {
+    btnSubWilson.addEventListener("click", function () {
+      setDebatesSubView("wilson");
+    });
+  }
+  if (btnSubFeuds) {
+    btnSubFeuds.addEventListener("click", function () {
+      setDebatesSubView("feuds");
+    });
+  }
 
   // Mobile bottom dock buttons
   document.querySelectorAll(".dock-item[data-tab]").forEach(function (btn) {
@@ -2386,38 +2452,64 @@ function switchTab(targetId, shouldScroll) {
   const validTabs = [
     "catchphrases",
     "soundboard",
-    "floor",
     "dodge",
-    "wilson",
-    "feuds",
-    "x",
+    "debates",
     "clips",
+    "x",
   ];
+
   const aliases = {
     phrases: "catchphrases",
     board: "catchphrases",
     "board-panel": "catchphrases",
     "board-title": "catchphrases",
-    "soundboard-section": "soundboard",
-    soundboard: "soundboard",
-    "floor-section": "floor",
     floor: "floor",
-    "dodge-section": "dodge",
+    "floor-section": "floor",
+    soundboard: "soundboard",
+    "soundboard-section": "soundboard",
     dodge: "dodge",
-    "wilson-section": "wilson",
+    "dodge-section": "dodge",
     wilson: "wilson",
-    "feuds-section": "feuds",
+    "wilson-section": "wilson",
     feuds: "feuds",
-    "x-section": "x",
+    "feuds-section": "feuds",
+    debates: "debates",
+    clashes: "debates",
+    "head-to-head": "debates",
     x: "x",
+    "x-section": "x",
     receipts: "x",
+    social: "x",
+    clips: "clips",
     "clips-tab-section": "clips",
     "clips-rail": "clips",
-    clips: "clips",
     watch: "clips",
   };
 
-  targetId = aliases[targetId] || targetId;
+  const resolved = aliases[targetId] || targetId;
+
+  // Handle sub-view routing
+  if (resolved === "floor") {
+    targetId = "catchphrases";
+    setCatchphraseSubView("floor");
+  } else if (resolved === "wilson") {
+    targetId = "debates";
+    setDebatesSubView("wilson");
+  } else if (resolved === "feuds") {
+    targetId = "debates";
+    setDebatesSubView("feuds");
+  } else if (resolved === "catchphrases") {
+    targetId = "catchphrases";
+    // default to phrases unless floor was requested
+    if (activeCatchphraseSubView !== "floor") {
+      setCatchphraseSubView("phrases");
+    }
+  } else if (resolved === "debates") {
+    targetId = "debates";
+  } else {
+    targetId = resolved;
+  }
+
   if (validTabs.indexOf(targetId) === -1) targetId = "catchphrases";
 
   activeTab = targetId;
@@ -2455,7 +2547,7 @@ function switchTab(targetId, shouldScroll) {
 
   // Update URL hash cleanly without page jump
   if (history.replaceState) {
-    history.replaceState(null, "", "#" + targetId);
+    history.replaceState(null, "", "#" + (resolved || targetId));
   }
 
   // If switched to clips tab, ensure clip is loaded in the tab host
@@ -2481,7 +2573,7 @@ function switchTab(targetId, shouldScroll) {
   }
 
   if (typeof track === "function") {
-    track("tab_switch", { tab: targetId });
+    track("tab_switch", { tab: targetId, sub: (targetId === "debates" ? activeDebatesSubView : (targetId === "catchphrases" ? activeCatchphraseSubView : null)) });
   }
 }
 
@@ -2494,12 +2586,10 @@ function initSwipeGestures() {
   const tabsList = [
     "catchphrases",
     "soundboard",
-    "floor",
     "dodge",
-    "wilson",
-    "feuds",
-    "x",
+    "debates",
     "clips",
+    "x",
   ];
 
   document.addEventListener(
@@ -2529,7 +2619,7 @@ function initSwipeGestures() {
           target &&
           target.closest &&
           target.closest(
-            ".filters, .ticker, .studio-tab-menu, .x-filters, .clips-list, .wilson-bars, .mobile-sheet, .mobile-bottom-dock"
+            ".filters, .ticker, .studio-tab-menu, .x-filters, .clips-list, .wilson-bars, .mobile-sheet, .mobile-bottom-dock, .sub-view-nav"
           )
         ) {
           return;
