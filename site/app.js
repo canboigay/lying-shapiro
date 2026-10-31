@@ -2574,7 +2574,7 @@ function switchTab(targetId, shouldScroll) {
   turnHead(targetId);
 
   // Toggle active styling on desktop top tab buttons
-  document.querySelectorAll(".tab-menu-item, .studio-nav-btn").forEach(function (btn) {
+  document.querySelectorAll(".tab-menu-item, .studio-nav-btn, .gnav-item[data-tab]").forEach(function (btn) {
     const isTarget = btn.getAttribute("data-tab") === targetId;
     btn.classList.toggle("active", isTarget);
     if (btn.hasAttribute("aria-selected")) {
@@ -2610,6 +2610,8 @@ function switchTab(targetId, shouldScroll) {
 
   // Smooth scroll to top of content on tab switch
   if (shouldScroll) {
+    // The nav is fixed, so there is no header to scroll to any more: if the
+    // reader is deep in a section, bring them back to the top of the new one.
     const wrap = document.getElementById("studio-tab-menu-wrap");
     const header = document.querySelector(".site-header");
     const targetScroll = (window.innerWidth <= 768 && header) ? header : wrap;
@@ -2618,6 +2620,8 @@ function switchTab(targetId, shouldScroll) {
       if (rect.top < 0 || rect.top > 250) {
         targetScroll.scrollIntoView({ behavior: "smooth", block: "start" });
       }
+    } else if (window.scrollY > 80) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   }
 

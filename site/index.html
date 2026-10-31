@@ -127,7 +127,6 @@
 
     /* On a phone the dock is the only way into the archive, so it stops being
        the last thing on the page and becomes a fixed tab bar. */
-    .h-hero { padding-bottom: calc(76px + env(safe-area-inset-bottom,0px)); }
     .h-dock {
       position: fixed;
       left: 0; right: 0; bottom: 0;
@@ -150,16 +149,23 @@
   <script src="./loader.js"></script>
 </head>
 <body>
+<nav class="gnav" id="gnav" aria-label="Sections">
+  <a class="gnav-brand" href="/">LYING <b>SHAPIRO</b></a>
+  <div class="gnav-links">
+    <a class="gnav-item active" href="/"><svg class="gnav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span>Ask</span></a>
+    <a class="gnav-item" data-tab="catchphrases" href="/archive#catchphrases"><svg class="gnav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg><span>Phrases</span></a>
+    <a class="gnav-item" data-tab="soundboard" href="/archive#soundboard"><svg class="gnav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg><span>Audio</span></a>
+    <a class="gnav-item" data-tab="dodge" href="/archive#dodge"><svg class="gnav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="1" y1="12" x2="3" y2="12"/></svg><span>Dodge</span></a>
+    <a class="gnav-item" data-tab="debates" href="/archive#debates"><svg class="gnav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="16" y1="16" x2="20" y2="20"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="4" y1="20" x2="8" y2="16"/></svg><span>Debates</span></a>
+    <a class="gnav-item" data-tab="clips" href="/archive#clips"><svg class="gnav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="3"/><polygon points="10 9 16 12 10 15 10 9" fill="currentColor" stroke="none"/></svg><span>Clips</span></a>
+    <a class="gnav-item" data-tab="x" href="/archive#x"><svg class="gnav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" fill="currentColor" stroke="none"/></svg><span>X</span></a>
+  </div>
+</nav>
 <section class="h-hero" id="hero">
   <div class="h-bg-frame" id="bg"></div>
   <div class="h-brian-bg" aria-hidden="true"><i></i></div>
   <div class="h-bg-shade"></div>
   <div class="h-wall" id="wall" aria-hidden="true"></div>
-
-  <div class="h-top">
-    <a class="h-logo" href="/">LYING <b>SHAPIRO</b></a>
-    <a class="h-parody" href="/archive">THE FULL ARCHIVE &rsaquo;</a>
-  </div>
 
   <div class="h-stage">
     <div class="h-left">
@@ -201,14 +207,6 @@
     </div>
   </div>
 
-  <nav class="h-dock" aria-label="Explore">
-    <a href="/archive#catchphrases"><strong>Catchphrase Board</strong><span>29 ranked lines</span></a>
-    <a href="/archive#soundboard"><strong>Soundboard</strong><span>14 one-tap cuts</span></a>
-    <a href="/archive#dodge"><strong>Polite Dodge Lab</strong><span>178 pivots</span></a>
-    <a href="/archive#debates"><strong>vs. Andrew Wilson</strong><span>20 head-to-heads</span></a>
-    <a href="/archive#clips"><strong>Video Vault</strong><span>9 clips</span></a>
-    <a href="/archive#x"><strong>Social / X</strong><span>25 receipts</span></a>
-  </nav>
 </section>
 
 <script>
