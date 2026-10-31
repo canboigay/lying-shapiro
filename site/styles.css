@@ -92,6 +92,20 @@ body {
 
 .studio-sep { opacity: 0.35; }
 
+.studio-home-link {
+  color: var(--text, #f4f1ea);
+  text-decoration: none;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  padding: 0.25rem 0.6rem;
+  flex: 0 0 auto;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.studio-home-link:hover { border-color: var(--red-hot); color: var(--red-hot); }
+
 .studio-corpus-stat {
   letter-spacing: 0.04em;
   color: var(--muted);
@@ -190,6 +204,36 @@ body {
   max-width: 1180px;
   margin: 0 auto;
   width: 100%;
+}
+
+/* Slim masthead: the tab menu below is the navigation, so this is one line of
+   attitude instead of a hero panel with its own CTAs competing with it. */
+.archive-masthead {
+  display: flex;
+  align-items: baseline;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+  padding: 0.25rem 0 0.35rem;
+}
+
+.archive-title {
+  font-family: var(--display);
+  font-size: clamp(1.6rem, 3.4vw, 2.3rem);
+  line-height: 1;
+  letter-spacing: 0.04em;
+  margin: 0;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.archive-title span { color: var(--red-hot); }
+
+.archive-line {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--muted);
 }
 
 .hero-box {
@@ -1443,16 +1487,38 @@ body {
 
 .dodge-card-top {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
+  align-items: center;
   gap: 0.5rem;
 }
 
 .dodge-debate-title {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--cream);
-  line-height: 1.3;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+  line-height: 1.35;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  text-transform: uppercase;
+}
+
+/* the dodge line is the whole card */
+.dodge-quote {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 1.02rem;
+  font-style: italic;
+  line-height: 1.42;
+  color: #f2f0ea;
+}
+
+.dodge-quote mark {
+  background: rgba(240, 180, 41, 0.22);
+  color: #ffd479;
+  padding: 0 0.12em;
+  border-radius: 3px;
 }
 
 .dodge-badge {
@@ -1524,6 +1590,50 @@ body {
 
 .dodge-card-foot a:hover {
   text-decoration: underline;
+}
+
+.dodge-watch {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+/* receipt material: present, folded, one tap away */
+.dodge-setup {
+  margin-left: auto;
+  text-align: right;
+}
+
+.dodge-setup > summary {
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  list-style: none;
+  white-space: nowrap;
+}
+
+.dodge-setup > summary::-webkit-details-marker { display: none; }
+.dodge-setup > summary::after { content: " ▾"; }
+.dodge-setup[open] > summary::after { content: " ▴"; }
+.dodge-setup > summary:hover { color: var(--cream); }
+
+.dodge-setup-quote {
+  margin: 0.5rem 0 0.3rem;
+  font-size: 0.78rem;
+  font-style: italic;
+  color: #cfcfd8;
+  text-align: left;
+  line-height: 1.4;
+}
+
+.dodge-window {
+  margin: 0;
+  font-size: 0.62rem;
+  color: var(--muted);
+  text-align: left;
+  letter-spacing: 0.04em;
 }
 
 /* ===== ANDREW WILSON FILES ===== */
@@ -2541,6 +2651,22 @@ body {
   .studio-bar {
     padding: 0.35rem 0.75rem;
     font-size: 0.65rem;
+  }
+
+  /* The status chips are decoration; the back-to-home link has to survive.
+     The quick-soundboard button duplicates the Audio tab in the bottom dock,
+     so it gives up its space to the link. */
+  .studio-bar-left .on-air,
+  .studio-bar-left .studio-sep,
+  .studio-bar-left .studio-corpus-stat,
+  .studio-quick-audio {
+    display: none;
+  }
+  .studio-bar-left {
+    flex: 1 1 auto;
+  }
+  .studio-home-link {
+    white-space: nowrap;
   }
   .studio-nav {
     display: none; /* replaced by thumb-accessible mobile dock */

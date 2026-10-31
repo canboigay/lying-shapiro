@@ -5,6 +5,12 @@ Editorial / talk-radio catchphrase board, soundboard, and transcript-grounded de
 - **Production Domain:** [https://lyingshapiro.com](https://lyingshapiro.com)
 - **Cloudflare Pages:** [https://lying-capiro.pages.dev](https://lying-capiro.pages.dev)
 
+## Routes
+
+- `/` — Ask Brian Anything. The homepage. Intro loader, ask box, clip podium.
+- `/archive` — the catchphrase board, soundboard, Dodge Lab, debates, clips and X receipts, in `site/archive.html`.
+- `/admin` — D1 analytics dashboard, bearer token in `localStorage`.
+
 ## Features
 
 - **Ranked Catchphrase Leaderboard:** 20 topical catchphrase clusters + Floor Control (`708` hits across `205` debates), grounded in `364` debates (`3.07M` words, `5,205` total phrase hits).

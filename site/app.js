@@ -1055,7 +1055,7 @@ function renderQuoteCards(container, rows, rankSource, opts) {
           ? '<span class="quote-source-badge">+' + kewlHits + " Kewl</span>"
           : "") +
         '<span class="quote-expand-hint">' +
-        (isOpen ? "Hide Proof ▴" : "View Proof ▾") +
+        (isOpen ? "Hide receipts ▴" : "Receipts ▾") +
         "</span>" +
         "</div>" +
         "</div>" +
@@ -1126,7 +1126,7 @@ function renderFloorSection() {
 
   const floors = floorControlClusters();
   if (!floors.length) {
-    floorBoard.innerHTML = '<p class="board-empty">No floor control tics indexed.</p>';
+    floorBoard.innerHTML = '<p class="board-empty">No mic-grabs indexed here.</p>';
     return;
   }
 
@@ -1142,7 +1142,7 @@ function renderBoard(clusters) {
 
   if (!rows.length) {
     board.innerHTML =
-      '<p class="board-empty">No catchphrases match this filter or search query.</p>';
+      '<p class="board-empty">No line matches that. He may have actually answered once.</p>';
     if (moreWrap) moreWrap.hidden = true;
     return;
   }
@@ -1468,9 +1468,20 @@ function renderDodgeLab() {
     return true;
   });
 
+  // The corpus stores several windows per debate and they often carry the same
+  // quote, which rendered as the identical card twice side by side. Key on the
+  // debate plus the pivot line so each visible dodge is a distinct one.
+  const seenDodge = new Set();
+  filtered = filtered.filter(function (w) {
+    const key = (w.title || "") + "|" + (w.pivot_span || w.pivot_marker || "");
+    if (seenDodge.has(key)) return false;
+    seenDodge.add(key);
+    return true;
+  });
+
   if (!filtered.length) {
     grid.innerHTML =
-      '<p class="board-empty">No polite-dodge windows match this filter.</p>';
+      '<p class="board-empty">No dodges match that. Try a topic he actually ran from.</p>';
     if (moreWrap) moreWrap.hidden = true;
     return;
   }
@@ -1479,54 +1490,41 @@ function renderDodgeLab() {
   grid.innerHTML = visible
     .map(function (w) {
       const isPivot = w.evidence_type === "pivot_marker";
-      const badgeText = isPivot
-        ? "Pivot: “" + (w.pivot_marker || "pivot") + "”"
-        : "90s Topic Abandon";
+      // The dodge line is the joke, so it leads. Everything else is receipt
+      // material and folds behind a tap: one loud quote per card, not six
+      // labelled fields.
+      const badgeText = isPivot ? "Pivot" : "Abandoned";
       const openerQuote = cleanRollingStutter(w.opener_span || "");
       const pivotQuote = w.pivot_span
         ? highlightSpanHtml(w.pivot_span, w.pivot_marker)
-        : "<em>Caller’s topic never returned to within 90-second window.</em>";
+        : "<em>Caller’s topic never came back. Ninety seconds, gone.</em>";
 
       return (
         '<article class="dodge-card">' +
         '<div class="dodge-card-top">' +
+        '<span class="dodge-badge' + (isPivot ? "" : " is-abandon") + '">' +
+        escapeHtml(badgeText) +
+        "</span>" +
         '<div class="dodge-debate-title">' +
         escapeHtml(w.title || "Debate") +
-        "</div>" +
-        '<span class="dodge-badge' +
-        (isPivot ? "" : " is-abandon") +
-        '">' +
-        escapeHtml(badgeText) +
-        "</span></div>" +
-        '<div class="dodge-steps">' +
-        '<div class="dodge-step">' +
-        '<span class="dodge-step-label">1. Polite Opener (@' +
-        escapeHtml(w.opener_timestamp || "0:00") +
-        ")</span>" +
-        '<div class="dodge-step-quote">“' +
-        escapeHtml(openerQuote) +
-        "”</div></div>" +
-        '<div class="dodge-step dodge-step-pivot">' +
-        '<span class="dodge-step-label">2. ' +
-        (isPivot ? "Immediate Pivot" : "Topic Abandon Check") +
-        " (@" +
-        escapeHtml(w.pivot_timestamp || "") +
-        ")</span>" +
-        '<div class="dodge-step-quote">' +
+        "</div></div>" +
+        '<blockquote class="dodge-quote">' +
         (w.pivot_span ? "“" + pivotQuote + "”" : pivotQuote) +
-        "</div></div></div>" +
+        "</blockquote>" +
         '<div class="dodge-card-foot">' +
-        "<span>Window: " +
-        escapeHtml(w.opener_timestamp || "0:00") +
-        " → " +
-        escapeHtml(w.pivot_timestamp || "") +
-        "</span>" +
         (w.url_start
-          ? '<a href="' +
+          ? '<a class="dodge-watch" href="' +
             escapeAttr(w.url_start) +
-            '" target="_blank" rel="noopener noreferrer">Watch @ ' +
-            escapeHtml(w.opener_timestamp || "clip") +
-            " ↗</a>"
+            '" target="_blank" rel="noopener noreferrer">▶ ' +
+            escapeHtml(w.pivot_timestamp || w.opener_timestamp || "clip") +
+            "</a>"
+          : "") +
+        (openerQuote
+          ? '<details class="dodge-setup"><summary>what he said first</summary>' +
+            '<p class="dodge-setup-quote">“' + escapeHtml(openerQuote) + "”</p>" +
+            '<p class="dodge-window">Opened @' +
+            escapeHtml(w.opener_timestamp || "0:00") +
+            " · pivoted @" + escapeHtml(w.pivot_timestamp || "?") + "</p></details>"
           : "") +
         "</div></article>"
       );

@@ -1,513 +1,299 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#08080a" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Lying Capiro" />
-  <title>Lying Capiro · Brian Shapiro Catchphrase Board &amp; Debate Corpus</title>
-  <meta name="description" content="Transcript-grounded ranking of recycled Brian Shapiro (Pushing The Limits) debate catchphrases, audio mashup soundboard, 164 polite-dodge windows, and video clips across 364 debates." />
-  <link rel="canonical" href="https://lyingshapiro.com/" />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://lyingshapiro.com/" />
-  <meta property="og:title" content="Lying Capiro · Brian Shapiro Catchphrase Board" />
-  <meta property="og:description" content="5,205 catchphrase hits across 364 Pushing The Limits debates — ranked with audio mashups, 164 polite-dodge windows, Andrew Wilson debate stats, and video clips." />
-  <meta property="og:image" content="https://lyingshapiro.com/brand/yt.jpg" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Lying Capiro · Brian Shapiro Catchphrase Board" />
-  <meta name="twitter:description" content="5,205 catchphrase hits across 364 Pushing The Limits debates — ranked with audio mashups, 164 polite-dodge windows, and video clips." />
-  <meta name="twitter:image" content="https://lyingshapiro.com/brand/yt.jpg" />
-  <link rel="stylesheet" href="./styles.css" />
-  <link rel="icon" type="image/png" href="./favicon.png" />
-  <link rel="apple-touch-icon" href="./brand/avatar-192.png" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&display=swap" rel="stylesheet" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lying Shapiro · Ask Brian Anything</title>
+<meta name="description" content="Ask Brian Shapiro anything. 415 debates, 4.36M words, zero straight answers. He answers, then answers a different question.">
+<link rel="canonical" href="https://lyingshapiro.com/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://lyingshapiro.com/">
+<meta property="og:title" content="Lying Shapiro · Ask Brian Anything">
+<meta property="og:description" content="415 debates. 4.36M words. Zero straight answers. Ask him something. He is happy to answer.">
+<meta property="og:image" content="https://lyingshapiro.com/brand/yt.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Lying Shapiro · Ask Brian Anything">
+<meta name="twitter:description" content="415 debates. 4.36M words. Zero straight answers.">
+<meta name="twitter:image" content="https://lyingshapiro.com/brand/yt.jpg">
+<meta name="theme-color" content="#07070b">
+<link rel="icon" type="image/png" href="./favicon.png">
+<link rel="apple-touch-icon" href="./brand/avatar-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./styles.css">
+<style>
+  :root { --h-red:#e52b38; --h-gold:#f0b429; --h-ink:#07070b; --h-card:#12121a; --h-line:#262634; --h-text:#f4f1ea; --h-mute:#9a9aab; }
+  * { box-sizing: border-box; }
+  html, body { margin:0; background:var(--h-ink); color:var(--h-text); }
+  body { font-family: Inter, system-ui, -apple-system, sans-serif; overflow-x:hidden; }
+
+  .h-hero { position:relative; min-height:100svh; display:flex; flex-direction:column; overflow:hidden; isolation:isolate; }
+
+  /* BACKGROUND: blurred live frame + drifting catchphrase wall */
+  .h-bg-frame { position:absolute; inset:-10%; z-index:-3; background-size:cover; background-position:center; filter:blur(38px) saturate(1.3) brightness(.45); transition:background-image .6s; }
+  .h-bg-shade { position:absolute; inset:0; z-index:-2; background:radial-gradient(ellipse at 50% 35%, transparent 0%, rgba(7,7,11,.75) 70%, var(--h-ink) 100%); }
+  .h-wall { position:absolute; inset:0; z-index:-1; overflow:hidden; pointer-events:none; opacity:.9; }
+  .h-wall span { position:absolute; white-space:nowrap; font-family:var(--font-display, Impact, sans-serif); text-transform:uppercase; color:rgba(255,255,255,.05); font-size:clamp(2.2rem,8vw,5.5rem); letter-spacing:.02em; animation:h-drift linear infinite; }
+  .h-wall span.hot { color:rgba(229,43,56,.14); }
+  @keyframes h-drift { from { transform:translateX(110vw);} to { transform:translateX(-120%);} }
+
+
+  /* Brian: a colossal face on a wall in the distance, fixed so it parallaxes as you scroll */
+  .h-brian-bg { position:fixed; z-index:-2; left:50%; top:46%; width:var(--ls-giant, 125vmax); aspect-ratio:1; translate:-50% -50%; scale:1; opacity:.13; filter:blur(2.5px) saturate(.85); pointer-events:none; -webkit-mask-image:radial-gradient(circle, #000 52%, transparent 71%); mask-image:radial-gradient(circle, #000 52%, transparent 71%); }
+  .h-brian-bg i { position:absolute; inset:0; border-radius:50%; background:url(./brand/face-800.jpg) center/cover; box-shadow:0 0 0 .6vmax rgba(229,43,56,.8); animation:h-breathe 9s ease-in-out infinite; }
+  @keyframes h-breathe { 0%,100% { scale:1; } 50% { scale:1.03; } }
+  /* after the intro: the head pulls back from the loader position into the distance */
+  html.ls-handoff .h-brian-bg { animation:h-recede 3.4s cubic-bezier(.3,.05,.2,1) both; }
+  @keyframes h-recede {
+    from { translate:calc(-50% + var(--ls-dx, 0px)) calc(-50% + var(--ls-dy, 0px)); scale:var(--ls-s0, 1); opacity:.9; filter:blur(0) saturate(1); }
+    35% { opacity:.55; }
+    to { translate:-50% -50%; scale:1; opacity:.13; filter:blur(2.5px) saturate(.85); }
+  }
+  /* content eases in as the intro dissolves */
+  .h-top, .h-stage, .h-dock { transition:opacity 1.2s ease, transform 1.2s ease; }
+  .h-stage { transition-delay:.35s; } .h-dock { transition-delay:.6s; }
+  html.ls-playing .h-top, html.ls-playing .h-stage, html.ls-playing .h-dock { opacity:0; transform:translateY(16px); }
+
+  /* TOP BAR */
+  .h-top { display:flex; align-items:center; justify-content:space-between; padding:.8rem 1rem; padding-top:calc(.8rem + env(safe-area-inset-top,0px)); }
+  .h-logo { font-family:var(--font-display, Impact, sans-serif); letter-spacing:.06em; font-size:1.05rem; color:inherit; text-decoration:none; }
+  .h-logo b { color:var(--h-red); font-weight:inherit; }
+  .h-parody { font:600 .62rem/1 ui-monospace, Menlo, monospace; letter-spacing:.14em; padding:.4rem .6rem; border:1px solid var(--h-line); border-radius:999px; color:var(--h-mute); text-decoration:none; transition:border-color .15s, color .15s; }
+  .h-parody:hover { border-color:var(--h-red); color:var(--h-text); }
+
+  /* STAGE */
+  .h-stage { flex:1; width:100%; max-width:1100px; margin:0 auto; padding:.5rem 1rem 1.25rem; display:grid; grid-template-columns:1fr 340px; gap:2.5rem; align-items:center; }
+  .h-stage > * { min-width:0; }
+  .h-hero { max-width:100vw; }
+  .h-left { display:flex; flex-direction:column; gap:1rem; }
+  .h-eyebrow { font:600 .7rem/1 ui-monospace, Menlo, monospace; letter-spacing:.16em; color:var(--h-gold); text-transform:uppercase; }
+  .h-title { font-family:var(--font-display, Impact, sans-serif); font-size:clamp(2.6rem,7.2vw,5.4rem); line-height:.92; margin:0; text-transform:uppercase; }
+  .h-title em { font-style:normal; color:var(--h-red); }
+
+  /* ASK BOX */
+  .h-ask { display:flex; gap:.5rem; background:rgba(18,18,26,.85); border:1px solid var(--h-line); border-radius:16px; padding:.4rem; backdrop-filter:blur(10px); }
+  .h-ask input { flex:1; min-width:0; background:transparent; border:0; outline:0; color:var(--h-text); font-size:1rem; padding:.8rem .9rem; }
+  .h-ask input::placeholder { color:var(--h-mute); }
+  .h-ask button { background:var(--h-red); color:#fff; border:0; border-radius:12px; padding:0 1.2rem; font:700 .9rem/1 inherit; cursor:pointer; white-space:nowrap; transition:transform .1s; }
+  .h-ask button:active { transform:scale(.96); }
+
+  .h-chips { display:flex; flex-wrap:wrap; gap:.45rem; }
+  .h-chip { background:rgba(255,255,255,.06); border:1px solid var(--h-line); color:var(--h-text); border-radius:999px; padding:.5rem .85rem; font-size:.82rem; cursor:pointer; transition:all .15s; }
+  .h-chip:hover { border-color:var(--h-red); background:rgba(229,43,56,.12); }
+
+  /* ANSWER BUBBLE */
+  .h-answer { min-height:5.2rem; background:var(--h-card); border:1px solid var(--h-line); border-left:4px solid var(--h-red); border-radius:14px; padding:.9rem 1rem; }
+  .h-answer small { display:block; font:600 .62rem/1 ui-monospace, Menlo, monospace; letter-spacing:.14em; color:var(--h-mute); margin-bottom:.45rem; text-transform:uppercase; }
+  .h-answer p { margin:0; font-size:1.05rem; line-height:1.4; }
+  .h-answer p b { color:var(--h-gold); }
+  .h-caret::after { content:'▍'; color:var(--h-red); animation:h-blink 1s steps(1) infinite; }
+  @keyframes h-blink { 50% { opacity:0; } }
+
+  .h-score { display:flex; gap:.6rem; flex-wrap:wrap; }
+  .h-stat { flex:1 1 90px; background:rgba(18,18,26,.7); border:1px solid var(--h-line); border-radius:12px; padding:.6rem .75rem; }
+  .h-stat b { display:block; font-family:var(--font-display, Impact, sans-serif); font-size:1.6rem; line-height:1; }
+  .h-stat span { font:.62rem/1.2 ui-monospace, Menlo, monospace; letter-spacing:.1em; color:var(--h-mute); text-transform:uppercase; }
+  .h-stat.zero b { color:var(--h-red); }
+
+  /* PODIUM (video) */
+  .h-podium { position:relative; width:100%; max-width:340px; justify-self:center; }
+  .h-podium-frame { position:relative; aspect-ratio:9/16; border-radius:26px; overflow:hidden; background:#000; border:2px solid #2a2a3a; box-shadow:0 30px 80px rgba(0,0,0,.7), 0 0 0 6px rgba(229,43,56,.12); }
+  .h-podium video { width:100%; height:100%; object-fit:contain; background:#000; display:block; }
+  .h-podium-tag { position:absolute; top:12px; left:12px; z-index:3; background:rgba(0,0,0,.65); backdrop-filter:blur(8px); border-radius:8px; padding:.35rem .6rem; font:600 .64rem/1 ui-monospace, Menlo, monospace; letter-spacing:.1em; display:flex; align-items:center; gap:.4rem; }
+  .h-dot { width:7px; height:7px; border-radius:50%; background:var(--h-red); animation:h-blink 1.2s infinite; }
+  .h-sound { position:absolute; left:12px; right:12px; bottom:12px; z-index:4; display:flex; align-items:center; gap:.6rem; background:rgba(0,0,0,.7); border:1px solid rgba(255,255,255,.18); border-radius:999px; padding:.4rem .7rem; backdrop-filter:blur(8px); }
+  .h-sound button { background:none; border:0; color:#fff; font-size:.76rem; cursor:pointer; padding:.1rem .2rem; white-space:nowrap; }
+  .h-sound input[type=range] { flex:1; min-width:0; accent-color:var(--h-red); height:4px; cursor:pointer; }
+  .h-vol-pct { font:600 .64rem/1 ui-monospace, Menlo, monospace; color:var(--h-mute); min-width:2.2rem; text-align:right; }
+  .h-cap { position:absolute; left:0; right:0; bottom:0; z-index:2; padding:2.5rem 1rem 3.6rem; background:linear-gradient(transparent, rgba(0,0,0,.85)); font-family:var(--font-display, Impact, sans-serif); text-transform:uppercase; font-size:1.5rem; line-height:1; text-align:center; text-shadow:0 2px 12px #000; pointer-events:none; }
+  .h-next { margin-top:.7rem; width:100%; background:transparent; color:var(--h-mute); border:1px dashed var(--h-line); border-radius:12px; padding:.65rem; font-size:.8rem; cursor:pointer; }
+  .h-next:hover { color:#fff; border-color:var(--h-red); }
+
+  /* EXPLORE DOCK */
+  .h-dock { display:flex; gap:.5rem; padding:.75rem 1rem calc(.9rem + env(safe-area-inset-bottom,0px)); overflow-x:auto; scrollbar-width:none; border-top:1px solid var(--h-line); background:rgba(7,7,11,.8); backdrop-filter:blur(12px); }
+  .h-dock::-webkit-scrollbar { display:none; }
+  .h-dock a { flex:0 0 auto; display:flex; flex-direction:column; gap:.15rem; padding:.55rem .9rem; border:1px solid var(--h-line); border-radius:12px; color:var(--h-text); text-decoration:none; background:var(--h-card); min-width:132px; }
+  .h-dock a strong { font-size:.88rem; }
+  .h-dock a span { font:.62rem/1.2 ui-monospace, Menlo, monospace; color:var(--h-mute); letter-spacing:.06em; }
+  .h-dock a:hover { border-color:var(--h-red); }
+
+  @media (max-width: 860px) {
+    .h-stage { grid-template-columns:1fr; gap:1rem; padding-top:0; }
+    .h-podium { order:0; max-width:min(250px, 62vw); margin-top:.5rem; }
+    .h-title { font-size:clamp(2.3rem,12vw,3.4rem); }
+    .h-score .h-stat:nth-child(n+3) { display:none; }
+    .h-eyebrow { font-size:.62rem; }
+
+    /* On a phone the dock is the only way into the archive, so it stops being
+       the last thing on the page and becomes a fixed tab bar. */
+    .h-hero { padding-bottom: calc(76px + env(safe-area-inset-bottom,0px)); }
+    .h-dock {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      z-index: 40;
+      background: rgba(7,7,11,.95);
+      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(14px);
+      border-top: 1px solid var(--h-line);
+      padding: .55rem .6rem calc(.55rem + env(safe-area-inset-bottom,0px));
+      gap: .4rem;
+      /* the bar scrolls; fade the edge so the hidden sections read as reachable */
+      -webkit-mask-image: linear-gradient(to right, #000 88%, transparent 100%);
+      mask-image: linear-gradient(to right, #000 88%, transparent 100%);
+    }
+    .h-dock a { min-width: 0; padding: .45rem .7rem; border-radius: 999px; }
+    .h-dock a strong { font-size: .78rem; white-space: nowrap; }
+    .h-dock a span { display: none; }
+  }
+</style>
   <script src="./loader.js"></script>
 </head>
 <body>
-  <div class="studio-bar" role="navigation" aria-label="Studio status">
-    <div class="studio-bar-left">
-      <span class="on-air"><span class="on-air-dot" aria-hidden="true"></span> LIVE ARCHIVE</span>
-      <span class="studio-sep" aria-hidden="true">·</span>
-      <span class="studio-corpus-stat">415 DEBATES · 4.36M WORDS · TRANSCRIPT-INDEXED</span>
+<section class="h-hero" id="hero">
+  <div class="h-bg-frame" id="bg"></div>
+  <div class="h-brian-bg" aria-hidden="true"><i></i></div>
+  <div class="h-bg-shade"></div>
+  <div class="h-wall" id="wall" aria-hidden="true"></div>
+
+  <div class="h-top">
+    <a class="h-logo" href="/">LYING <b>SHAPIRO</b></a>
+    <a class="h-parody" href="/archive">THE FULL ARCHIVE &rsaquo;</a>
+  </div>
+
+  <div class="h-stage">
+    <div class="h-left">
+      <div class="h-eyebrow">415 debates. 4.36M words. Zero straight answers.</div>
+      <h1 class="h-title">Ask Brian<br><em>anything.</em></h1>
+
+      <form class="h-ask" id="form" autocomplete="off">
+        <input id="q" type="text" placeholder="Did you lie about..." enterkeyhint="send" aria-label="Ask Brian a question">
+        <button type="submit">Ask</button>
+      </form>
+
+      <div class="h-chips" id="chips"></div>
+
+      <div class="h-answer" aria-live="polite">
+        <small>Brian says</small>
+        <p id="ans" class="h-caret">Go ahead. Ask him something. He is happy to answer.</p>
+      </div>
+
+      <div class="h-score">
+        <div class="h-stat zero"><b id="s-straight">0</b><span>Straight answers</span></div>
+        <div class="h-stat"><b id="s-dodges">0</b><span>Dodges this visit</span></div>
+        <div class="h-stat"><b>178</b><span>Polite dodges logged</span></div>
+        <div class="h-stat"><b>94%</b><span>TDS meter</span></div>
+      </div>
     </div>
-    <div class="studio-bar-right">
-      <button type="button" class="studio-tds-badge" id="tds-side" aria-expanded="false" aria-controls="tds-breakdown" title="Click to view Trump Derangement Syndrome breakdown">
-        <span class="tds-badge-dot"></span>
-        <span class="tds-badge-title">TDS METER:</span>
-        <strong class="tds-badge-score" id="tds-score">94%</strong>
-        <span class="tds-badge-band" id="tds-blurb">CRITICAL</span>
-        <span class="tds-badge-arrow">▾</span>
-      </button>
-      <button type="button" class="studio-quick-audio" data-tab="soundboard">
-        <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
-        <span>Soundboard</span>
-      </button>
+
+    <div class="h-podium">
+      <div class="h-podium-frame">
+        <div class="h-podium-tag"><span class="h-dot"></span><span id="tag">LIVE FROM THE ARCHIVE</span></div>
+        <video id="vid" playsinline muted loop autoplay></video>
+        <div class="h-cap" id="cap"></div>
+        <div class="h-sound">
+          <button id="snd" type="button" aria-label="Mute or unmute">Sound off</button>
+          <input id="vol" type="range" min="0" max="100" value="80" aria-label="Volume">
+          <span class="h-vol-pct" id="volpct">80%</span>
+        </div>
+      </div>
+      <button class="h-next" id="next" type="button">Different clip</button>
     </div>
   </div>
 
-  <header class="site-header">
-    <div class="hero-box">
-      <div class="hero-top-kicker">
-        <span class="kicker-badge">PARODY ARCHIVE</span>
-        <span class="kicker-text">UNOFFICIAL BRIAN SHAPIRO DEBATE &amp; EXCUSE TRACKER</span>
-      </div>
-      <h1 class="hero-main-title">LYING SHAPIRO</h1>
-      <p class="hero-lead">Welcome to Brian Shapiro’s Liberal World</p>
-      <p class="hero-subtext">415 debates. 4.36 million words. Zero straight answers. Every repetitive catchphrase, polite dodge, and procedural mic-grab — timestamped, ranked, and clipped.</p>
-
-      <div class="hero-cta-group">
-        <button type="button" class="hero-cta-btn cta-audio" data-tab="soundboard">
-          <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
-          <div class="cta-text">
-            <strong>Instant Soundboard</strong>
-            <span>14 One-Tap Meltdown Cuts</span>
-          </div>
-        </button>
-
-        <button type="button" class="hero-cta-btn cta-debates" data-tab="debates">
-          <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" y1="19" x2="11" y2="13"/><line x1="4" y1="20" x2="8" y2="16"/><line x1="3" y1="21" x2="5" y2="19"/></svg>
-          <div class="cta-text">
-            <strong>vs. Andrew Wilson</strong>
-            <span>20 Head-to-Head Battles</span>
-          </div>
-        </button>
-
-        <button type="button" class="hero-cta-btn cta-dodge" data-tab="dodge">
-          <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/><circle cx="12" cy="12" r="3"/></svg>
-          <div class="cta-text">
-            <strong>Polite Dodge Lab</strong>
-            <span>178 Timestamped Pivots</span>
-          </div>
-        </button>
-      </div>
-    </div>
-
-    <!-- Collapsible TDS Breakdown Drawer -->
-    <section class="tds-breakdown" id="tds-breakdown" hidden aria-label="TDS Topic Breakdown">
-      <div class="tds-breakdown-head">
-        <div>
-          <h3>Trump Derangement Syndrome (TDS) Corpus Breakdown</h3>
-          <p id="tds-breakdown-summary">Weighted share of Pushing The Limits catchphrase hits and debate coverage tied to Trump topics or Trump-adjacent debate dodges.</p>
-        </div>
-        <button type="button" class="tds-breakdown-close" id="tds-breakdown-close" aria-label="Close TDS breakdown">Close</button>
-      </div>
-      <div class="tds-breakdown-grid" id="tds-breakdown-grid"></div>
-    </section>
-  </header>
-
-  <!-- STICKY PRIMARY TAB MENU -->
-  <div class="studio-tab-menu-wrap" id="studio-tab-menu-wrap">
-    <nav class="studio-tab-menu" id="studio-tab-menu" role="tablist" aria-label="Archive Sections">
-      <button type="button" class="tab-menu-item active" role="tab" id="tab-btn-catchphrases" aria-selected="true" aria-controls="tab-panel-catchphrases" data-tab="catchphrases">
-        <span class="tab-item-icon">
-          <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></svg>
-        </span>
-        <span class="tab-item-title">Catchphrases</span>
-        <span class="tab-item-badge" id="tab-badge-catchphrases">29</span>
-      </button>
-      <button type="button" class="tab-menu-item" role="tab" id="tab-btn-soundboard" aria-selected="false" aria-controls="tab-panel-soundboard" data-tab="soundboard">
-        <span class="tab-item-icon">
-          <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
-        </span>
-        <span class="tab-item-title">Soundboard</span>
-        <span class="tab-item-badge" id="tab-badge-soundboard">14</span>
-      </button>
-      <button type="button" class="tab-menu-item" role="tab" id="tab-btn-dodge" aria-selected="false" aria-controls="tab-panel-dodge" data-tab="dodge">
-        <span class="tab-item-icon">
-          <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/><circle cx="12" cy="12" r="3"/></svg>
-        </span>
-        <span class="tab-item-title">Polite Dodge</span>
-        <span class="tab-item-badge" id="tab-badge-dodge">178</span>
-      </button>
-      <button type="button" class="tab-menu-item" role="tab" id="tab-btn-debates" aria-selected="false" aria-controls="tab-panel-debates" data-tab="debates">
-        <span class="tab-item-icon">
-          <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" y1="19" x2="11" y2="13"/><line x1="4" y1="20" x2="8" y2="16"/><line x1="3" y1="21" x2="5" y2="19"/></svg>
-        </span>
-        <span class="tab-item-title">Head-to-Head</span>
-        <span class="tab-item-badge" id="tab-badge-debates">32</span>
-      </button>
-      <button type="button" class="tab-menu-item" role="tab" id="tab-btn-clips" aria-selected="false" aria-controls="tab-panel-clips" data-tab="clips">
-        <span class="tab-item-icon">
-          <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="3"/><polygon points="10 9 16 12 10 15 10 9" fill="currentColor"/></svg>
-        </span>
-        <span class="tab-item-title">Video Vault</span>
-        <span class="tab-item-badge" id="tab-badge-clips">9</span>
-      </button>
-      <button type="button" class="tab-menu-item" role="tab" id="tab-btn-x" aria-selected="false" aria-controls="tab-panel-x" data-tab="x">
-        <span class="tab-item-icon">
-          <svg class="nav-svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-        </span>
-        <span class="tab-item-title">Social / X</span>
-        <span class="tab-item-badge" id="tab-badge-x">25</span>
-      </button>
-    </nav>
-  </div>
-
-  <main class="layout layout-with-clips" id="main-layout">
-    <div class="main-column" id="main-column">
-
-      <!-- TAB 1: CATCHPHRASES -->
-      <div class="tab-panel active" id="tab-panel-catchphrases" role="tabpanel" aria-labelledby="tab-btn-catchphrases">
-        <div class="sub-view-bar">
-          <div class="sub-view-nav" role="tablist" aria-label="Catchphrase views">
-            <button type="button" class="sub-view-btn active" id="sub-btn-phrases" data-subview="phrases">
-              Topical Phrases <span class="sub-view-badge" id="sub-badge-phrases">26</span>
-            </button>
-            <button type="button" class="sub-view-btn" id="sub-btn-floor" data-subview="floor">
-              Floor Control &amp; Mic-Grabs <span class="sub-view-badge" id="sub-badge-floor">3</span>
-            </button>
-          </div>
-        </div>
-
-        <section class="board-panel" id="board-panel" aria-labelledby="board-title">
-          <div class="board-head">
-            <div class="board-head-top">
-              <div>
-                <h2 id="board-title">Most-Used Catchphrases</h2>
-                <p class="board-sub">The most-repeated lines across 415 debates. Click any quote for associated variants, audio mashup sources, and timestamped transcript proof.</p>
-              </div>
-            </div>
-
-            <div class="board-toolbar">
-              <div class="search-wrap">
-                <input type="search" id="board-search" class="board-search" placeholder="Search phrases, variants, or transcript quotes..." aria-label="Search catchphrases and quotes" />
-                <button type="button" id="board-search-clear" class="board-search-clear" hidden aria-label="Clear search">×</button>
-              </div>
-              <div class="sort-wrap">
-                <label for="board-sort" class="sort-label">Sort:</label>
-                <select id="board-sort" class="board-sort" aria-label="Sort catchphrases">
-                  <option value="ptl_hits">Most Used (PTL Hits)</option>
-                  <option value="debates">Most Debates Hit</option>
-                  <option value="wilson">Andrew Wilson Debates</option>
-                  <option value="kewl">Kewl Vic Live Overlays</option>
-                  <option value="rate">Density (Per 1k Words)</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div class="filters" id="filters" role="group" aria-label="Category filters">
-            <!-- filled by JS -->
-          </div>
-
-          <div class="quote-board" id="quote-board" aria-live="polite">
-            <p class="board-loading">Loading catchphrases...</p>
-          </div>
-
-          <div class="board-more-wrap" id="board-more-wrap" hidden>
-            <button type="button" class="show-more-btn" id="show-more-btn">Show more phrases</button>
-          </div>
-        </section>
-
-        <section class="floor-section" id="floor-section" aria-labelledby="floor-title" hidden>
-          <div class="section-head">
-            <div class="section-kicker">PROCEDURAL CRUTCHES · 708+ HITS ACROSS 205+ DEBATES</div>
-            <h2 id="floor-title">Floor Control &amp; Interruption Tics</h2>
-            <p class="section-sub">Procedural fillers used to filibuster, cut callers off, or grab the mic mid-point (<em>“Hold on let me finish”</em>, <em>“Get off my show”</em>, <em>“Don’t interrupt”</em>). Cataloged here so they don’t drown out topical policy debates.</p>
-          </div>
-          <div class="quote-board floor-board" id="floor-board"></div>
-        </section>
-      </div>
-
-      <!-- TAB 2: INSTANT SOUNDBOARD -->
-      <div class="tab-panel" id="tab-panel-soundboard" role="tabpanel" aria-labelledby="tab-btn-soundboard" hidden>
-        <section class="soundboard-section" id="soundboard-section" aria-labelledby="soundboard-title">
-          <div class="soundboard-head">
-            <div>
-              <div class="section-kicker">14 ONE-TAP AUDIO MASHUPS &amp; MELTDOWNS</div>
-              <h2 id="soundboard-title">Instant Soundboard</h2>
-              <p class="soundboard-sub">Tap any button to hear the 3-hit debate mashup or meltdown cut. Use "Play All Mashups" for sequential radio-reel playback.</p>
-            </div>
-            <div class="soundboard-actions">
-              <button type="button" class="reel-btn" id="play-reel-btn" aria-pressed="false">▶ Play All Mashups</button>
-              <button type="button" class="reel-stop-btn" id="stop-audio-btn" hidden>■ Stop</button>
-            </div>
-          </div>
-          <div class="soundboard-grid" id="soundboard-grid" role="group" aria-label="Audio mashup soundboard"></div>
-        </section>
-      </div>
-
-      <!-- TAB 3: POLITE DODGE LAB -->
-      <div class="tab-panel" id="tab-panel-dodge" role="tabpanel" aria-labelledby="tab-btn-dodge" hidden>
-        <section class="dodge-section" id="dodge-section" aria-labelledby="dodge-title">
-          <div class="section-head">
-            <div class="section-kicker">BEHAVIORAL PATTERN LAB · 178 TIMESTAMPED WINDOWS</div>
-            <h2 id="dodge-title">The “Polite Dodge” Tracker</h2>
-            <p class="section-sub">How the signature move works: open with a polite concession (<em>“I’m glad you asked”</em>, <em>“Okay let’s talk about that”</em>, <em>“Very fair question”</em>), then immediately pivot away with <em>“in a second”</em>, <em>“let me ask you”</em>, or abandon the caller’s topic within 90 seconds.</p>
-          </div>
-
-          <div class="dodge-controls">
-            <div class="dodge-tabs" id="dodge-tabs" role="group" aria-label="Polite dodge filter">
-              <button type="button" class="dodge-tab active" data-dodge-filter="pivot_marker">Explicit Pivot Caught <span id="dodge-count-pivot">49</span></button>
-              <button type="button" class="dodge-tab" data-dodge-filter="all">All Dodge Windows <span id="dodge-count-all">178</span></button>
-              <button type="button" class="dodge-tab" data-dodge-filter="no_topic_return_heuristic">90s Topic Abandon <span id="dodge-count-abandon">129</span></button>
-            </div>
-            <input type="search" id="dodge-search" class="dodge-search" placeholder="Filter by debate title or quote..." aria-label="Filter polite dodge windows" />
-          </div>
-
-          <div class="dodge-grid" id="dodge-grid" aria-live="polite"></div>
-
-          <div class="board-more-wrap" id="dodge-more-wrap" hidden>
-            <button type="button" class="show-more-btn" id="dodge-more-btn">Show more dodge windows</button>
-          </div>
-        </section>
-      </div>
-
-      <!-- TAB 4: HEAD-TO-HEAD DEBATES -->
-      <div class="tab-panel" id="tab-panel-debates" role="tabpanel" aria-labelledby="tab-btn-debates" hidden>
-        <div class="sub-view-bar">
-          <div class="sub-view-nav" role="tablist" aria-label="Head-to-head match views">
-            <button type="button" class="sub-view-btn active" id="sub-btn-wilson" data-debatesubview="wilson">
-              Andrew Wilson Files <span class="sub-view-badge" id="sub-badge-wilson">20</span>
-            </button>
-            <button type="button" class="sub-view-btn" id="sub-btn-feuds" data-debatesubview="feuds">
-              Cross-Channel Feuds <span class="sub-view-badge" id="sub-badge-feuds">12</span>
-            </button>
-          </div>
-        </div>
-
-        <section class="wilson-section" id="wilson-section" aria-labelledby="wilson-title">
-          <div class="section-head">
-            <div class="section-kicker" id="wilson-kicker">HEAD-TO-HEAD SUB-CORPUS · 20 DEBATES</div>
-            <h2 id="wilson-title">The Andrew Wilson Files</h2>
-            <p class="section-sub">When debating Andrew Wilson across 20 full episodes, Brian leans heavily on procedural floor-control and four recurring talking points. Click any crutch line to inspect its quotes in the Catchphrases tab.</p>
-          </div>
-
-          <div class="wilson-layout">
-            <div class="wilson-clusters-col">
-              <h3 class="wilson-col-title">Top Crutch Lines vs. Andrew Wilson</h3>
-              <div class="wilson-bars" id="wilson-bars"></div>
-            </div>
-            <div class="wilson-debates-col">
-              <h3 class="wilson-col-title" id="wilson-list-title">All 20 Indexed Wilson Debates</h3>
-              <ul class="wilson-debate-list" id="wilson-debate-list"></ul>
-            </div>
-          </div>
-        </section>
-
-        <section class="feuds-section" id="feuds-section" aria-labelledby="feuds-title" hidden>
-          <div class="section-head">
-            <div class="section-kicker">CROSS-CHANNEL CLASHES · VERIFIED CAPTIONS</div>
-            <h2 id="feuds-title">Head-to-Head Feuds &amp; Meltdowns</h2>
-            <p class="section-sub">Every opponent Brian has squared off with on his own show or other channels (Gavin McInnes, Warren Smith, DragonFistTV, Larry Elder, Tim Pool, etc.), with full caption transcripts behind each clash.</p>
-          </div>
-          <div class="feuds-grid" id="feuds-grid"></div>
-        </section>
-      </div>
-
-      <!-- TAB 7: X RECEIPTS -->
-      <div class="tab-panel" id="tab-panel-x" role="tabpanel" aria-labelledby="tab-btn-x" hidden>
-        <section class="x-section" id="x-section" aria-labelledby="x-title">
-          <div class="section-head">
-            <div class="section-kicker">@TheBrianShapiro · @PTLRadioShow SOCIAL ARCHIVE</div>
-            <h2 id="x-title">X Receipts</h2>
-            <p class="section-sub">Posts quoted word for word from public search-index captures of x.com status pages. Each card links to the original post and connects to on-air catchphrases.</p>
-          </div>
-          <div class="x-filters" id="x-filters" role="group" aria-label="Filter X posts"></div>
-          <div class="x-grid" id="x-grid"></div>
-          <div class="x-about" id="x-about"></div>
-        </section>
-      </div>
-
-      <!-- TAB 8: WATCH BRIAN CLIPS VAULT -->
-      <div class="tab-panel" id="tab-panel-clips" role="tabpanel" aria-labelledby="tab-btn-clips" hidden>
-        <section class="clips-tab-section" id="clips-tab-section" aria-labelledby="clips-tab-title">
-          <div class="section-head">
-            <div class="section-kicker">VIDEO VAULT · 9 VIRAL DEBATE CLIPS &amp; SUPERCUTS</div>
-            <h2 id="clips-tab-title">Watch Brian: Video Vault</h2>
-            <p class="section-sub">Stream viral debate clips, meltdown cuts, and the full Jimmy supercut with synchronized video, audio, and transcript notes.</p>
-          </div>
-          <div class="clips-tab-layout">
-            <div class="clips-tab-player-wrap">
-              <div class="clips-player-host" id="clips-tab-player-host"></div>
-              <p class="clips-now" id="clips-tab-now" aria-live="polite"></p>
-            </div>
-            <div class="clips-tab-sidebar">
-              <div class="clips-tab-sidebar-head">
-                <span class="clips-tab-sidebar-title">All 9 Debate Clips</span>
-                <span class="clips-counter" id="clips-tab-counter">1/9</span>
-              </div>
-              <ul class="clips-list" id="clips-tab-list"></ul>
-            </div>
-          </div>
-        </section>
-      </div>
-
-    </div>
-
-    <!-- WATCH BRIAN CLIPS RAIL -->
-    <aside class="clips-rail" id="clips-rail" hidden aria-label="Watch Brian">
-      <div class="clips-rail-head">
-        <div>
-          <h2 id="clips-title">Watch Brian</h2>
-          <p class="clips-rail-sub">9 viral debate clips &amp; supercuts</p>
-        </div>
-        <div class="clips-nav-btns">
-          <button type="button" class="clips-step-btn" id="clips-prev-btn" aria-label="Previous clip" title="Previous clip">‹</button>
-          <span class="clips-counter" id="clips-counter">1/9</span>
-          <button type="button" class="clips-step-btn" id="clips-next-btn" aria-label="Next clip" title="Next clip">›</button>
-        </div>
-      </div>
-      <div class="clips-player-host" id="clips-player-host"></div>
-      <p class="clips-now" id="clips-now" aria-live="polite"></p>
-      <ul class="clips-list" id="clips-list"></ul>
-    </aside>
-  </main>
-
-  <button type="button" class="clips-fab" id="clips-fab" hidden aria-controls="clips-drawer" aria-expanded="false">▶ Watch Clips (9)</button>
-  <div class="clips-drawer" id="clips-drawer" hidden>
-    <div class="clips-drawer-panel" id="clips-drawer-panel" role="dialog" aria-modal="true" aria-labelledby="clips-drawer-title">
-      <div class="clips-drawer-bar">
-        <h2 id="clips-drawer-title">Watch Brian · 9 Clips</h2>
-        <button type="button" class="clips-drawer-close" id="clips-drawer-close" aria-label="Close">Close</button>
-      </div>
-      <div class="clips-player-host" id="clips-drawer-host"></div>
-      <p class="clips-now" id="clips-drawer-now" aria-live="polite"></p>
-      <ul class="clips-list" id="clips-drawer-list"></ul>
-    </div>
-  </div>
-
-  <!-- IMMERSIVE LIVE AUDIO DOCK (MINI-PLAYER) -->
-  <div class="audio-dock-bar" id="audio-dock-bar" hidden aria-live="polite">
-    <div class="audio-dock-inner">
-      <div class="audio-dock-eq" aria-hidden="true">
-        <span class="eq-bar eq-1"></span>
-        <span class="eq-bar eq-2"></span>
-        <span class="eq-bar eq-3"></span>
-        <span class="eq-bar eq-4"></span>
-      </div>
-      <div class="audio-dock-info">
-        <span class="audio-dock-kicker">ON AIR · AUDIO PLAYING</span>
-        <span class="audio-dock-title" id="audio-dock-title">Mashup playing...</span>
-      </div>
-      <div class="audio-dock-controls">
-        <button type="button" class="audio-dock-stop" id="audio-dock-stop-btn" aria-label="Stop audio">■ Stop</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- IMMERSIVE MOBILE BOTTOM APP DOCK -->
-  <nav class="mobile-bottom-dock" id="mobile-bottom-dock" aria-label="Mobile Navigation">
-    <button type="button" class="dock-item active" data-tab="catchphrases">
-      <span class="dock-icon">
-        <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></svg>
-      </span>
-      <span class="dock-label">Phrases</span>
-    </button>
-    <button type="button" class="dock-item" data-tab="soundboard">
-      <span class="dock-icon">
-        <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
-      </span>
-      <span class="dock-label">Audio</span>
-    </button>
-    <button type="button" class="dock-item" data-tab="dodge">
-      <span class="dock-icon">
-        <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/><circle cx="12" cy="12" r="3"/></svg>
-      </span>
-      <span class="dock-label">Dodge</span>
-    </button>
-    <button type="button" class="dock-item" data-tab="debates">
-      <span class="dock-icon">
-        <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" y1="19" x2="11" y2="13"/><line x1="4" y1="20" x2="8" y2="16"/><line x1="3" y1="21" x2="5" y2="19"/></svg>
-      </span>
-      <span class="dock-label">Debates</span>
-    </button>
-    <button type="button" class="dock-item" data-tab="clips">
-      <span class="dock-icon">
-        <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="3"/><polygon points="10 9 16 12 10 15 10 9" fill="currentColor"/></svg>
-      </span>
-      <span class="dock-label">Clips</span>
-    </button>
-    <button type="button" class="dock-item" id="mobile-more-btn" aria-haspopup="dialog" aria-expanded="false">
-      <span class="dock-icon">
-        <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
-      </span>
-      <span class="dock-label">More</span>
-    </button>
+  <nav class="h-dock" aria-label="Explore">
+    <a href="/archive#catchphrases"><strong>Catchphrase Board</strong><span>29 ranked lines</span></a>
+    <a href="/archive#soundboard"><strong>Soundboard</strong><span>14 one-tap cuts</span></a>
+    <a href="/archive#dodge"><strong>Polite Dodge Lab</strong><span>178 pivots</span></a>
+    <a href="/archive#debates"><strong>vs. Andrew Wilson</strong><span>20 head-to-heads</span></a>
+    <a href="/archive#clips"><strong>Video Vault</strong><span>9 clips</span></a>
+    <a href="/archive#x"><strong>Social / X</strong><span>25 receipts</span></a>
   </nav>
+</section>
 
-  <!-- MOBILE SLIDE-UP BOTTOM SHEET FOR "MORE" -->
-  <div class="mobile-sheet-backdrop" id="mobile-sheet-backdrop" hidden></div>
-  <div class="mobile-sheet" id="mobile-sheet" hidden role="dialog" aria-modal="true" aria-label="More Sections">
-    <div class="mobile-sheet-handle-bar">
-      <div class="mobile-sheet-handle"></div>
-    </div>
-    <div class="mobile-sheet-head">
-      <h3>More Sections &amp; Tools</h3>
-      <button type="button" class="mobile-sheet-close" id="mobile-sheet-close" aria-label="Close menu">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-    <div class="mobile-sheet-grid">
-      <button type="button" class="sheet-tile" data-tab="floor">
-        <span class="sheet-icon">
-          <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
-        </span>
-        <div>
-          <span class="sheet-title">Floor Control &amp; Mic-Grabs</span>
-          <span class="sheet-desc">Filibusters &amp; interruption crutches (708+ hits)</span>
-        </div>
-      </button>
-      <button type="button" class="sheet-tile" data-tab="feuds">
-        <span class="sheet-icon">
-          <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
-        </span>
-        <div>
-          <span class="sheet-title">Cross-Channel Feuds &amp; Meltdowns</span>
-          <span class="sheet-desc">12 opponent clash cards (Gavin, Warren, DragonFist, etc.)</span>
-        </div>
-      </button>
-      <button type="button" class="sheet-tile" data-tab="x">
-        <span class="sheet-icon">
-          <svg class="nav-svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-        </span>
-        <div>
-          <span class="sheet-title">Social / X Receipts</span>
-          <span class="sheet-desc">25 verified public posts &amp; on-air tie-ins</span>
-        </div>
-      </button>
-      <button type="button" class="sheet-tile" id="sheet-tds-btn">
-        <span class="sheet-icon">
-          <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 14v-4"/><path d="M3.34 17a10 10 0 1 1 17.32 0"/></svg>
-        </span>
-        <div>
-          <span class="sheet-title">TDS Topic Breakdown</span>
-          <span class="sheet-desc">Interactive gauge &amp; Trump focus analysis</span>
-        </div>
-      </button>
-      <a href="/admin" class="sheet-tile" target="_blank" rel="noopener noreferrer">
-        <span class="sheet-icon">
-          <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-        </span>
-        <div>
-          <span class="sheet-title">Analytics Dashboard</span>
-          <span class="sheet-desc">Live visitors, referrers, and search queries</span>
-        </div>
-      </a>
-    </div>
-  </div>
+<script>
+const CLIPS = [
+  { src:"./clips/WHAT-WHAT-PTL-raw-9x16.mp4", poster:"./clips/posters/what-what-ptl.jpg", cap:"What? What?", key:["who","what","why","how","when","where"] },
+  { src:"./clips/january-6th-9x16.mp4", poster:"./clips/posters/january-6th.jpg", cap:"January 6th", key:["jan","capitol","riot","insurrection","election"] },
+  { src:"./clips/convicted-felon-9x16.mp4", poster:"./clips/posters/convicted-felon.jpg", cap:"Convicted felon", key:["felon","convict","guilty","crime","trump","jail"] },
+  { src:"./clips/mushroom-gobbler-9x16.mp4", poster:"./clips/posters/mushroom-gobbler.jpg", cap:"Maga mushroom gobbler", key:["maga","mushroom","drug","trip","brain"] },
+  { src:"./clips/glad-you-asked-9x16.mp4", poster:"./clips/posters/glad-you-asked.jpg", cap:"I'm happy to talk", key:["answer","talk","question","yes","no","straight"] },
+  { src:"./clips/liable-sexual-abuser-9x16.mp4", poster:"./clips/posters/liable-sexual-abuser.jpg", cap:"Liable", key:["liable","abuse","carroll","civil","lawsuit"] },
+  { src:"./clips/jimmy-supercut-9x16.mp4", poster:"./clips/posters/jimmy-supercut.jpg", cap:"Jimmy! Let me talk!", key:["jimmy","dore","interrupt","talk over","let me"] },
+];
+const DODGES = [
+  "I'm happy to answer that. But first, <b>January 6th</b>.",
+  "That's a fair question. Let me ask <b>you</b> one.",
+  "Great question. Are you aware he's a <b>convicted felon</b>?",
+  "I'll answer that. Right after I mention <b>the Epstein files</b>.",
+  "Glad you asked. Can I just finish my point? <b>What? What?</b>",
+  "We'll get to that. Do you condemn <b>everything</b>?",
+  "Interesting. That reminds me of <b>a totally different thing</b>.",
+  "Sir, sir. I answered that <b>four debates ago</b>.",
+];
+const CHIPS = ["Did you lie?", "Is he a felon?", "What about Jan 6th?", "Do you condemn it?", "Just answer yes or no"];
+const WALL = ["January 6th","Convicted felon","Answer the question","That's a fair question","What? What?","Epstein files","I'll answer that","Maga mushroom gobbler","Let me finish","Do you condemn it"];
 
-  <footer class="site-footer">
-    <div class="footer-inner">
-      <div class="footer-brand">
-        <span class="footer-title">LYING SHAPIRO</span>
-        <p class="footer-note">Parody &amp; media-criticism archive tracking Brian Shapiro’s debate rhetoric. Captions transcribed from public broadcasts.</p>
-      </div>
-      <div class="footer-meta">
-        <div class="footer-channels" id="footer-channels"></div>
-        <p id="footer-stats" class="footer-stats"></p>
-        <details class="footer-details">
-          <summary>Corpus Specs</summary>
-          <div class="corpus-pills" id="corpus-pills"></div>
-        </details>
-      </div>
-    </div>
-  </footer>
+const $ = id => document.getElementById(id);
+const vid = $("vid"), bg = $("bg");
+let idx = 0, dodges = 0, typer = null;
 
-  <script src="./app.js"></script>
+function setClip(i, sound) {
+  idx = (i + CLIPS.length) % CLIPS.length;
+  const c = CLIPS[idx];
+  vid.src = c.src; vid.poster = c.poster;
+  vid.muted = !sound; syncSound();
+  vid.play().catch(()=>{});
+  bg.style.backgroundImage = `url(${c.poster})`;
+  $("cap").textContent = c.cap;
+}
+function type(html) {
+  clearInterval(typer);
+  const p = $("ans"); p.classList.add("h-caret");
+  const tmp = document.createElement("div"); tmp.innerHTML = html;
+  const text = tmp.textContent; let n = 0;
+  p.textContent = "";
+  typer = setInterval(() => {
+    n++; p.textContent = text.slice(0, n);
+    if (n >= text.length) { clearInterval(typer); p.innerHTML = html; }
+  }, 22);
+}
+function ask(question) {
+  const q = (question || "").toLowerCase();
+  let match = CLIPS.findIndex(c => c.key.some(k => q.includes(k)));
+  if (match < 0) match = Math.floor(Math.random() * CLIPS.length);
+  dodges++; $("s-dodges").textContent = dodges;
+  type(DODGES[Math.floor(Math.random() * DODGES.length)]);
+  if (window.innerWidth <= 860) { var pod = document.querySelector('.h-podium'); if (pod) pod.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+  setClip(match, true);
+  $("tag").textContent = "BRIAN IS DODGING";
+}
+
+// wall
+(function(){ const w = $("wall"); for (let i=0;i<12;i++){ const s=document.createElement("span"); s.textContent=WALL[i%WALL.length]; if(i%3===0) s.className="hot";
+  s.style.top=(4+Math.random()*88)+"%"; s.style.animationDuration=(40+Math.random()*50)+"s"; s.style.animationDelay=(-Math.random()*60)+"s"; w.appendChild(s);} })();
+// chips
+$("chips").innerHTML = CHIPS.map(c => `<button type="button" class="h-chip">${c}</button>`).join("");
+document.querySelectorAll(".h-chip").forEach(b => b.addEventListener("click", () => { $("q").value = b.textContent; ask(b.textContent); }));
+$("form").addEventListener("submit", e => { e.preventDefault(); ask($("q").value); });
+$("next").addEventListener("click", () => setClip(idx + 1, !vid.muted));
+function syncSound() {
+  $("snd").textContent = (vid.muted || vid.volume === 0) ? "Sound off" : "Sound on";
+  $("volpct").textContent = Math.round(vid.volume * 100) + "%";
+}
+$("snd").addEventListener("click", () => {
+  if (vid.muted || vid.volume === 0) { vid.muted = false; if (vid.volume === 0) vid.volume = .8; }
+  else vid.muted = true;
+  $("vol").value = Math.round(vid.volume * 100); syncSound();
+});
+$("vol").addEventListener("input", e => {
+  vid.volume = e.target.value / 100;
+  vid.muted = vid.volume === 0;
+  syncSound();
+});
+vid.volume = .8;
+setClip(0, false);
+window.addEventListener('resize', function(){ ['--ls-giant','--ls-dx','--ls-dy','--ls-s0'].forEach(function(k){ document.documentElement.style.removeProperty(k); }); });
+</script>
 </body>
 </html>

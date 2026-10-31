@@ -32,16 +32,23 @@ export default {
       return Response.redirect(url.toString(), 301);
     }
 
+    // The Ask Brian page used to live at /hero-preview; the links are already
+    // out in the wild.
+    if (url.pathname === "/hero-preview" || url.pathname === "/hero-preview.html") {
+      const to = new URL(url);
+      to.pathname = "/";
+      return Response.redirect(to.toString(), 301);
+    }
+
     if (url.pathname === "/api/event") return handleEvent(request, env, ctx);
     if (url.pathname === "/api/stats") return handleStats(request, env, url);
     if (url.pathname === "/api/live") return handleLive(request, env, url);
     if (url.pathname.startsWith("/api/")) return json({ error: "not_found" }, 404);
 
-    let assetReq = request;
-    if (url.pathname === "/admin" || url.pathname === "/admin/") {
-      assetReq = new Request(new URL("/admin.html", url), request);
-    }
-    const res = await env.ASSETS.fetch(assetReq);
+    // No rewrite for /admin: the asset layer already resolves /admin to
+    // admin.html (200). Rewriting to /admin.html made it 307 back to /admin,
+    // which looped forever in the browser.
+    const res = await env.ASSETS.fetch(request);
 
     // Only log navigations / HTML pages, not every image and audio file.
     const isAsset = ASSET_RE.test(url.pathname);
