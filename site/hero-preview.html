@@ -64,11 +64,14 @@
   /* PODIUM (video) */
   .h-podium { position:relative; width:100%; max-width:340px; justify-self:center; }
   .h-podium-frame { position:relative; aspect-ratio:9/16; border-radius:26px; overflow:hidden; background:#000; border:2px solid #2a2a3a; box-shadow:0 30px 80px rgba(0,0,0,.7), 0 0 0 6px rgba(229,43,56,.12); }
-  .h-podium video { width:100%; height:100%; object-fit:cover; display:block; }
+  .h-podium video { width:100%; height:100%; object-fit:contain; background:#000; display:block; }
   .h-podium-tag { position:absolute; top:12px; left:12px; z-index:3; background:rgba(0,0,0,.65); backdrop-filter:blur(8px); border-radius:8px; padding:.35rem .6rem; font:600 .64rem/1 ui-monospace, Menlo, monospace; letter-spacing:.1em; display:flex; align-items:center; gap:.4rem; }
   .h-dot { width:7px; height:7px; border-radius:50%; background:var(--h-red); animation:h-blink 1.2s infinite; }
-  .h-sound { position:absolute; top:12px; right:12px; z-index:3; background:rgba(0,0,0,.65); color:#fff; border:1px solid rgba(255,255,255,.2); border-radius:999px; padding:.5rem .8rem; font-size:.78rem; cursor:pointer; backdrop-filter:blur(8px); }
-  .h-cap { position:absolute; left:0; right:0; bottom:0; z-index:2; padding:2.5rem 1rem 1rem; background:linear-gradient(transparent, rgba(0,0,0,.85)); font-family:var(--font-display, Impact, sans-serif); text-transform:uppercase; font-size:1.5rem; line-height:1; text-align:center; text-shadow:0 2px 12px #000; pointer-events:none; }
+  .h-sound { position:absolute; left:12px; right:12px; bottom:12px; z-index:4; display:flex; align-items:center; gap:.6rem; background:rgba(0,0,0,.7); border:1px solid rgba(255,255,255,.18); border-radius:999px; padding:.4rem .7rem; backdrop-filter:blur(8px); }
+  .h-sound button { background:none; border:0; color:#fff; font-size:.76rem; cursor:pointer; padding:.1rem .2rem; white-space:nowrap; }
+  .h-sound input[type=range] { flex:1; min-width:0; accent-color:var(--h-red); height:4px; cursor:pointer; }
+  .h-vol-pct { font:600 .64rem/1 ui-monospace, Menlo, monospace; color:var(--h-mute); min-width:2.2rem; text-align:right; }
+  .h-cap { position:absolute; left:0; right:0; bottom:0; z-index:2; padding:2.5rem 1rem 3.6rem; background:linear-gradient(transparent, rgba(0,0,0,.85)); font-family:var(--font-display, Impact, sans-serif); text-transform:uppercase; font-size:1.5rem; line-height:1; text-align:center; text-shadow:0 2px 12px #000; pointer-events:none; }
   .h-next { margin-top:.7rem; width:100%; background:transparent; color:var(--h-mute); border:1px dashed var(--h-line); border-radius:12px; padding:.65rem; font-size:.8rem; cursor:pointer; }
   .h-next:hover { color:#fff; border-color:var(--h-red); }
 
@@ -130,7 +133,11 @@
         <div class="h-podium-tag"><span class="h-dot"></span><span id="tag">LIVE FROM THE ARCHIVE</span></div>
         <video id="vid" playsinline muted loop autoplay></video>
         <div class="h-cap" id="cap"></div>
-        <button class="h-sound" id="snd" type="button">Sound off</button>
+        <div class="h-sound">
+          <button id="snd" type="button" aria-label="Mute or unmute">Sound off</button>
+          <input id="vol" type="range" min="0" max="100" value="80" aria-label="Volume">
+          <span class="h-vol-pct" id="volpct">80%</span>
+        </div>
       </div>
       <button class="h-next" id="next" type="button">Different clip</button>
     </div>
@@ -176,7 +183,7 @@ function setClip(i, sound) {
   idx = (i + CLIPS.length) % CLIPS.length;
   const c = CLIPS[idx];
   vid.src = c.src; vid.poster = c.poster;
-  vid.muted = !sound; $("snd").textContent = sound ? "Sound on" : "Sound off";
+  vid.muted = !sound; syncSound();
   vid.play().catch(()=>{});
   bg.style.backgroundImage = `url(${c.poster})`;
   $("cap").textContent = c.cap;
@@ -210,7 +217,21 @@ $("chips").innerHTML = CHIPS.map(c => `<button type="button" class="h-chip">${c}
 document.querySelectorAll(".h-chip").forEach(b => b.addEventListener("click", () => { $("q").value = b.textContent; ask(b.textContent); }));
 $("form").addEventListener("submit", e => { e.preventDefault(); ask($("q").value); });
 $("next").addEventListener("click", () => setClip(idx + 1, !vid.muted));
-$("snd").addEventListener("click", () => { vid.muted = !vid.muted; $("snd").textContent = vid.muted ? "Sound off" : "Sound on"; });
+function syncSound() {
+  $("snd").textContent = (vid.muted || vid.volume === 0) ? "Sound off" : "Sound on";
+  $("volpct").textContent = Math.round(vid.volume * 100) + "%";
+}
+$("snd").addEventListener("click", () => {
+  if (vid.muted || vid.volume === 0) { vid.muted = false; if (vid.volume === 0) vid.volume = .8; }
+  else vid.muted = true;
+  $("vol").value = Math.round(vid.volume * 100); syncSound();
+});
+$("vol").addEventListener("input", e => {
+  vid.volume = e.target.value / 100;
+  vid.muted = vid.volume === 0;
+  syncSound();
+});
+vid.volume = .8;
 setClip(0, false);
 </script>
 </body>
