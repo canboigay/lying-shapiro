@@ -27,56 +27,65 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&display=swap" rel="stylesheet" />
 </head>
 <body>
-  <div class="studio-bar" role="navigation" aria-label="Studio navigation">
+  <div class="studio-bar" role="navigation" aria-label="Studio status">
     <div class="studio-bar-left">
-      <span class="on-air"><span class="on-air-dot" aria-hidden="true"></span> ON AIR</span>
+      <span class="on-air"><span class="on-air-dot" aria-hidden="true"></span> LIVE ARCHIVE</span>
       <span class="studio-sep" aria-hidden="true">·</span>
-      <span>Pushing The Limits Corpus</span>
+      <span class="studio-corpus-stat">415 DEBATES · 4.36M WORDS · TRANSCRIPT-INDEXED</span>
     </div>
-    <nav class="studio-nav" id="studio-top-nav">
-      <button type="button" class="studio-nav-btn active" data-tab="catchphrases">Catchphrases</button>
-      <button type="button" class="studio-nav-btn" data-tab="soundboard">Soundboard</button>
-      <button type="button" class="studio-nav-btn" data-tab="dodge">Polite Dodge <span class="nav-badge" id="nav-dodge-count">178</span></button>
-      <button type="button" class="studio-nav-btn" data-tab="debates">Head-to-Head <span class="nav-badge" id="nav-debates-count">32</span></button>
-      <button type="button" class="studio-nav-btn" data-tab="clips">Video Vault <span class="nav-badge" id="nav-clips-count">9</span></button>
-      <button type="button" class="studio-nav-btn" data-tab="x">Social / X <span class="nav-badge" id="nav-x-count">25</span></button>
-    </nav>
-  </div>
-
-  <div class="ticker" aria-label="Top catchphrase frequency crawl">
-    <div class="ticker-label">LIVE COUNTS</div>
-    <div class="ticker-track" id="ticker-track">
-      <div class="ticker-inner" id="ticker-inner">Loading debate corpus crawl...</div>
+    <div class="studio-bar-right">
+      <button type="button" class="studio-tds-badge" id="tds-side" aria-expanded="false" aria-controls="tds-breakdown" title="Click to view Trump Derangement Syndrome breakdown">
+        <span class="tds-badge-dot"></span>
+        <span class="tds-badge-title">TDS METER:</span>
+        <strong class="tds-badge-score" id="tds-score">94%</strong>
+        <span class="tds-badge-band" id="tds-blurb">CRITICAL</span>
+        <span class="tds-badge-arrow">▾</span>
+      </button>
+      <button type="button" class="studio-quick-audio" data-tab="soundboard">
+        <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+        <span>Soundboard</span>
+      </button>
     </div>
   </div>
 
   <header class="site-header">
-    <div class="masthead">
-      <div class="avatar-wrap" id="avatar-wrap" hidden>
-        <img id="avatar-img" alt="Lying Capiro — Independent Thinker avatar" width="96" height="96" />
+    <div class="hero-box">
+      <div class="hero-top-kicker">
+        <span class="kicker-badge">PARODY ARCHIVE</span>
+        <span class="kicker-text">UNOFFICIAL BRIAN SHAPIRO DEBATE &amp; EXCUSE TRACKER</span>
       </div>
-      <div class="brand-text">
-        <div class="brand-kicker">364 DEBATES · 3.07M WORDS · TRANSCRIPT-GROUNDED</div>
-        <h1>LYING CAPIRO</h1>
-        <p class="tagline">Welcome to Brian Shapiro’s Liberal World</p>
-        <p class="disclaimer">Satire / parody archive of recycled talking points, polite dodges, and floor-control tics across Pushing The Limits debates (with Kewl Vic Live commentary overlays). Not affiliated with Brian Shapiro — and <em>not</em> Ben Shapiro.</p>
-        <div class="hero-stat-strip" id="hero-stat-strip" aria-label="Corpus highlights"></div>
-      </div>
+      <h1 class="hero-main-title">LYING SHAPIRO</h1>
+      <p class="hero-lead">Welcome to Brian Shapiro’s Liberal World</p>
+      <p class="hero-subtext">415 debates. 4.36 million words. Zero straight answers. Every repetitive catchphrase, polite dodge, and procedural mic-grab — timestamped, ranked, and clipped.</p>
 
-      <aside class="tds-side" id="tds-side" aria-labelledby="tds-title" role="button" tabindex="0" aria-expanded="false" aria-controls="tds-breakdown" title="Click to toggle TDS topic breakdown">
-        <div class="tds-side-label">
-          <span class="tds-kicker" id="tds-title">TDS</span>
-          <div class="tds-score-inline" id="tds-score" aria-live="polite">-</div>
-        </div>
-        <div class="tds-gauge tds-gauge-vert" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="tds-gauge" aria-label="Trump Derangement Syndrome meter">
-          <div class="tds-fill" id="tds-fill"></div>
-          <div class="tds-needle" id="tds-needle"></div>
-        </div>
-        <p class="tds-side-cap" id="tds-blurb">Trump share</p>
-        <span class="tds-breakdown-hint">Breakdown ▾</span>
-      </aside>
+      <div class="hero-cta-group">
+        <button type="button" class="hero-cta-btn cta-audio" data-tab="soundboard">
+          <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+          <div class="cta-text">
+            <strong>Instant Soundboard</strong>
+            <span>14 One-Tap Meltdown Cuts</span>
+          </div>
+        </button>
+
+        <button type="button" class="hero-cta-btn cta-debates" data-tab="debates">
+          <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" y1="19" x2="11" y2="13"/><line x1="4" y1="20" x2="8" y2="16"/><line x1="3" y1="21" x2="5" y2="19"/></svg>
+          <div class="cta-text">
+            <strong>vs. Andrew Wilson</strong>
+            <span>20 Head-to-Head Battles</span>
+          </div>
+        </button>
+
+        <button type="button" class="hero-cta-btn cta-dodge" data-tab="dodge">
+          <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/><circle cx="12" cy="12" r="3"/></svg>
+          <div class="cta-text">
+            <strong>Polite Dodge Lab</strong>
+            <span>178 Timestamped Pivots</span>
+          </div>
+        </button>
+      </div>
     </div>
 
+    <!-- Collapsible TDS Breakdown Drawer -->
     <section class="tds-breakdown" id="tds-breakdown" hidden aria-label="TDS Topic Breakdown">
       <div class="tds-breakdown-head">
         <div>
@@ -98,6 +107,50 @@
         </span>
         <span class="tab-item-title">Catchphrases</span>
         <span class="tab-item-badge" id="tab-badge-catchphrases">29</span>
+      </button>
+      <button type="button" class="tab-menu-item" role="tab" id="tab-btn-soundboard" aria-selected="false" aria-controls="tab-panel-soundboard" data-tab="soundboard">
+        <span class="tab-item-icon">
+          <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+        </span>
+        <span class="tab-item-title">Soundboard</span>
+        <span class="tab-item-badge" id="tab-badge-soundboard">14</span>
+      </button>
+      <button type="button" class="tab-menu-item" role="tab" id="tab-btn-dodge" aria-selected="false" aria-controls="tab-panel-dodge" data-tab="dodge">
+        <span class="tab-item-icon">
+          <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/><circle cx="12" cy="12" r="3"/></svg>
+        </span>
+        <span class="tab-item-title">Polite Dodge</span>
+        <span class="tab-item-badge" id="tab-badge-dodge">178</span>
+      </button>
+      <button type="button" class="tab-menu-item" role="tab" id="tab-btn-debates" aria-selected="false" aria-controls="tab-panel-debates" data-tab="debates">
+        <span class="tab-item-icon">
+          <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" y1="19" x2="11" y2="13"/><line x1="4" y1="20" x2="8" y2="16"/><line x1="3" y1="21" x2="5" y2="19"/></svg>
+        </span>
+        <span class="tab-item-title">Head-to-Head</span>
+        <span class="tab-item-badge" id="tab-badge-debates">32</span>
+      </button>
+      <button type="button" class="tab-menu-item" role="tab" id="tab-btn-clips" aria-selected="false" aria-controls="tab-panel-clips" data-tab="clips">
+        <span class="tab-item-icon">
+          <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="3"/><polygon points="10 9 16 12 10 15 10 9" fill="currentColor"/></svg>
+        </span>
+        <span class="tab-item-title">Video Vault</span>
+        <span class="tab-item-badge" id="tab-badge-clips">9</span>
+      </button>
+      <button type="button" class="tab-menu-item" role="tab" id="tab-btn-x" aria-selected="false" aria-controls="tab-panel-x" data-tab="x">
+        <span class="tab-item-icon">
+          <svg class="nav-svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </span>
+        <span class="tab-item-title">Social / X</span>
+        <span class="tab-item-badge" id="tab-badge-x">25</span>
+      </button>
+    </nav>
+    <div class="ticker" aria-label="Top catchphrase frequency crawl">
+      <div class="ticker-label">LIVE CRAWL</div>
+      <div class="ticker-track" id="ticker-track">
+        <div class="ticker-inner" id="ticker-inner">Loading debate corpus crawl...</div>
+      </div>
+    </div>
+  </div>
       </button>
       <button type="button" class="tab-menu-item" role="tab" id="tab-btn-soundboard" aria-selected="false" aria-controls="tab-panel-soundboard" data-tab="soundboard">
         <span class="tab-item-icon">

@@ -273,16 +273,21 @@ function startMashupReel() {
   playAudioByKey(ordered[0], true);
 }
 
-function phraseAudioButtonHtml(clusterId) {
+function phraseAudioButtonHtml(clusterId, label) {
   var item = getPhraseAudio(clusterId);
   if (!item || !item.src) return "";
   var title = item.title || clusterId;
+  var dur = Math.round(item.durationSec || 4);
+  var btnText = label ? label : "Listen (" + dur + "s)";
   return (
     '<button type="button" class="phrase-audio-btn" data-cluster-id="' +
     escapeAttr(clusterId) +
     '" aria-label="Play &quot;' +
     escapeAttr(title) +
-    '&quot;" aria-pressed="false">▶</button>'
+    '&quot;" aria-pressed="false">' +
+    '<span class="audio-btn-icon">▶</span> ' +
+    '<span class="audio-btn-label">' + escapeHtml(btnText) + '</span>' +
+    '</button>'
   );
 }
 
@@ -740,20 +745,24 @@ function renderTds(clusters) {
   const blurb = document.getElementById("tds-blurb");
 
   requestAnimationFrame(function () {
-    fill.style.width = "100%";
-    fill.style.height = t.score + "%";
-    needle.style.left = "";
-    needle.style.bottom = "calc(" + t.score + "% - 1px)";
-    scoreEl.textContent = String(t.score);
-    gauge.setAttribute("aria-valuenow", String(t.score));
+    if (fill) {
+      fill.style.width = "100%";
+      fill.style.height = t.score + "%";
+    }
+    if (needle) {
+      needle.style.left = "";
+      needle.style.bottom = "calc(" + t.score + "% - 1px)";
+    }
+    if (scoreEl) scoreEl.textContent = t.score + "%";
+    if (gauge) gauge.setAttribute("aria-valuenow", String(t.score));
   });
 
   const pctHits = (t.hitShare * 100).toFixed(1);
-  let band = "low";
-  if (t.score >= 80) band = "very high";
-  else if (t.score >= 60) band = "high";
-  else if (t.score >= 40) band = "moderate";
-  else if (t.score >= 20) band = "elevated";
+  let band = "NORMAL";
+  if (t.score >= 80) band = "CRITICAL";
+  else if (t.score >= 60) band = "HIGH";
+  else if (t.score >= 40) band = "MODERATE";
+  else if (t.score >= 20) band = "ELEVATED";
 
   if (blurb) {
     blurb.textContent = band;
@@ -1022,6 +1031,8 @@ function renderQuoteCards(container, rows, rankSource, opts) {
     const compact = compactMode || (!!opts.markCompactFrom && i >= opts.markCompactFrom);
     const kewlHits = Number(c.hit_count_kewl_vic_live) || 0;
     const wilsonHits = Number(c.wilson_videos_hit) || 0;
+    const hitsCount = c.hit_count_ptl != null ? c.hit_count_ptl : 0;
+    const debatesCount = c.videos_hit_ptl != null ? c.videos_hit_ptl : 0;
 
     html.push(
       '<article class="quote-card' +
@@ -1031,6 +1042,21 @@ function renderQuoteCards(container, rows, rankSource, opts) {
         '" data-id="' +
         escapeAttr(id) +
         '">' +
+        '<div class="quote-card-header">' +
+        '<div class="quote-tags">' +
+        '<span class="quote-rank-badge">' +
+        (opts.floor ? "FC" : "#" + rank) +
+        "</span>" +
+        '<span class="cat-pill cat-' +
+        escapeAttr(c.category || "dodge") +
+        '">' +
+        escapeHtml(prettyCat(c.category)) +
+        "</span>" +
+        "</div>" +
+        '<div class="quote-audio-col">' +
+        phraseAudioButtonHtml(id) +
+        "</div>" +
+        "</div>" +
         '<div class="quote-trigger" role="button" tabindex="0" aria-expanded="' +
         isOpen +
         '" id="trigger-' +
@@ -1038,37 +1064,25 @@ function renderQuoteCards(container, rows, rankSource, opts) {
         '" aria-controls="drawer-' +
         escapeAttr(id) +
         '">' +
-        '<div class="quote-rank">' +
-        '<span class="quote-rank-num">' +
-        (opts.floor ? "FC" : "#" + rank) +
-        "</span>" +
-        phraseAudioButtonHtml(id) +
-        "</div>" +
-        '<div class="quote-main">' +
         '<h3 class="quote-title">' +
         escapeHtml(quotedTitle(c)) +
         "</h3>" +
         '<div class="quote-meta-row">' +
-        '<span class="quote-hits">' +
-        escapeHtml(timesUsedLabel(c.hit_count_ptl != null ? c.hit_count_ptl : 0)) +
-        "</span>" +
-        '<span class="quote-debates">' +
-        (c.videos_hit_ptl != null ? c.videos_hit_ptl : 0) +
+        '<span class="quote-hits"><strong>' +
+        hitsCount.toLocaleString() +
+        " hits</strong> across " +
+        debatesCount +
         " debates</span>" +
-        (kewlHits > 0
-          ? '<span class="quote-source-badge">+' + kewlHits + " Kewl overlay</span>"
-          : "") +
         (wilsonHits > 0
-          ? '<span class="quote-source-badge">' + wilsonHits + " Wilson debate" + (wilsonHits === 1 ? "" : "s") + "</span>"
+          ? '<span class="quote-source-badge">' + wilsonHits + " vs Wilson</span>"
           : "") +
-        '<span class="cat-pill cat-' +
-        escapeAttr(c.category || "dodge") +
-        '">' +
-        escapeHtml(prettyCat(c.category)) +
+        (kewlHits > 0
+          ? '<span class="quote-source-badge">+' + kewlHits + " Kewl</span>"
+          : "") +
+        '<span class="quote-expand-hint">' +
+        (isOpen ? "Hide Proof ▴" : "View Proof ▾") +
         "</span>" +
         "</div>" +
-        "</div>" +
-        '<span class="quote-chevron" aria-hidden="true"></span>' +
         "</div>" +
         '<div class="quote-drawer" id="drawer-' +
         escapeAttr(id) +
@@ -1099,11 +1113,12 @@ function renderQuoteCards(container, rows, rankSource, opts) {
       if (ev.target.closest(".phrase-audio-btn")) return;
       toggleQuoteCard(btn);
     });
-    btn.addEventListener("keydown", function (ev) {
-      if (ev.target.closest(".phrase-audio-btn")) return;
-      if (ev.key !== "Enter" && ev.key !== " ") return;
-      ev.preventDefault();
-      toggleQuoteCard(btn);
+    btn.addEventListener("keydown", function (e) {
+      if (e.target.closest(".phrase-audio-btn")) return;
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        toggleQuoteCard(btn);
+      }
     });
   });
 
@@ -2318,10 +2333,13 @@ function setDebatesSubView(subView) {
 }
 
 function initTabMenu() {
-  const tabBtns = document.querySelectorAll(".tab-menu-item, .studio-nav-btn");
+  const tabBtns = document.querySelectorAll(".tab-menu-item, .studio-nav-btn, .hero-cta-btn, .studio-quick-audio, [data-tab]");
   tabBtns.forEach(function (btn) {
     btn.addEventListener("click", function (e) {
+      // Don't override if clicking an audio play button inside a card
+      if (e.target.closest && e.target.closest(".phrase-audio-btn")) return;
       e.preventDefault();
+      closeMobileSheet();
       const tab = btn.getAttribute("data-tab");
       if (tab) switchTab(tab, true);
     });
