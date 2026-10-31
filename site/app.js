@@ -2428,6 +2428,40 @@ function initTabMenu() {
   switchTab(initial || "catchphrases", false);
 }
 
+// Order matters twice over: it is the tab order and the order of the six
+// planes on Brian's prism, so moving right turns the head 60deg to the right.
+const TAB_PLANES = ["catchphrases", "soundboard", "dodge", "debates", "clips", "x"];
+
+function planeDirection(prevPanel, nextPanel) {
+  if (!prevPanel || !nextPanel) return 1;
+  const a = TAB_PLANES.indexOf(String(prevPanel.id).replace("tab-panel-", ""));
+  const b = TAB_PLANES.indexOf(String(nextPanel.id).replace("tab-panel-", ""));
+  if (a === -1 || b === -1 || a === b) return 1;
+  return b > a ? 1 : -1;
+}
+
+let headTurned = false;
+
+function turnHead(targetId) {
+  const prism = document.getElementById("ls-prism");
+  if (!prism) return;
+  const i = TAB_PLANES.indexOf(targetId);
+  if (i === -1) return;
+  prism.style.setProperty("--ls-angle", -60 * i + "deg");
+  if (!headTurned) {
+    // first paint: place the prism without announcing a turn
+    headTurned = true;
+    return;
+  }
+  // Lights come up while he turns, otherwise a dark face on a dark page is a
+  // turn nobody sees.
+  prism.classList.add("turning");
+  clearTimeout(turnHead._t);
+  turnHead._t = setTimeout(function () {
+    prism.classList.remove("turning");
+  }, 950);
+}
+
 function switchTab(targetId, shouldScroll) {
   const validTabs = [
     "catchphrases",
@@ -2492,17 +2526,52 @@ function switchTab(targetId, shouldScroll) {
 
   if (validTabs.indexOf(targetId) === -1) targetId = "catchphrases";
 
+  const prevPanel = document.querySelector(".tab-panel.tab-panel-active");
+  const nextPanel = document.getElementById("tab-panel-" + targetId);
+  const reduced =
+    window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const turning = !!(prevPanel && nextPanel && prevPanel !== nextPanel && !reduced);
+  const dir = planeDirection(prevPanel, nextPanel);
+
   activeTab = targetId;
+
+  // The old plane turns away while the new one turns in, and the head turns
+  // with them. The leaving panel is taken out of flow so the page height does
+  // not double for the duration of the turn.
+  if (turning) {
+    prevPanel.hidden = false;
+    prevPanel.classList.remove("tab-panel-active", "plane-in");
+    prevPanel.classList.add("plane-out");
+    prevPanel.classList.toggle("rev", dir < 0);
+    const leaving = prevPanel;
+    setTimeout(function () {
+      leaving.hidden = true;
+      leaving.classList.remove("plane-out", "rev");
+    }, 300);
+  }
 
   // Toggle tab panel visibility
   validTabs.forEach(function (id) {
     const panel = document.getElementById("tab-panel-" + id);
-    if (panel) {
-      const isActive = id === targetId;
-      panel.hidden = !isActive;
-      panel.classList.toggle("tab-panel-active", isActive);
-    }
+    if (!panel) return;
+    if (turning && panel === prevPanel) return;
+    const isActive = id === targetId;
+    panel.hidden = !isActive;
+    panel.classList.toggle("tab-panel-active", isActive);
   });
+
+  if (turning && nextPanel) {
+    nextPanel.classList.remove("plane-in", "rev");
+    void nextPanel.offsetWidth; // restart the animation on a fast second tap
+    nextPanel.classList.toggle("rev", dir < 0);
+    nextPanel.classList.add("plane-in");
+    const arriving = nextPanel;
+    setTimeout(function () {
+      arriving.classList.remove("plane-in", "rev");
+    }, 620);
+  }
+
+  turnHead(targetId);
 
   // Toggle active styling on desktop top tab buttons
   document.querySelectorAll(".tab-menu-item, .studio-nav-btn").forEach(function (btn) {
