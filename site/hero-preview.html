@@ -22,9 +22,17 @@
   @keyframes h-drift { from { transform:translateX(110vw);} to { transform:translateX(-120%);} }
 
 
-  /* Brian head that lives in the background after the intro hands off */
-  .h-brian-bg { position:absolute; z-index:-2; left:var(--ls-fx, 50%); top:var(--ls-fy, 38%); width:var(--ls-fs, min(58vmin,420px)); aspect-ratio:1; translate:-50% -50%; border-radius:50%; background:url(./brand/face-800.jpg) center/cover; opacity:.24; box-shadow:0 0 0 3px rgba(229,43,56,.7), 0 0 120px rgba(229,43,56,.4); pointer-events:none; animation:h-breathe 6s ease-in-out infinite; }
-  @keyframes h-breathe { 0%,100% { scale:1; } 50% { scale:1.045; } }
+  /* Brian: a colossal face on a wall in the distance, fixed so it parallaxes as you scroll */
+  .h-brian-bg { position:fixed; z-index:-2; left:50%; top:46%; width:var(--ls-giant, 125vmax); aspect-ratio:1; translate:-50% -50%; scale:1; opacity:.13; filter:blur(2.5px) saturate(.85); pointer-events:none; -webkit-mask-image:radial-gradient(circle, #000 52%, transparent 71%); mask-image:radial-gradient(circle, #000 52%, transparent 71%); }
+  .h-brian-bg i { position:absolute; inset:0; border-radius:50%; background:url(./brand/face-800.jpg) center/cover; box-shadow:0 0 0 .6vmax rgba(229,43,56,.8); animation:h-breathe 9s ease-in-out infinite; }
+  @keyframes h-breathe { 0%,100% { scale:1; } 50% { scale:1.03; } }
+  /* after the intro: the head pulls back from the loader position into the distance */
+  html.ls-handoff .h-brian-bg { animation:h-recede 3.4s cubic-bezier(.3,.05,.2,1) both; }
+  @keyframes h-recede {
+    from { translate:calc(-50% + var(--ls-dx, 0px)) calc(-50% + var(--ls-dy, 0px)); scale:var(--ls-s0, 1); opacity:.9; filter:blur(0) saturate(1); }
+    35% { opacity:.55; }
+    to { translate:-50% -50%; scale:1; opacity:.13; filter:blur(2.5px) saturate(.85); }
+  }
   /* content eases in as the intro dissolves */
   .h-top, .h-stage, .h-dock { transition:opacity 1.2s ease, transform 1.2s ease; }
   .h-stage { transition-delay:.35s; } .h-dock { transition-delay:.6s; }
@@ -105,8 +113,8 @@
 <body>
 <section class="h-hero" id="hero">
   <div class="h-bg-frame" id="bg"></div>
+  <div class="h-brian-bg" aria-hidden="true"><i></i></div>
   <div class="h-bg-shade"></div>
-  <div class="h-brian-bg" aria-hidden="true"></div>
   <div class="h-wall" id="wall" aria-hidden="true"></div>
 
   <div class="h-top">
@@ -245,7 +253,7 @@ $("vol").addEventListener("input", e => {
 });
 vid.volume = .8;
 setClip(0, false);
-window.addEventListener('resize', function(){ ['--ls-fx','--ls-fy','--ls-fs'].forEach(function(k){ document.documentElement.style.removeProperty(k); }); });
+window.addEventListener('resize', function(){ ['--ls-giant','--ls-dx','--ls-dy','--ls-s0'].forEach(function(k){ document.documentElement.style.removeProperty(k); }); });
 </script>
 </body>
 </html>

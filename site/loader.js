@@ -11,7 +11,7 @@
   if (params.get("intro") === "0") return;
 
   var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var MIN_MS = reduce ? 700 : 7000;
+  var MIN_MS = reduce ? 700 : 5200;
   var QUOTES = [
     "January 6th", "Convicted felon", "That's a fair question", "Answer the question",
     "I'll answer that", "What? What?", "In the Epstein files", "Maga mushroom gobbler",
@@ -20,7 +20,7 @@
   ];
 
   var css = [
-    "#ls-intro{position:fixed;inset:0;z-index:99999;background:#050507;color:#f4f1ea;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Bebas Neue',Impact,'Arial Narrow',sans-serif;transition:opacity 1.6s ease;touch-action:manipulation;cursor:pointer}",
+    "#ls-intro{position:fixed;inset:0;z-index:99999;background:#050507;color:#f4f1ea;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Bebas Neue',Impact,'Arial Narrow',sans-serif;transition:opacity 1.3s ease;touch-action:manipulation;cursor:pointer}",
     "#ls-intro.out{opacity:0;pointer-events:none}",
     "#ls-intro .bg{position:absolute;inset:-20%;background:radial-gradient(circle at 50% 40%,#3a0a10 0%,#12060a 45%,#050507 80%);animation:ls-bg 1.6s ease-out both}",
     "@keyframes ls-bg{0%{opacity:0}25%{opacity:1}100%{opacity:1}}",
@@ -29,7 +29,7 @@
     "#ls-intro .scan{position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 3px);pointer-events:none;mix-blend-mode:overlay}",
     "#ls-intro .stage{position:relative;width:min(58vmin,420px);aspect-ratio:1;margin-top:-6vh;flex:0 0 auto}",
     /* face */
-    "#ls-intro .face{position:absolute;inset:0;border-radius:50%;background:url(./brand/face-800.jpg) center/cover;box-shadow:0 0 0 3px #e52b38,0 0 90px rgba(229,43,56,.55),0 30px 80px rgba(0,0,0,.8);animation:ls-slam .7s cubic-bezier(.2,1.4,.3,1) .15s both,ls-shake .35s linear 1.6s 3,ls-shake .35s linear 4.6s 4,ls-pulse 1.1s ease-in-out 2.1s infinite}",
+    "#ls-intro .face{position:absolute;inset:0;border-radius:50%;background:url(./brand/face-800.jpg) center/cover;box-shadow:0 0 0 3px #e52b38,0 0 90px rgba(229,43,56,.55),0 30px 80px rgba(0,0,0,.8);animation:ls-slam .7s cubic-bezier(.2,1.4,.3,1) .15s both,ls-shake .35s linear 1.6s 3,ls-shake .35s linear 3.7s 3,ls-pulse 1.1s ease-in-out 2.1s infinite}",
     "@keyframes ls-slam{0%{transform:scale(.05) rotate(-200deg);opacity:0}60%{opacity:1}100%{transform:scale(1) rotate(0);opacity:1}}",
     "@keyframes ls-shake{0%,100%{translate:0 0}25%{translate:-5px 3px}50%{translate:6px -3px}75%{translate:-4px -2px}}",
     "@keyframes ls-pulse{0%,100%{filter:none}50%{filter:saturate(1.35) contrast(1.06)}}",
@@ -37,7 +37,7 @@
     "@keyframes ls-flash{0%{opacity:0}10%{opacity:.8}100%{opacity:0}}",
     /* spiral quotes */
     "#ls-intro .q{position:absolute;left:50%;top:50%;width:0;height:0;animation:ls-spiral 2.4s cubic-bezier(.15,.7,.2,1) both}",
-    "#ls-intro .q i{position:absolute;left:0;top:0;transform:translate(-50%,-50%);white-space:nowrap;font-style:normal;font-size:clamp(.72rem,2.6vmin,1.35rem);letter-spacing:.06em;text-transform:uppercase;padding:.15em .55em;background:rgba(5,5,7,.78);border:1px solid rgba(229,43,56,.55);border-radius:6px;color:#fff;animation:ls-upright 2.4s cubic-bezier(.15,.7,.2,1) both,ls-bob 3.2s ease-in-out 3.4s infinite alternate}",
+    "#ls-intro .q i{position:absolute;left:0;top:0;transform:translate(-50%,-50%);white-space:nowrap;font-style:normal;font-size:clamp(.72rem,2.6vmin,1.35rem);letter-spacing:.06em;text-transform:uppercase;padding:.15em .55em;background:rgba(5,5,7,.78);border:1px solid rgba(229,43,56,.55);border-radius:6px;color:#fff;animation:ls-upright 2.4s cubic-bezier(.15,.7,.2,1) both,ls-bob 3.2s ease-in-out 3s infinite alternate}",
     "#ls-intro .q.gold i{border-color:rgba(240,180,41,.7);color:#f0b429}",
     "@keyframes ls-spiral{0%{transform:rotate(calc(var(--a) - 260deg)) translateX(2vmin) scale(.2);opacity:0}15%{opacity:1}100%{transform:rotate(var(--a)) translateX(var(--r)) scale(1);opacity:1}}",
     "@keyframes ls-upright{0%{transform:translate(-50%,-50%) rotate(calc(260deg - var(--a)))}100%{transform:translate(-50%,-50%) rotate(calc(-1 * var(--a)))}}",
@@ -48,8 +48,8 @@
     "@keyframes ls-word{0%{opacity:0;transform:translateY(40px) scale(2.2) rotate(-6deg)}100%{opacity:1;transform:none}}",
     "#ls-intro .sub{position:relative;z-index:6;margin-top:1.4vh;font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;font-size:clamp(.62rem,1.8vmin,.8rem);letter-spacing:.18em;text-transform:uppercase;color:#f0b429;height:1.2em;display:flex;justify-content:center;opacity:1}",
     "#ls-intro .sub span{position:absolute;white-space:nowrap;opacity:0}",
-    "#ls-intro .sub .s1{animation:ls-inout 2.2s ease 2.5s both}",
-    "#ls-intro .sub .s2{animation:ls-in .6s ease 4.9s both}",
+    "#ls-intro .sub .s1{animation:ls-inout 1.7s ease 2.3s both}",
+    "#ls-intro .sub .s2{animation:ls-in .6s ease 3.9s both}",
     "@keyframes ls-bob{from{translate:0 -5px}to{translate:0 6px}}",
     "@keyframes ls-inout{0%{opacity:0;transform:translateY(8px)}15%{opacity:1;transform:none}85%{opacity:1}100%{opacity:0}}",
     "@keyframes ls-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}",
@@ -139,13 +139,17 @@
   function done() {
     if (finished) return;
     finished = true;
-    // Tell the page behind us where Brian's head is, so its background head sits exactly under ours.
+    // Hand Brian's head to the page behind us. It starts exactly where ours is, then recedes into the distance.
     try {
       var st = el.querySelector(".stage").getBoundingClientRect();
+      var vw = window.innerWidth, vh = window.innerHeight;
+      var giant = Math.round(Math.max(vw, vh) * 1.25);
       var root = document.documentElement.style;
-      root.setProperty("--ls-fx", Math.round(st.left + st.width / 2 + window.scrollX) + "px");
-      root.setProperty("--ls-fy", Math.round(st.top + st.height / 2 + window.scrollY) + "px");
-      root.setProperty("--ls-fs", Math.round(st.width) + "px");
+      root.setProperty("--ls-giant", giant + "px");
+      root.setProperty("--ls-dx", Math.round(st.left + st.width / 2 - vw / 2) + "px");
+      root.setProperty("--ls-dy", Math.round(st.top + st.height / 2 - vh * 0.46) + "px");
+      root.setProperty("--ls-s0", (st.width / giant).toFixed(4));
+      document.documentElement.classList.add("ls-handoff");
     } catch (e) {}
     document.documentElement.classList.remove("ls-playing");
     document.documentElement.classList.add("ls-reveal");
@@ -155,13 +159,13 @@
       document.documentElement.classList.remove("ls-lock","ls-reveal");
       if (el.parentNode) el.parentNode.removeChild(el);
       if (style.parentNode) style.parentNode.removeChild(style);
-    }, 1750);
+    }, 1450);
   }
 
   if (!loaded) window.addEventListener("load", function () { loaded = true; });
   el.addEventListener("click", done);
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" || e.key === "Enter") done(); });
   // hard safety net so a slow asset can never trap the visitor
-  setTimeout(done, 13000);
+  setTimeout(done, 11000);
   requestAnimationFrame(tick);
 })();
