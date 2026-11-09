@@ -3593,3 +3593,14 @@ body {
 }
 
 .footer-admin:hover { color: var(--red-hot, #e52b38); }
+
+/* Home entry cards (Ask hero -> Board / Index) */
+.h-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;max-width:1180px;margin:26px auto 8px;padding:0 20px}
+.h-card{display:block;background:#12121a;border:1px solid #262633;border-radius:14px;padding:20px 22px;text-decoration:none;color:#f2f2f2}
+.h-card:hover{border-color:#e5a93c}
+.h-card b{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.04em;display:block;margin-bottom:6px}
+.h-card span{display:block;color:#a7a7b3;font-size:14.5px;line-height:1.55}
+.h-card em{display:inline-block;margin-top:12px;color:#e5a93c;font-style:normal;font-family:'IBM Plex Mono',monospace;font-size:12.5px;letter-spacing:.08em}
+/* Archive index strip */
+.idx-strip{max-width:1180px;margin:14px auto 4px;padding:12px 18px;background:#101018;border:1px solid #262633;border-radius:10px;color:#a7a7b3;font-size:14px;line-height:1.55}
+.idx-strip b{color:#e5a93c;font-family:'IBM Plex Mono',monospace;letter-spacing:.12em;font-size:12.5px}
