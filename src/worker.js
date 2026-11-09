@@ -26,6 +26,8 @@ export default {
     const t0 = Date.now();
     const url = new URL(request.url);
 
+    if (url.protocol === "http:") { url.protocol = "https:"; return Response.redirect(url.toString(), 301); }
+
     // Canonicalise www -> apex.
     if (url.hostname === "www.lyingshapiro.com") {
       url.hostname = "lyingshapiro.com";
@@ -61,6 +63,18 @@ export default {
       const h = new Headers(res.headers);
       h.set("X-Robots-Tag", "noindex, nofollow");
       h.set("Cache-Control", "no-store");
+      return new Response(res.body, { status: res.status, headers: h });
+    }
+    // Cache policy: media files are stable-named and immutable; code gets an
+    // hour; HTML keeps revalidating so deploys land instantly.
+    const p = url.pathname;
+    let cc = null;
+    if (/^\/(audio|clips|videos|brand)\//.test(p)) cc = "public, max-age=31536000, immutable";
+    else if (/\.(css|js)$/.test(p)) cc = "public, max-age=3600";
+    else if (/\.(png|jpe?g|gif|ico|svg|webp)$/.test(p)) cc = "public, max-age=604800";
+    if (cc) {
+      const h = new Headers(res.headers);
+      h.set("Cache-Control", cc);
       return new Response(res.body, { status: res.status, headers: h });
     }
     return res;
