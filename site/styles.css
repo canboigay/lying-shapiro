@@ -3644,3 +3644,15 @@ body {
   }
   .gnav-sheet-link .gnav-ico { display: block; width: 19px; height: 19px; }
 }
+
+/* a11y + touch pass (2026-11-09) */
+:focus-visible{outline:2.5px solid #ffd23f;outline-offset:2px;border-radius:4px}
+@media (pointer:coarse){
+ .filter-chip{min-height:44px;padding:10px 14px}
+ .clips-step-btn{width:44px;height:44px;font-size:20px}
+ .sub-view-nav > *{min-height:44px}
+ .tab-menu-item{min-height:44px}
+ .mashup-chip{min-height:40px}
+ .hero-cta-btn{min-height:44px}
+}
+.filters,.phrase-filters{flex-wrap:wrap}

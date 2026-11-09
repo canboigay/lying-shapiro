@@ -563,7 +563,7 @@ function renderHeroStats() {
   const clipsCount = CLIPS.length || 9;
   const xCount = 25;
 
-  if (bPhrases) bPhrases.textContent = String(phrasesCount + floorCount);
+  if (bPhrases) bPhrases.textContent = String(phrasesCount);
   if (subPhrases) subPhrases.textContent = String(phrasesCount);
   if (subFloor) subFloor.textContent = String(floorCount);
   if (bSoundboard) bSoundboard.textContent = "14";

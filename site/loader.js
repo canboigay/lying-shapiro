@@ -11,7 +11,7 @@
   if (params.get("intro") === "0") return;
 
   var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var MIN_MS = reduce ? 700 : 5200;
+  var MIN_MS = reduce ? 700 : 3400;
   var QUOTES = [
     "January 6th", "Convicted felon", "That's a fair question", "Answer the question",
     "I'll answer that", "What? What?", "In the Epstein files", "Maga mushroom gobbler",
@@ -22,6 +22,7 @@
   var css = [
     "#ls-intro{position:fixed;inset:0;z-index:99999;background:#050507;color:#f4f1ea;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Bebas Neue',Impact,'Arial Narrow',sans-serif;transition:opacity 1.3s ease;touch-action:manipulation;cursor:pointer}",
     "#ls-intro.out{opacity:0;pointer-events:none}",
+    "#ls-intro.fast{transition:opacity .15s ease}",
     "#ls-intro .bg{position:absolute;inset:-20%;background:radial-gradient(circle at 50% 40%,#3a0a10 0%,#12060a 45%,#050507 80%);animation:ls-bg 1.6s ease-out both}",
     "@keyframes ls-bg{0%{opacity:0}25%{opacity:1}100%{opacity:1}}",
     "#ls-intro .rays{position:absolute;left:50%;top:40%;width:260vmax;height:260vmax;margin:-130vmax 0 0 -130vmax;background:repeating-conic-gradient(from 0deg,rgba(229,43,56,.10) 0 6deg,transparent 6deg 18deg);animation:ls-spin 28s linear infinite;mask-image:radial-gradient(circle,#000 0,transparent 42%);-webkit-mask-image:radial-gradient(circle,#000 0,transparent 42%)}",
@@ -91,7 +92,7 @@
   for (var i = 0; i < n; i++) {
     // spread across the top and sides only (skip the bottom arc where the headline sits)
     var a = Math.round(140 + (260 / (n - 1)) * i);
-    var r = narrow ? (i % 2 ? 38 : 33) : (i % 3 === 0 ? 36 : i % 3 === 1 ? 30 : 42);
+    var r = narrow ? (i % 2 ? 38 : 33) : (i % 3 === 0 ? 36 : i % 3 === 1 ? 30 : 42); if (i === 0 || i === n - 1) r = Math.min(r, 29);
     var d = (0.9 + i * 0.07).toFixed(2);
     quotes += '<div class="q' + (i % 4 === 0 ? " gold" : "") + '" style="--a:' + a + "deg;--r:" + r + "vmin;animation-delay:" + d + 's"><i style="animation-delay:' + d + 's">' + QUOTES[i] + "</i></div>";
   }
@@ -101,7 +102,7 @@
     '<button type="button" class="skip" aria-label="Skip intro">Skip</button>' +
     '<div class="stage"><div class="face"></div>' + quotes + "</div>" +
     "<h1>" + h1 + "</h1>" +
-    '<div class="sub"><span class="s1">Loading the receipts</span><span class="s2">415 debates &middot; 4.36M words &middot; zero straight answers</span></div>' +
+    '<div class="sub"><span class="s1">Loading the receipts</span><span class="s2">415 debates &middot; 4.26M words &middot; zero straight answers</span></div>' +
     '<div class="bar"><div class="row"><span id="ls-msg">Loading straight answers</span><span id="ls-pct">0%</span></div><div class="track"><div class="fill" id="ls-fill"></div></div></div>' +
     '<div class="flash"></div>';
   document.documentElement.appendChild(el);
@@ -113,7 +114,7 @@
   var MSGS = [
     [0, "Loading straight answers"],
     [28, "Straight answers found: 0"],
-    [52, "Scanning 4.36M words for an apology"],
+    [52, "Scanning 4.26M words for an apology"],
     [74, "Searching transcripts for a yes or no"],
     [92, "Error: none exist. Continuing anyway"]
   ];
@@ -132,13 +133,14 @@
     if (fill) fill.style.width = shown + "%";
     if (pct) pct.textContent = shown + "%";
     if (msg) { for (var k = MSGS.length - 1; k >= 0; k--) { if (shown >= MSGS[k][0]) { msg.textContent = MSGS[k][1]; break; } } }
-    if (p >= 1 && loaded) { done(); return; }
+    if (p >= 1 && loaded) { done(false); return; }
     requestAnimationFrame(tick);
   }
 
-  function done() {
+  function done(fast) {
     if (finished) return;
     finished = true;
+    if (fast) el.classList.add("fast");
     // Hand Brian's head to the page behind us. It starts exactly where ours is, then recedes into the distance.
     try {
       var st = el.querySelector(".stage").getBoundingClientRect();
@@ -159,13 +161,13 @@
       document.documentElement.classList.remove("ls-lock","ls-reveal");
       if (el.parentNode) el.parentNode.removeChild(el);
       if (style.parentNode) style.parentNode.removeChild(style);
-    }, 1450);
+    }, el.classList.contains("fast") ? 220 : 1450);
   }
 
   if (!loaded) window.addEventListener("load", function () { loaded = true; });
-  el.addEventListener("click", done);
-  document.addEventListener("keydown", function (e) { if (e.key === "Escape" || e.key === "Enter") done(); });
+  el.addEventListener("click", function () { done(true); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" || e.key === "Enter") done(true); });
   // hard safety net so a slow asset can never trap the visitor
-  setTimeout(done, 11000);
+  setTimeout(function(){ done(false); }, 8000);
   requestAnimationFrame(tick);
 })();

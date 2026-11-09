@@ -75,13 +75,22 @@ export default {
     if (cc) {
       const h = new Headers(res.headers);
       h.set("Cache-Control", cc);
-      return new Response(res.body, { status: res.status, headers: h });
+      return withSecurity(new Response(res.body, { status: res.status, headers: h }));
     }
-    return res;
+    return withSecurity(res);
   },
 };
 
 /* ---------- helpers ---------- */
+function withSecurity(res) {
+  const h = new Headers(res.headers);
+  h.set("X-Content-Type-Options", "nosniff");
+  h.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  h.set("X-Frame-Options", "SAMEORIGIN");
+  h.set("Strict-Transport-Security", "max-age=31536000");
+  return new Response(res.body, { status: res.status, statusText: res.statusText, headers: h });
+}
+
 
 function json(obj, status = 200, extra = {}) {
   return new Response(JSON.stringify(obj), {

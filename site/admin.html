@@ -38,8 +38,8 @@
 <body>
   <div id="login" class="card" hidden>
     <h1>LYING<span>SHAPIRO</span> · analytics</h1>
-    <p class="empty">Enter the admin token (set with <code>wrangler secret put ADMIN_TOKEN</code>). It's stored only in this browser.</p>
-    <form id="login-form"><input id="tok" type="password" autocomplete="current-password" placeholder="Admin token" /><button>Unlock</button></form>
+    <p class="empty">Enter the admin token. It's stored only in this browser.</p>
+    <form id="login-form"><label for="tok" style="position:absolute;left:-9999px">Admin token</label><input id="tok" type="password" autocomplete="current-password" placeholder="Admin token" /><button>Unlock</button></form><p style="margin-top:14px"><a href="/" style="color:#9a9ab0">&larr; Back to the site</a></p>
     <p class="err" id="login-err"></p>
   </div>
 
