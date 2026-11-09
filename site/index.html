@@ -249,6 +249,7 @@ body{animation:ls-page-in .45s cubic-bezier(.16,1,.3,1) .5s backwards}
       <div class="h-podium-frame">
         <div class="h-podium-tag"><span class="h-dot"></span><span id="tag">LIVE FROM THE ARCHIVE</span></div>
         <video id="vid" playsinline muted loop autoplay></video>
+        <img id="egg-gif" src="./brand/brian-heads.gif" alt="" hidden style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit;z-index:3">
         <div class="h-cap" id="cap"></div>
         <div class="h-sound">
           <button id="snd" type="button" aria-label="Mute or unmute">Sound off</button>
@@ -289,23 +290,11 @@ const CLIPS = [
   { src:"./clips/liable-sexual-abuser-9x16.mp4", poster:"./clips/posters/liable-sexual-abuser.jpg", cap:"Liable", key:["liable","abuse","carroll","civil","lawsuit"] },
   { src:"./clips/jimmy-supercut-9x16.mp4", poster:"./clips/posters/jimmy-supercut.jpg", cap:"Jimmy! Let me talk!", key:["jimmy","dore","interrupt","talk over","let me"] },
 ];
-const DODGES = [
-  "I'm happy to answer that. But first, <b>January 6th</b>.",
-  "That's a fair question. Let me ask <b>you</b> one.",
-  "Great question. Are you aware he's a <b>convicted felon</b>?",
-  "I'll answer that. Right after I mention <b>the Epstein files</b>.",
-  "Glad you asked. Can I just finish my point? <b>What? What?</b>",
-  "We'll get to that. Do you condemn <b>everything</b>?",
-  "Interesting. That reminds me of <b>a totally different thing</b>.",
-  "Sir, sir. I answered that <b>four debates ago</b>.",
-];
 const CHIPS = ["Did you lie?", "Is he a felon?", "What about Jan 6th?", "Do you condemn it?", "Just answer yes or no"];
 const WALL = ["January 6th","Convicted felon","Answer the question","That's a fair question","What? What?","Epstein files","I'll answer that","Maga mushroom gobbler","Let me finish","Do you condemn it"];
-
 const $ = id => document.getElementById(id);
 const vid = $("vid"), bg = $("bg");
 let idx = 0, dodges = 0, typer = null;
-
 function setClip(i, sound) {
   idx = (i + CLIPS.length) % CLIPS.length;
   const c = CLIPS[idx];
@@ -326,16 +315,143 @@ function type(html) {
     if (n >= text.length) { clearInterval(typer); p.innerHTML = html; }
   }, 22);
 }
-function ask(question) {
-  const q = (question || "").toLowerCase();
-  let match = CLIPS.findIndex(c => c.key.some(k => q.includes(k)));
-  if (match < 0) match = Math.floor(Math.random() * CLIPS.length);
-  dodges++; $("s-dodges").textContent = dodges;
-  type(DODGES[Math.floor(Math.random() * DODGES.length)]);
-  if (window.innerWidth <= 860) { var pod = document.querySelector('.h-podium'); if (pod) pod.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
-  setClip(match, true);
-  $("tag").textContent = "BRIAN IS DODGING";
+
+// ===== Ask Brian v2: topic-aware dodge engine + easter eggs =====
+const PIVOTS = [
+  "But first, <b>January 6th</b>.",
+  "Are you aware he's a <b>convicted felon</b>?",
+  "Right after I mention <b>the Epstein files</b>.",
+  "Can I just finish my point? <b>What? What?</b>",
+  "Do you condemn <b>everything</b>? All of it?",
+  "That reminds me of <b>a totally different thing</b>.",
+  "I answered that <b>four debates ago</b>.",
+  "Let me ask <b>you</b> one. Do you support <b>January 6th</b>?"
+];
+const TOPICS = [
+ { id:"jan6", clip:1, phrases:["january 6","jan 6","capitol","insurrection"], words:["riot","rioters","election denier"],
+   ack:["January 6th? Funny you bring it up.","Oh, we're doing January 6th? Good."],
+   line:["I talk about <b>January 6th</b> because nobody else will say it plainly.","476 mentions across 109 debates. It is basically my cardio."] },
+ { id:"felon", clip:2, phrases:["convicted felon","34 count","34-count"], words:["felon","convicted","guilty","crime","jail","fraud","hush money"],
+   ack:["A convicted felon. Say the words.","You mean the 34-count situation?"],
+   line:["He is a <b>convicted felon</b>. That is not an opinion, that is a verdict.","I will keep saying <b>convicted felon</b> until it stops being true. It has not stopped."] },
+ { id:"epstein", clip:5, phrases:["epstein"], words:["files","client list","island"],
+   ack:["The Epstein files? Interesting.","Funny you should mention the files."],
+   line:["Release <b>the Epstein files</b>. All of them. Today.","Why does every answer I give end at <b>the Epstein files</b>? Ask him."] },
+ { id:"maga", clip:3, phrases:["maga is dead","mushroom gobbler"], words:["maga","trump supporter","supporters","rally","cult"],
+   ack:["MAGA? Say less.","Oh, I have thoughts on MAGA."],
+   line:["<b>MAGA is dead</b>. Repeat after me. I'll wait.","MAGA <b>mushroom gobbler</b>. That is the whole answer."] },
+ { id:"trump", clip:2, phrases:["donald trump"], words:["trump","president","white house","dictator","king"],
+   ack:["Trump? Let me tell you about Trump.","Oh good, my favorite subject."],
+   line:["He is a <b>convicted felon</b> and a <b>liable sexual abuser</b>. Next question.","Everything with him starts at <b>January 6th</b> and ends at a rally."] },
+ { id:"health", clip:4, phrases:["health care","healthcare","obamacare"], words:["doctor","hospital","insurance","medical","sick","coverage","medicare"],
+   ack:["Healthcare? I actually have a policy answer for that.","One specific policy? Careful, I might answer."],
+   line:["Ask Herb about healthcare. He hung up. <b>Screw you, Herb</b>, by the way.","People are one hospital visit from broke, and I'm the rude one?"] },
+ { id:"ukraine", clip:4, phrases:["ukraine","putin"], words:["war","russia","kyiv","zelensky","invasion"],
+   ack:["Ukraine? Jimmy and I covered this at length.","The war. Right."],
+   line:["He said he'd end it in <b>24 hours</b>. Still waiting on that clock.","Putin never got a go-ahead from Biden. Say it with me."] },
+ { id:"election", clip:1, phrases:["stolen election","2020 election"], words:["election","voters","ballots","rigged","stolen","vote"],
+   ack:["The election? I have receipts.","Stolen? Show me one court case. One."],
+   line:["They tried to <b>steal the election</b> and then called me the liar.","60-plus court cases. Zero. That is the answer."] },
+ { id:"biden", clip:4, phrases:["joe biden"], words:["biden","democrat","democrats","left","liberal","kamala","harris"],
+   ack:["Biden? Sure, let's do Biden.","The Democrats. Fine."],
+   line:["Say what you want about Biden. He never tried to <b>steal an election</b> on live TV.","I'm an <b>independent thinker</b>. It says so on the pin."] },
+ { id:"wilson", clip:6, phrases:["andrew wilson"], words:["wilson","crusader","debate me bro"],
+   ack:["Wilson? Twenty bouts. Twenty.","Andrew Wilson. My cardio nemesis."],
+   line:["20 Wilson debates in the archive and he still won't <b>answer the question</b>.","Ask the Index. It's all in <b>the Wilson Files</b>."] },
+ { id:"kewl", clip:6, phrases:["kewl vic","kewl"], words:["vic","stream","panel","kick"],
+   ack:["Kewl Vic? Now we're talking.","The panel king himself."],
+   line:["Kewl runs the panel. I just get <b>dog walked</b> on it. Allegedly.","Check the receipts. <b>+54 Kewl receipts</b> and counting."] },
+ { id:"jimmy", clip:6, phrases:["jimmy"], words:["interrupt","talk over","cut off","let me talk"],
+   ack:["Jimmy. JIMMY. Let me talk.","Oh, Jimmy gets his own supercut for a reason."],
+   line:["<b>Let me talk, Jimmy.</b> That is the entire foreign policy.","Jimmy asks, I answer, Jimmy interrupts. It's our thing."] },
+ { id:"money", clip:4, phrases:["cost of living","gas prices"], words:["economy","jobs","inflation","prices","taxes","money","rich","poor","rent","billionaire"],
+   ack:["The economy? Sure.","Money questions. My favorite dodge category."],
+   line:["The billionaires are fine. Everyone else gets a <b>fair question</b> and no answer.","I talk for a living. The economy talks louder."] },
+ { id:"ice", clip:4, phrases:["immigration","deport"], words:["ice","border","immigrant","migrants","migrant","wall"],
+   ack:["Immigration? Let's be precise.","The border. Okay."],
+   line:["I ask one question: is it humane? Watch them change the subject. I learned from the best.","Callers melt down on this one. <b>Sensitive callers</b>, every time."] },
+ { id:"guns", clip:4, phrases:["second amendment"], words:["gun","guns","shooting","rifle","nra"],
+   ack:["Guns? Careful, the callers are listening.","Second Amendment. Right."],
+   line:["I ask for one law. One. And suddenly <b>I'm</b> the extremist.","This is where the chat goes fully <b>What? What?</b>"] },
+ { id:"media", clip:4, phrases:["newsmax","fox news","fake news"], words:["media","news","cnn","msnbc","journalist","press"],
+   ack:["The media? I was ON Newsmax. Once.","Media questions. Delicious."],
+   line:["I felt like I was at a <b>rally</b>, not a news hit. Leave it there.","90% of that crowd had no idea what show they were at. I said what I said."] },
+ { id:"personal", clip:4, phrases:["your show","your wife","las vegas","radio show"], words:["vegas","radio","host","married","wife","age","tall","weight"],
+   ack:["Me? Finally, a good topic.","Personal questions get personal answers."],
+   line:["Pushing The Limits, Las Vegas. <b>Independent thinker</b>. Next.","I do this for a living. The archive has 415 debates of evidence."] },
+];
+const GENERIC_ACK = ["That's a fair question.","Great question.","Glad you asked.","Interesting. Very interesting.","I'm happy to answer that."];
+const INSULT_LINES = [
+  "Okay. <b>I'm gonna dog walk you</b>. Metaphorically. On the record.",
+  "Imbecile is a strong word. I retract my apology in advance.",
+  "You're an idiot, caller. <b>Have a nice day.</b>",
+  "Semi-intelligent today, I see. Growth."
+];
+const TRICK_LINES = [
+  "Yes or no? I have <b>a trick for you</b>: I answer in paragraphs.",
+  "That was <b>a trick</b>. A yes-or-no box. I don't live in the box.",
+  "Binary questions are how callers lose. <b>What? What?</b>"
+];
+let heat = 0, lastQ = "", repeats = 0, gobblers = 0, eggAudio = null;
+window.__state = { get heat(){return heat;}, get repeats(){return repeats;} };
+function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
+function playPad(id){ try{ if(eggAudio) eggAudio.pause(); eggAudio = new Audio("./audio/pads/" + id + ".mp3"); eggAudio.volume = .9; eggAudio.play().catch(()=>{}); window.__lastEgg = id; }catch(e){} }
+function showGif(ms){ const g = $("egg-gif"); if(!g) return; g.hidden = false; setTimeout(()=>{ g.hidden = true; }, ms); }
+function facepalm(){ const v = $("vid"); const keep = { src: v.getAttribute("src"), poster: v.poster }; v.src = "./clips/facepalm-egg.mp4"; v.loop = true; v.muted = true; v.play().catch(()=>{});
+  setTimeout(()=>{ setClip(idx, false); }, 3900); $("tag").textContent = "BRIAN IS FACEPALMING"; }
+function storm(){ const s = $("egg-storm"); if(!s) return; s.hidden = false; const sv = $("egg-storm-vid"); sv.play().catch(()=>{});
+  setTimeout(()=>{ s.hidden = true; sv.pause(); }, 5200); }
+function scoreTopics(q){
+  const padded = " " + q + " ";
+  return TOPICS.map(t => { let s = 0;
+    t.phrases.forEach(p => { if (q.includes(p)) s += 3; });
+    t.words.forEach(w => { if (padded.includes(w)) s += 1; });
+    return { t, s };
+  }).filter(x => x.s > 0).sort((a,b) => b.s - a.s);
 }
+function ask(question) {
+  const raw = (question || "").trim();
+  const q = raw.toLowerCase();
+  if (!q) { type("Ask me something. Anything. I am <b>happy to answer</b>."); return; }
+  if (q === lastQ) { repeats++; } else { repeats = 0; lastQ = q; }
+  heat = Math.min(6, heat + 1);
+  const finish = (html, clipIdx) => { dodges++; $("s-dodges").textContent = dodges; type(html);
+    if (window.innerWidth <= 860) { var pod = document.querySelector('.h-podium'); if (pod) pod.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    if (clipIdx != null) setClip(clipIdx, true); $("tag").textContent = "BRIAN IS DODGING"; };
+  // ---- easter eggs & specials ----
+  if (/storm/.test(q)) { storm(); return finish("You asked for the storm. <b>HEAD STORM</b>. You're welcome.", 0); }
+  if (/name (me )?(one|a) (specific )?policy|one specific policy/.test(q)) {
+    playPad("obamacare-answer");
+    const st = $("s-straight"); st.textContent = "1";
+    setTimeout(()=>{ st.textContent = "0"; }, 2600);
+    $("tag").textContent = "BRIAN ANSWERED (once)";
+    return finish("<b>Obamacare.</b>", 4);
+  }
+  if (/spell (your|his|the) name|how do you spell/.test(q)) { playPad("spell-shapiro"); return finish("S-H-A-P-I-R-O. <b>Spell it right</b> or don't spell it at all.", 4); }
+  if (/who are you|introduce yourself|your name/.test(q)) { playPad("my-name-is-brian"); return finish("My name is <b>Brian Shapiro</b>. Host. Independent thinker. Alleged liar, per this website.", 4); }
+  if (/is maga dead|maga dead/.test(q)) { playPad("maga-is-dead"); return finish("<b>MAGA IS DEAD.</b> Yes or no? I said what I said.", 3); }
+  if (/gobbler|mushroom/.test(q)) { gobblers++; showGif(2400);
+    if (gobblers >= 2) { const t = document.querySelector('.h-stat b'); }
+    return finish(gobblers >= 2 ? "<b>GOBBLER MODE.</b> MAGA mushroom gobbler. There is no other answer now." : "MAGA <b>mushroom gobbler</b>. Say it back. Everyone does.", 3); }
+  if (repeats >= 2) { showGif(2000); return finish("<b>What? What?</b> WHAT? You asked that already. Twice.", 0); }
+  if (/idiot|stupid|moron|imbecile|dumb|shut up|loser/.test(q)) { if (heat >= 4) facepalm(); return finish(pick(INSULT_LINES), 0); }
+  if (/yes or no|just answer/.test(q)) { return finish(pick(TRICK_LINES), 4); }
+  if (/who made this|is this (site|real)|are you (a bot|an ai|real)/.test(q)) { return finish("This is a <b>parody archive</b>. Every dodge is documented. I am simply the ghost of 415 debates.", 4); }
+  if (/are you lying|you lied|did you lie|liar/.test(q)) { return finish("Lying? Me? Name one time. The site is called that, I don't control branding. <b>January 6th</b>, though.", 1); }
+  if (raw.length > 140) { return finish("Let me stop you right there. That was a filibuster, not a question. " + pick(PIVOTS), 6); }
+  // ---- topic engine ----
+  const scored = scoreTopics(q);
+  const top = scored[0];
+  if (top) {
+    const t = top.t;
+    const line = Math.random() < .62 ? pick(t.line) : pick(PIVOTS.filter(p => !t.line.join(" ").includes(p.replace(/<[^>]+>/g,"").slice(0,10))));
+    const heatPrefix = heat >= 4 ? "Sir. Sir. " : (heat === 3 ? "Let me stop you right there. " : "");
+    return finish(heatPrefix + pick(t.ack) + " " + line, t.clip);
+  }
+  if (heat >= 5) facepalm();
+  return finish(pick(GENERIC_ACK) + " " + pick(PIVOTS), Math.floor(Math.random() * CLIPS.length));
+}
+window.__ask = ask;
 
 // wall
 (function(){ const w = $("wall"); for (let i=0;i<12;i++){ const s=document.createElement("span"); s.textContent=WALL[i%WALL.length]; if(i%3===0) s.className="hot";
@@ -372,5 +488,6 @@ window.addEventListener('resize', function(){ ['--ls-giant','--ls-dx','--ls-dy',
  document.addEventListener('keydown', function(e){ if(e.key==='Escape') close(); });
 })();
 </script>
+<div id="egg-storm" hidden style="position:fixed;inset:0;z-index:200;background:#000"><video id="egg-storm-vid" src="./clips/headstorm-egg.mp4" muted loop playsinline style="width:100%;height:100%;object-fit:cover"></video><div style="position:absolute;left:0;right:0;bottom:26px;text-align:center;font-family:'Bebas Neue',sans-serif;letter-spacing:.3em;color:#fff;font-size:22px">HEAD STORM</div></div>
 </body>
 </html>
