@@ -54,8 +54,28 @@
 .bd-hidden{display:none!important}
 .srch-off{display:none!important}
 </style>
+<style id="ls-splash-css">
+#ls-splash{position:fixed;inset:0;z-index:99998;background:#050507;display:flex;align-items:center;justify-content:center;transition:opacity .25s ease;cursor:pointer}
+#ls-splash.out{opacity:0;pointer-events:none}
+#ls-splash .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:min(92vw,860px);padding:12px}
+#ls-splash img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px;border:1px solid rgba(255,255,255,.14);opacity:0;animation:ls-pop .3s ease forwards;background:#111}
+@keyframes ls-pop{from{opacity:0;transform:scale(.86)}to{opacity:1;transform:scale(1)}}
+#ls-splash .cap{position:absolute;left:0;right:0;bottom:calc(18px + env(safe-area-inset-bottom,0px));text-align:center;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.22em;color:#9a9aa5;text-transform:uppercase}
+@media (max-width:640px){#ls-splash .grid{grid-template-columns:repeat(3,1fr)}}
+@media (prefers-reduced-motion: reduce){#ls-splash img{animation:none;opacity:1}}
+</style>
 </head>
 <body>
+<!-- ls-splash -->
+<div id="ls-splash" role="presentation"><div class="grid"><img src="/videos/--9LaPwP1Ks.jpg" alt="" fetchpriority="high" style="animation-delay:0ms"><img src="/videos/-GRlvwVJiVo.jpg" alt="" fetchpriority="high" style="animation-delay:35ms"><img src="/videos/0OgvP_aEOOo.jpg" alt="" fetchpriority="high" style="animation-delay:70ms"><img src="/videos/0QI9B7Wrin8.jpg" alt="" fetchpriority="high" style="animation-delay:105ms"><img src="/videos/0QmcJDwjLMs.jpg" alt="" style="animation-delay:140ms"><img src="/videos/0UirvOOhVHc.jpg" alt="" style="animation-delay:175ms"><img src="/videos/0evXgM2xypI.jpg" alt="" style="animation-delay:210ms"><img src="/videos/0rP81gnU5hw.jpg" alt="" style="animation-delay:245ms"><img src="/videos/0zX18-rbfz4.jpg" alt="" style="animation-delay:280ms"><img src="/videos/16pB-l0Bnck.jpg" alt="" style="animation-delay:315ms"><img src="/videos/1Jpx3luTF-U.jpg" alt="" style="animation-delay:350ms"><img src="/videos/1KTqpd4sgPE.jpg" alt="" style="animation-delay:385ms"></div><div class="cap">Lying Shapiro</div></div>
+<script>
+(function(){ var sp=document.getElementById('ls-splash'); if(!sp) return;
+ try{ if(sessionStorage.getItem('ls_intro_seen')!=='1' && document.querySelector('script[src*="loader.js"]')){ sp.remove(); return; } }catch(e){}
+ var done=false; function out(){ if(done) return; done=true; sp.classList.add('out'); setTimeout(function(){ sp.remove(); }, 280); }
+ sp.addEventListener('click', out);
+ setTimeout(out, 1150); setTimeout(function(){ if(sp.parentNode) sp.remove(); }, 2600);
+})();
+</script>
 <nav class="gnav" id="gnav" aria-label="Sections">
   <a class="gnav-brand" href="/">LYING <b>SHAPIRO</b></a>
   <div class="gnav-links">
