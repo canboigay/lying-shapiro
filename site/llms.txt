@@ -1,0 +1,37 @@
+# Lying Shapiro (lyingshapiro.com)
+
+A parody and media-criticism archive documenting the debate rhetoric of Brian Shapiro, host of Pushing The Limits on KSHP 1400 AM in Las Vegas. Not affiliated with Pushing The Limits. Brian Shapiro is not Ben Shapiro.
+
+Corpus: 415 debates, 4,258,173 transcribed words, 5,205 catchphrase hits, 178 logged polite dodges, 20 debates vs Andrew Wilson.
+
+## Top catchphrases (times used across the corpus)
+- Hold on let me finish: 878
+- January 6th: 557
+- In the Epstein files: 371
+- Liable sexual abuser: 364
+- I'm glad you asked: 192
+- Answer the question: 178
+- maga mushroom gobbler: 176
+- The election was stolen: 167
+- Convicted felon: 156
+- I'll answer that: 61
+- That's a fair question: 57
+- Complete imbecile: 57
+- Praising Adolf Hitler: 49
+- Insurrection: 49
+- Stormy Daniels: 45
+
+## Pages
+- / Ask Brian: an interactive parody Q&A that answers every question with a documented Brian Shapiro dodge.
+- /archive The Index: the full catchphrase corpus, polite-dodge tracker, Wilson files, clips and receipts.
+- /soundboard Stream Soundboard: 63 real, verified Brian Shapiro audio clips for live commentary.
+- /videos The Video Index: 429 catalogued Brian Shapiro videos with thumbnails, each linking to YouTube.
+
+## Signature lines
+- MAGA mushroom gobbler
+- MAGA is dead
+- January 6th
+- Convicted felon
+- What? What?
+- Hold on, let me finish
+- Do you condemn it?
