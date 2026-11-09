@@ -63,6 +63,17 @@
 #ls-splash .cap{position:absolute;left:0;right:0;bottom:calc(18px + env(safe-area-inset-bottom,0px));text-align:center;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.22em;color:#9a9aa5;text-transform:uppercase}
 @media (max-width:640px){#ls-splash .grid{grid-template-columns:repeat(3,1fr)}}
 @media (prefers-reduced-motion: reduce){#ls-splash img{animation:none;opacity:1}}
+
+html{transition:opacity .18s ease}
+html.ls-leaving{opacity:0}
+body{animation:ls-page-in .45s cubic-bezier(.16,1,.3,1) .5s backwards}
+@keyframes ls-page-in{from{opacity:0}to{opacity:1}}
+@view-transition{navigation:auto}
+::view-transition-old(root){animation:ls-vt-out .22s ease both}
+::view-transition-new(root){animation:ls-vt-in .3s cubic-bezier(.16,1,.3,1) both}
+@keyframes ls-vt-out{to{opacity:0}}
+@keyframes ls-vt-in{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion: reduce){body{animation:none}html{transition:none}}
 </style>
 </head>
 <body>
@@ -73,7 +84,23 @@
  try{ if(sessionStorage.getItem('ls_intro_seen')!=='1' && document.querySelector('script[src*="loader.js"]')){ sp.remove(); return; } }catch(e){}
  var done=false; function out(){ if(done) return; done=true; sp.classList.add('out'); setTimeout(function(){ sp.remove(); }, 280); }
  sp.addEventListener('click', out);
- setTimeout(out, 1150); setTimeout(function(){ if(sp.parentNode) sp.remove(); }, 2600);
+ setTimeout(out, 820); setTimeout(function(){ if(sp.parentNode) sp.remove(); }, 2600);
+})();
+</script>
+<script>
+(function(){ if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+ if (document.startViewTransition) return;
+ document.addEventListener('click', function(e){
+  var a = e.target.closest && e.target.closest('a[href]'); if(!a) return;
+  if (a.target && a.target !== '_self') return;
+  var u; try{ u = new URL(a.href, location.href); }catch(err){ return; }
+  if (u.origin !== location.origin) return;
+  if (u.pathname === location.pathname) return;
+  if (a.hasAttribute('data-tab') && location.pathname.indexOf('/archive') === 0) return;
+  e.preventDefault();
+  document.documentElement.classList.add('ls-leaving');
+  setTimeout(function(){ location.href = a.href; }, 180);
+ });
 })();
 </script>
 <nav class="gnav" id="gnav" aria-label="Sections">
